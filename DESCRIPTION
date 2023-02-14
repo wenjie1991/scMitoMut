@@ -1,0 +1,13 @@
+Package: scMitoMut
+Title: Single-cell Mitochondrial Mutation Analysis Tool
+Version: 0.0.0.9000
+Authors@R: 
+    person("Wenjie", "SUN", , "sunwjie@gmail.com", role = c("aut", "cre"),
+    comment = c(ORCID = "000-0002-3100-2346"))
+Description: This package is for analysing mitochondrial mutations using single cell omics
+    data such as scRNASeq and scATACSeq. It provides functions for mutation
+    filtering and visualization.
+License: MIT + file LICENSE
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.2.1
