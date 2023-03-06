@@ -36,7 +36,7 @@ betaBinomEst <- function(counts, total, prob_start = 0.99, theta_start = 10) {
 
 #' Fit betaBinomial distribution
 #'
-fit_bb <- function(y, N, init_vaf, max_try = 1) {
+fit_bb_r <- function(y, N, init_vaf, max_try = 1) {
     fit <- NULL
     try_num <- 0
     while (try_num < max_try) {
@@ -56,16 +56,24 @@ fit_bb <- function(y, N, init_vaf, max_try = 1) {
     fit
 }
 
+fit_bb_cpp <- function(y, N, max_iter = 100, tol = 1e-6) {
+    mle_bb(y, N, max_iter, tol)
+}
+
+
 #' Calculate p-value
 #'
-calc_pval <- function(y, N, fit) {
+calc_pval_r <- function(y, N, fit) {
 
     pval <- NULL
 
     if (class(fit) != "try-error") {
 
-        prob <- fit[1]
-        theta <- fit[2]
+        a = fit[[1]]
+        b = fit[[2]]
+
+        prob <- a / (a + b)
+        theta <- a + b
 
         pval <- lapply(seq_along(y), function(i) {
             sum(emdbook::dbetabinom(0:(y[i]), prob, N[i], theta))
@@ -75,6 +83,12 @@ calc_pval <- function(y, N, fit) {
     pval
 }
 
+calc_pval_cpp = function(y, N, fit) {
+    a = fit[[1]]
+    b = fit[[2]]
+    pbetabinom(y, N, a, b)
+}
+
 #' Fit one location
 #'
 #' @examples
@@ -82,7 +96,7 @@ calc_pval <- function(y, N, fit) {
 #' process_locus("mt1000", mtmutObj, maj_base = NULL, max_try = 1)
 #'
 #' ##
-process_locus_bb <- function(d_select_maj_base, max_try = 1) {
+process_locus_bb_bk <- function(d_select_maj_base, max_try = 1) {
 
     #################################################
     ### Transform data
@@ -100,13 +114,18 @@ process_locus_bb <- function(d_select_maj_base, max_try = 1) {
     #################################################
     ## Model fitting
     # fit = vglm(cbind(y, N - y) ~ 1, family = betabinomialff, trace = T, weights = rep(1, length(N)))
-    fit = fit_bb(y, N, mean_vaf, max_try)
+	# fit = fit_bb_r(y, N, mean_vaf, max_try)
+    fit = fit_bb_cpp(y, N)
 
-    pval <- calc_pval(y, N, fit)
+    # pval <- calc_pval_r(y, N, fit)
+    pval <- calc_pval_cpp(y, N, fit)
 
     #################################################
     ## Output
-    model_par <- data.table(mean_vaf, prob = fit[1], theta = fit[2])
+    prob = fit[[1]] / (fit[[1]] + fit[[2]])
+    theta = fit[[1]] + fit[[2]]
+
+    model_par <- data.table(mean_vaf, prob = prob, theta = theta)
 
     ## do p value adjust later
     ## and join the p value to the table later
@@ -119,4 +138,54 @@ process_locus_bb <- function(d_select_maj_base, max_try = 1) {
     )
 }
 
+
+## new fit bb function
+process_locus_bb = function(d_select_maj_base, selected_maj_cell = NULL) {
+    #################################################
+    ### Transform data
+    ## coverage
+    N <- d_select_maj_base$coverage
+    ## majority base depth
+    y <- d_select_maj_base[, alt_depth]
+    ## majority base forward depth
+    y_fwd <- d_select_maj_base[, fwd_depth]
+    ## majority base reverse depth
+    y_rev <- d_select_maj_base[, rev_depth]
+    ## averrage vaf
+    mean_vaf <- sum(y) / sum(N)
+
+    if (!is.null(selected_maj_cell)) {
+        ## vector of selected cell
+        is_selected_cell = d_select_maj_base$cell_barcode %in% selected_maj_cell
+
+        #################################################
+        ## Model fitting
+        # fit = vglm(cbind(y, N - y) ~ 1, family = betabinomialff, trace = T, weights = rep(1, length(N)))
+        # fit = fit_bb_r(y, N, mean_vaf, max_try)
+        fit = fit_bb_cpp(y[is_selected_cell], N[is_selected_cell])
+    } else {
+
+        #################################################
+        ## Model fitting
+        # fit = vglm(cbind(y, N - y) ~ 1, family = betabinomialff, trace = T, weights = rep(1, length(N)))
+        # fit = fit_bb_r(y, N, mean_vaf, max_try)
+        fit = fit_bb_cpp(y, N)
+    }
+
+    # pval <- calc_pval_r(y, N, fit)
+    pval <- calc_pval_cpp(y, N, fit)
+
+    #################################################
+    ## Output
+    prob = fit[[1]] / (fit[[1]] + fit[[2]])
+    theta = fit[[1]] + fit[[2]]
+
+    model_par <- data.table(mean_vaf, prob = prob, theta = theta)
+
+    ## output the list
+    list(
+        pval = pval,
+        parameters = model_par
+    )
+}
 

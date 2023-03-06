@@ -23,14 +23,24 @@ if (F) {
 
 #' @export
 plot_locus <- function(
-    d_select_maj_base, p_adj = 0.05, p_threshold, loc_i = NA, maj_base= NA) {
+    d_select_maj_base, p, p_threshold = 0.05, loc_i = NA, maj_base= NA) {
     ## alt / depth
     N = d_select_maj_base$coverage
     y = d_select_maj_base[, alt_depth]
-    plot(N, y / (N + 0.001), log = "x", xlab = "Seq Depth", ylab = "p", 
-        main = paste0(loc_i, "_", maj_base))
-    points(N[p_adj < p_threshold], (y / (N + 0.001))[p_adj < p_threshold], 
-        col = "red", pch = 19)
+    d_plot = data.table(
+        depth = N,
+        vaf = y / (N + 0.001),
+        highlight = p < p_threshold
+    )
+    ggplot(d_plot, aes(x = depth, y = vaf, color = highlight)) + 
+        geom_point() + 
+        scale_color_manual(values = c("black", "red")) + 
+        scale_x_log10() + 
+        labs(x = "Seq Depth", y = "p", title = paste0(loc_i, "_", maj_base))
+    # plot(N, y / (N + 0.001), log = "x", xlab = "Seq Depth", ylab = "p", 
+        # main = paste0(loc_i, "_", maj_base))
+    # points(N[p< p_threshold], (y / (N + 0.001))[p < p_threshold], 
+        # col = "red", pch = 19)
 }
 
 

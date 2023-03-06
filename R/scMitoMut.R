@@ -10,8 +10,6 @@
 #' @importFrom magrittr %>% %<>% extract extract2
 #' @importFrom data.table data.table rbindlist .N :=
 #' @importFrom plyr . count
-#' @importFrom Ckmeans.1d.dp Ckmeans.1d.dp
-#' @importFrom egg ggarrange
 #' @importFrom stringr str_glue str_match str_split_fixed str_c
 #' @importFrom utils combn aregexec
 #' @import stats
@@ -19,7 +17,7 @@
 #' @import Rcpp
 #' @import ggplot2
 #' @import zlibbioc
-#' @useDynLib CellBarcode
+#' @useDynLib scMitoMut
 NULL
 
 

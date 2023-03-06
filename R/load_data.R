@@ -20,8 +20,12 @@ read_mgatk = function(mgatk_output_dir, prefix) {
     names(ref_d) = c("loc", "ref")
 
     ## base-wise coverage
-    coverage_d = fread(coverage_file)
-    names(coverage_d) = c("loc", "cell_barcode", "coverage")
+    if (length(coverage_file) == 0) {
+        coverage_d = base_depth_d[, .(coverage = sum(fwd_depth + rev_depth)), by = c("loc", "cell_barcode")]
+    } else {
+        coverage_d = fread(coverage_file)
+        names(coverage_d) = c("loc", "cell_barcode", "coverage")
+    }
 
     ## merge base-wise depth, ref seq, coverage
     merge_d = merge(base_depth_d, coverage_d, by = c("loc", "cell_barcode"))
@@ -75,6 +79,7 @@ parse_mgatk = function(dir, prefix, h5_file = "mut.h5") {
     d_ply(merge_d, "loc", function(x) {
         d_name = paste0("mt", x$loc[1])
         #         print(d_name)
+        x$loc = NULL
         h5write(x, h5g, d_name)
     })
 
@@ -86,7 +91,7 @@ parse_mgatk = function(dir, prefix, h5_file = "mut.h5") {
     #     H5Gclose(h5g)
     #     h5closeAll()
 
-        h5_file = h5_file
+    h5_file = h5_file
 }
 
 ## test read out
@@ -103,21 +108,30 @@ parse_mgatk = function(dir, prefix, h5_file = "mut.h5") {
 open_h5_file <- function(h5_file) {
     h5f <- H5Fopen(h5_file)
     h5g <- h5f & "mut_table"
-    mut_list <- h5ls(h5g)$name %>%
-        substring(3) %>%
-        as.numeric() %>%
-        sort()
+    mut_list <- h5ls(h5g)$name 
     cell_id_list <- h5f$cell_id_list
     ## we call the output as mtmutObj
-    list(h5f = h5f, h5g = h5g, mut_list = mut_list, cell_id_list = cell_id_list)
+    list(h5f = h5f, 
+        mut_table = h5g, 
+        mut_list = mut_list, 
+        cell_id_list = cell_id_list, 
+        selected_loc = cell_id_list
+    )
 }
 
+#' Select cell
+#'
+#' @export
+subset_cell <- function(mtmutObj, cell_id_list) {
+    mtmutObj$selected_loc <- cell_id_list
+    mtmutObj
+}
 
 
 #' Read one locus
 read_locus = function(mtmutObj, loc, maj_base = NULL) {
 
-    d_sub <- data.table((mtmutObj$h5g&loc)[])
+    d_sub <- data.table((mtmutObj$mut_table&loc)[])[cell_barcode %in% mtmutObj$selected_loc]
 
     ## maj_base is the base with max frequency
     if (is.null(maj_base)) {

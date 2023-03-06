@@ -7,9 +7,9 @@ calc_strand_concordance <- function(y_fwd, y_rev) {
 #' Calculate VAF variant
 calc_vmr <- function(y, N) {
     vaf_v = y / N
-    bulk_vaf = sum(y) / sum(N)
+    bulk_vaf = mean(vaf_v)
 
-    sd(vaf_v) / (bulk_vaf + 1e-12)
+    var(vaf_v) / (bulk_vaf + 1e-12)
 }
 
 process_locus_summary <- function(d_select_maj_base) {
@@ -27,8 +27,14 @@ process_locus_summary <- function(d_select_maj_base) {
     ## averrage vaf
     mean_vaf <- sum(y) / sum(N)
 
-
     cor = calc_strand_concordance(y_fwd, y_rev)
     vmr = calc_vmr(y, N)
+
+    res <- list(
+        mean_vaf = mean_vaf,
+        cor = cor,
+        vmr = vmr
+    )
+}
 
 

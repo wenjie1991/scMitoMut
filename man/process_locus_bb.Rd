@@ -4,7 +4,7 @@
 \alias{process_locus_bb}
 \title{Fit one location}
 \usage{
-process_locus_bb(loc, mtmutObj, maj_base = NULL, max_try = 1)
+process_locus_bb(d_select_maj_base, max_try = 1)
 }
 \description{
 Fit one location
