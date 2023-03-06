@@ -140,7 +140,7 @@ process_locus_bb_bk <- function(d_select_maj_base, max_try = 1) {
 
 
 ## new fit bb function
-process_locus_bb = function(d_select_maj_base, selected_maj_cell = NULL) {
+process_locus_bb = function(d_select_maj_base, selected_maj_cell = NULL, max_theta = 1e4) {
     #################################################
     ### Transform data
     ## coverage
@@ -171,6 +171,14 @@ process_locus_bb = function(d_select_maj_base, selected_maj_cell = NULL) {
         # fit = fit_bb_r(y, N, mean_vaf, max_try)
         fit = fit_bb_cpp(y, N)
     }
+
+    ## correct fit to avoid overflow
+    if (fit[[1]] + fit[[2]] > max_theta) {
+        scale_factor = max_theta / (fit[[1]] + fit[[2]])
+        fit[[1]] = fit[[1]] * scale_factor
+        fit[[2]] = fit[[2]] * scale_factor
+    }
+
 
     # pval <- calc_pval_r(y, N, fit)
     pval <- calc_pval_cpp(y, N, fit)

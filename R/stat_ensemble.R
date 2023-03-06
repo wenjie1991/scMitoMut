@@ -1,6 +1,6 @@
 
 get_bm_pval = function(x, method = "none") {
-    p.adjust(x[[2]]$pval, method)
+    p.adjust(x$pval, method)
 }
 
 
@@ -12,7 +12,7 @@ process_locus_ensemble <- function(loc, mtmutObj, maj_base = NULL, max_try = 1) 
     res_bm <- process_locus_bm(d_select_maj_base, max_try = max_try)
 
     ## fit beta binomial model
-    selected_maj_cell = d_select_maj_base[get_bm_pval(res_bm, 'fdr') >= 0.05]$cell_barcode
+    selected_maj_cell = d_select_maj_base[get_bm_pval(res_bm, 'fdr') >= 0.001]$cell_barcode
     res_bb <- process_locus_bb(d_select_maj_base, selected_maj_cell)
 
     ## VMR and consistency of fwd rev strand
