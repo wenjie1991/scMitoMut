@@ -5,11 +5,11 @@ get_bm_pval = function(x, method = "none") {
 
 
 #' @export
-process_locus_ensemble <- function(loc, mtmutObj, maj_base = NULL, max_try = 1) {
+process_locus_ensemble <- function(loc, mtmutObj, maj_base = NULL) {
     d_select_maj_base <- read_locus(mtmutObj, loc, maj_base)
 
     ## fit binomial mixture model
-    res_bm <- process_locus_bm(d_select_maj_base, max_try = max_try)
+    res_bm <- process_locus_bm(d_select_maj_base)
 
     ## fit beta binomial model
     selected_maj_cell = d_select_maj_base[get_bm_pval(res_bm, 'fdr') >= 0.001]$cell_barcode
@@ -27,3 +27,57 @@ process_locus_ensemble <- function(loc, mtmutObj, maj_base = NULL, max_try = 1) 
         )
     )
 }
+
+
+#' @export
+run_ensemble_calling <- function(mtmutObj, mc.cores = getOption("mc.cores", 2L)) {
+    ## get the list of loci
+    loc_list <- mtmutObj$loc_list
+
+    ## create a h5g to keep p value
+    if ("pval" %in% h5ls(mtmutObj$h5f, recursive = F)$name) {
+        h5delete(mtmutObj$h5f, "pval")
+    }
+    h5g <- H5Gcreate(h5loc = mtmutObj$h5f, name = "pval")
+
+    ## run the ensemble calling
+    res_l = mclapply(loc_list, function(xi) {
+        res = process_locus_ensemble(xi, mtmutObj)
+        res$data = NULL
+
+        pval = res$model$beta_binom$pval
+        model_par_bb = res$model$beta_binom$parameters
+        model_par_bm = res$model$binom_mix$parameters
+        list(pval = pval, model_par_bb = model_par_bb, model_par_bm = model_par_bm)
+    }, mc.cores = mc.cores)
+
+    model_par_bb = lapply(res_l, function(x) {
+        x$model_par_bb
+    }) %>% rbindlist #%>% do.call(rbind, .) %>% data.frame
+    model_par_bb = cbind(loc = loc_list, model_par_bb)
+
+    model_par_bm = lapply(res_l, function(x) {
+        x$model_par_bm
+    }) %>% rbindlist #%>% do.call(rbind, .) %>% data.frame
+    model_par_bm = cbind(loc = loc_list, model_par_bm)
+
+    lapply(seq_along(mtmutObj$loc_list), function(i) {
+        loc_i = mtmutObj$loc_list[i]
+        res_i = res_l[[i]]$pval
+        h5write(res_i, h5g, loc_i)
+    })
+
+    if ("model_par_bb" %in% h5ls(x$h5f, recursive = F)$name) {
+        h5delete(mtmutObj$h5f, "model_par_bb")
+    }
+
+    if ("model_par_bm" %in% h5ls(x$h5f, recursive = F)$name) {
+        h5delete(mtmutObj$h5f, "model_par_bm")
+    }
+
+    h5write(model_par_bb, mtmutObj$h5f, "model_par_bb")
+    h5write(model_par_bm, mtmutObj$h5f, "model_par_bm")
+}
+
+
+

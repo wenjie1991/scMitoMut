@@ -153,11 +153,6 @@ double log_n_choose_k(long n, long k) {
     return result;
 }
 
-// [[Rcpp::export]]
-double test_beta(double a, double b) {
-    return R::beta(a, b);
-}
-
 // likelihood beta-binomial distribution
 // [[Rcpp::export]]
 long double log_beta_binomial_pmf(

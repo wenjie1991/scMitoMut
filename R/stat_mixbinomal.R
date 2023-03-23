@@ -1,27 +1,11 @@
-library(mixtools)
-
-fit_bm_r <- function(x, n, init_theta, init_lambda, max_try = 1) {
-
-    m = data.matrix(data.frame(x, n-x))
-    em_out1 <- mixtools::multmixEM(m, k = 1)
-
-    try_num <- 0
-    while (try_num < max_try) {
-        try_num <- try_num + 1
-        tryCatch(
-            {
-                em_out2 <- mixtools::multmixEM(m, theta = init_theta, lambda = init_lambda, k = 2)
-                break
-            },
-            error = function(e) {
-                print(e)
-                print(paste0("Try ", try_num, " times."))
-            }
-        )
-        init_vaf <- init_vaf - 0.001
-    }
-    list(k1 = em_out1, k2 = em_out2)
-}
+# fit_bm_r <- function(x, n, init_theta, init_lambda) {
+#
+#     m = data.matrix(data.frame(x, n-x))
+#     em_out1 <- mixtools::multmixEM(m, k = 1)
+#
+#     em_out2 <- mixtools::multmixEM(m, theta = init_theta, lambda = init_lambda, k = 2)
+#     list(k1 = em_out1, k2 = em_out2)
+# }
 
 fit_bm_cpp = function(x, n, ave_p, p1, p2, theta1, max_iter = 100, tol = 1e-6) {
     em_out = em_bm(x, n, p1, p2, theta1, max_iter, tol)
@@ -31,9 +15,7 @@ fit_bm_cpp = function(x, n, ave_p, p1, p2, theta1, max_iter = 100, tol = 1e-6) {
     list(k1_ll = loglike_k1, k2 = em_out)
 }
 
-
-
-process_locus_bm = function(d_select_maj_base, max_try = 1) {
+process_locus_bm = function(d_select_maj_base) {
 
     #################################################
     ### Transform data
@@ -50,20 +32,19 @@ process_locus_bm = function(d_select_maj_base, max_try = 1) {
 
     #################################################
     ### Model fitting
-    # em_out_l = fit_bm_r(x, n, init_theta = matrix(rep(0.5, 4), 2, 2), init_lambda = c(0.2, 0.8), max_try = max_try)
-    # pval_m = em_out_l$k2$posterior
-    # pval = pval_m[, which.max(em_out_l$k2$lambda)]
+    # em_out_l = fit_bm_r(x, n, init_theta = NULL, init_lambda = NULL)
+    # major_i = which.max(em_out_l$k2$lambda)
+    # minor_i = which.min(em_out_l$k2$lambda)
+
     # list(
-    #     #         res = d_select_maj_base,
-    #     pval = pval,
-    #     parameters = data.table(
-    #         loglik_k1 = em_out_l$k1$loglik,
-    #         loglik_k2 = em_out_l$k2$loglik,
-    #         k2_pi1 = em_out_l$k2$lambda[1],
-    #         k2_pi2 = em_out_l$k2$lambda[2],
-    #         k2_theta1 = em_out_l$k2$theta[1, 1],
-    #         k2_theta2 = em_out_l$k2$theta[2, 1]
-    #     )
+        # pval = em_out_l$k2$posterior[, major_i],
+        # parameters = data.table(
+            # loglik_k1 = em_out_l$k1$loglik,
+            # loglik_k2 = em_out_l$k2$loglik,
+            # k2_pi1 = em_out_l$k2$theta[major_i, 1],
+            # k2_pi2 = em_out_l$k2$theta[minor_i, 1],
+            # k2_theta1 = em_out_l$k2$lambda[major_i]
+        # )
     # )
 
     ## use the binomial estimate as the initial value

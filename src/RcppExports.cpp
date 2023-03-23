@@ -68,18 +68,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// test_beta
-double test_beta(double a, double b);
-RcppExport SEXP _scMitoMut_test_beta(SEXP aSEXP, SEXP bSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< double >::type a(aSEXP);
-    Rcpp::traits::input_parameter< double >::type b(bSEXP);
-    rcpp_result_gen = Rcpp::wrap(test_beta(a, b));
-    return rcpp_result_gen;
-END_RCPP
-}
 // log_beta_binomial_pmf
 long double log_beta_binomial_pmf(const double a, const double b, const double x, const double n);
 RcppExport SEXP _scMitoMut_log_beta_binomial_pmf(SEXP aSEXP, SEXP bSEXP, SEXP xSEXP, SEXP nSEXP) {
@@ -128,7 +116,6 @@ static const R_CallMethodDef CallEntries[] = {
     {"_scMitoMut_binomial_log_likelihood", (DL_FUNC) &_scMitoMut_binomial_log_likelihood, 3},
     {"_scMitoMut_em_bm", (DL_FUNC) &_scMitoMut_em_bm, 7},
     {"_scMitoMut_log_n_choose_k", (DL_FUNC) &_scMitoMut_log_n_choose_k, 2},
-    {"_scMitoMut_test_beta", (DL_FUNC) &_scMitoMut_test_beta, 2},
     {"_scMitoMut_log_beta_binomial_pmf", (DL_FUNC) &_scMitoMut_log_beta_binomial_pmf, 4},
     {"_scMitoMut_pbetabinom", (DL_FUNC) &_scMitoMut_pbetabinom, 4},
     {"_scMitoMut_mle_bb", (DL_FUNC) &_scMitoMut_mle_bb, 4},

@@ -16,46 +16,39 @@ library(readr)
 library(stringr)
 library(rhdf5)
 
-# No import
-library(emdbook)
-library(bbmle)
 
-
-
-#' Fit betabinomial distribution
-betaBinomEst <- function(counts, total, prob_start = 0.99, theta_start = 10) {
-    mtmp <- function(prob, size, theta) {
-        -sum(emdbook::dbetabinom(counts, prob, size, theta, log = TRUE))
-    }
-    m0 <- suppressWarnings(
-        bbmle::mle2(mtmp, start = list(prob = prob_start, theta = theta_start), data = list(size = total))
-    )
-    # MLE of theta
-    bbmle::coef(m0)
-}
+# Fit betabinomial distribution
+# betaBinomEst <- function(counts, total, prob_start = 0.99, theta_start = 10) {
+#     mtmp <- function(prob, size, theta) {
+#         -sum(emdbook::dbetabinom(counts, prob, size, theta, log = TRUE))
+#     }
+#     m0 <- suppressWarnings(
+#         bbmle::mle2(mtmp, start = list(prob = prob_start, theta = theta_start), data = list(size = total))
+#     )
+#     # MLE of theta
+#     bbmle::coef(m0)
+# }
+# fit_bb_r <- function(y, N, init_vaf, max_try = 1) {
+#     fit <- NULL
+#     try_num <- 0
+#     while (try_num < max_try) {
+#         try_num <- try_num + 1
+#         tryCatch(
+#             {
+#                 fit <- betaBinomEst(y, N, init_vaf)
+#                 break
+#             },
+#             error = function(e) {
+#                 print(e)
+#                 print(paste0("Try ", try_num, " times."))
+#             }
+#         )
+#         init_vaf <- init_vaf - 0.001
+#     }
+#     fit
+# }
 
 #' Fit betaBinomial distribution
-#'
-fit_bb_r <- function(y, N, init_vaf, max_try = 1) {
-    fit <- NULL
-    try_num <- 0
-    while (try_num < max_try) {
-        try_num <- try_num + 1
-        tryCatch(
-            {
-                fit <- betaBinomEst(y, N, init_vaf)
-                break
-            },
-            error = function(e) {
-                print(e)
-                print(paste0("Try ", try_num, " times."))
-            }
-        )
-        init_vaf <- init_vaf - 0.001
-    }
-    fit
-}
-
 fit_bb_cpp <- function(y, N, max_iter = 100, tol = 1e-6) {
     mle_bb(y, N, max_iter, tol)
 }

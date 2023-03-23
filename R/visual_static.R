@@ -44,3 +44,29 @@ plot_locus <- function(
 }
 
 
+#' @export
+plot_vaf_coverage = function(mtmutObj, loc, p_threshold = 0.05, p_adj_method = "fdr") {
+    d = read_locus(mtmutObj, loc)
+    plot_locus(d, p = get_pval(mtmutObj, loc, p_adj_method), p_threshold = p_threshold)
+}
+
+#' QC plot: 2D scatter plot for coverage ~ VAF and UMAP
+#'
+#' @param mtmutObj an object of class "mtmutObj"
+#' @param loc a string of mitochondrial position, e.g. "mt1000"
+#' @param p_threshold a numeric value of p-value threshold
+#' @param p_adj_method a string of p-value adjustment method
+#' @export
+#' @examples
+#' try_plot("chr1_10000", mtmutObj, p = 0.05, p_adj_method = "holm")
+#' ##
+plot_locus_profile = function(loc, mtmutObj, seuratObj, p_threshold = 0.05, p_adj_method = "holm") {
+    y = process_locus_ensemble(loc, mtmutObj)
+
+    p_depth_vaf = plot_locus(y$d, p = p.adjust(y$model$beta_binom$pval, p_adj_method), p_threshold = p_threshold)
+    cell_select_bb = y[[1]]$cell_barcode[p.adjust(y$model$beta_binom$pval, p_adj_method) < p_threshold]
+
+    p_umap = Seurat::DimPlot(seuratObj, cells.highlight = cell_select_bb)
+
+    egg::ggarrange(p_depth_vaf, p_umap, ncol = 2)
+}

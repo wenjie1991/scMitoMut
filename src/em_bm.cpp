@@ -59,7 +59,7 @@ Rcpp::List em_bm(
     double p2 = 0.6,
     double theta1 = 0.7,
     int max_iter = 1000, 
-    double tol = 1e-6 
+    double tol = 0.001
 ) {
     double N = n.size();
     // Run the EM algorithm
@@ -117,7 +117,7 @@ Rcpp::List em_bm(
 
         // Check for convergence
         iter++;
-        if (iter % 10 == 0) {
+        if (iter % 10 == 0 || iter < 10) {
             ll = binomial_mixture_log_likelihood(x, n, p1, p2, theta1);
             if (ll - ll_old < tol) {
                 break;
