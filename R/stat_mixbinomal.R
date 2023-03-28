@@ -49,7 +49,7 @@ process_locus_bm = function(d_select_maj_base) {
 
     ## use the binomial estimate as the initial value
     ave_p = sum(x)/sum(n)
-    fit_l = fit_bm_cpp(x, n, ave_p = ave_p, p1 = ave_p, p2 = ave_p/2, theta1 = 0.95, max_iter = 100, tol = 1e-6)
+    fit_l = fit_bm_cpp(x, n, ave_p = ave_p, p1 = ave_p, p2 = ave_p/1.1, theta1 = 0.90, max_iter = 100, tol = 1e-6)
 
     list(
         pval = fit_l$k2$pval,

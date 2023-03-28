@@ -21,7 +21,7 @@ read_mgatk = function(mgatk_output_dir, prefix) {
 
     ## base-wise coverage
     if (length(coverage_file) == 0) {
-        coverage_d = base_depth_d[, .(coverage = sum(fwd_depth + rev_depth)), by = c("loc", "cell_barcode")]
+        coverage_d = base_depth_d[, .(coverage = sum(fwd_depth + rev_depth, na.rm=T)), by = c("loc", "cell_barcode")]
     } else {
         coverage_d = fread(coverage_file)
         names(coverage_d) = c("loc", "cell_barcode", "coverage")
@@ -172,7 +172,7 @@ mut_filter = function(
     loc_list = mtmutObj$loc_selected
     res = mclapply(loc_list, function(xi) {
         pval = get_pval(mtmutObj, xi, method = p_adj_method)
-        data.frame(loc = xi, mut_cell_n = sum(pval < p_threshold))
+        data.frame(loc = xi, mut_cell_n = sum(pval < p_threshold, na.rm=T))
     }) %>% rbindlist
     res[mut_cell_n >= min_cell]
 }
@@ -243,81 +243,121 @@ memoSort <- function(M, m = NULL) {
 #' # d_plot = export_p(x, pos_list)
 #' # d_plot_vaf = export_vaf(x, pos_list)
 #' # d_plot_bin = export_binary(x, pos_list, 0.05)
-export_dt = function(mtmutObj, pos_list, p_threshold = 0.05, min_cell_n = 0, p_adj_method = "holm") {
+export_dt = function(mtmutObj, pos_list, p_threshold = 0.05, percent_interp = 0.2, n_interp = 2, min_cell_n = 0, p_adj_method = "fdr", all_cell = F) {
     res = mclapply(pos_list, function(pos_i) {
         d = read_locus(mtmutObj, pos_i)
-        d$pval = get_pval(mtmutObj, pos_i, method = "holm")
+        d$pval = get_pval(mtmutObj, pos_i, method = "fdr")
         d$pos = pos_i
         d
     }) %>% rbindlist
-    cell_list = res[, .(n = sum(pval < p_threshold)), by = cell_barcode][n > min_cell_n, cell_barcode]
-    res = res[cell_barcode %in% cell_list]
+    
     res[, vaf := ((fwd_depth + rev_depth) / coverage)]
 
-    res
+    # if (!all_cell) {
+        # cell_list = res[, .(n = sum(pval < p_threshold, na.rm=T)), by = cell_barcode][n > 0, cell_barcode]
+        # pos_list = res[, .(n = sum(pval < p_threshold, na.rm=T)), by = pos][n >= min_cell_n, pos]
+        # res = res[cell_barcode %in% cell_list & pos %in% pos_list]
+    # }
+
+    ## get binary mutation
+    d = dcast(res, pos ~ cell_barcode, value.var = "pval")
+    m = data.matrix(d[, -1])
+    rownames(m) =  d[[1]]
+    m_b = m < p_threshold
+
+    ## interpolate the mutation has higher frequency with the mutation has lower frequency
+    if (percent_interp < 1) {
+        mut_count = rowSums(m_b, na.rm=T)
+        ix = sort(mut_count, decreasing = F, index.return = T)$ix
+
+        ## For the lowest framqent mutations
+        for (i in 1:(length(ix) - 1)) {
+            mut_i = ix[i]
+
+            ## test the overlap with other mutations
+            for (j in (i+1):(length(ix))) {
+                mut_j = ix[j]
+                mut_v_maj = m_b[mut_j, ]
+                mut_v_min = m_b[mut_i, ]
+                mut_v_maj[is.na(mut_v_maj)] = F
+                mut_v_min[is.na(mut_v_min)] = F
+
+                # p = fisher.test(mut_v_maj, mut_v_min)$p.value
+                tab = table(mut_v_maj, mut_v_min)
+                p = (tab[4] / sum(tab[, 2]))
+
+                ## if the p value is small, then the two mutations are not independent
+                ## interpolate the mutation has higher frequency with the mutation has lower frequency
+                if (p >= percent_interp & tab[4] >= n_interp) {
+                    m_b[mut_j, mut_v_min] = T
+                } else {
+                    m_b[mut_j, mut_v_min] = F
+                }
+            }
+        }
+
+    }
+    m_b_dt = m_b %>% data.table(keep.rownames=T) %>% melt(id.var = 'rn', value.name = "mut_status") 
+    res = merge(res, m_b_dt, by.x = c('pos', "cell_barcode"), by.y = c('rn', "variable"), all = T)
+
+    if (!all_cell) {
+        cell_list = res[, .(n = sum(mut_status, na.rm=T)), by = cell_barcode][n > 0, cell_barcode]
+        pos_list = res[, .(n = sum(mut_status, na.rm=T)), by = pos][n >= min_cell_n, pos]
+        res = res[cell_barcode %in% cell_list & pos %in% pos_list]
+    }
+
+    return(res)
 }
 
 export_df = function(mtmutObj, pos_list, ...) {
     data.frame(export_dt(mtmutObj, pos_list, ...))
 }
 
-export_p = function(mtmutObj, pos_list, ...) {
+export_pval = function(mtmutObj, pos_list, memoSort = F, ...) {
     res = export_dt(mtmutObj, pos_list, ...)
     d = dcast(res, pos ~ cell_barcode, value.var = "pval")
     m = data.matrix(d[, -1])
     rownames(m) =  d[[1]]
+
+    if (memoSort) {
+        d = dcast(res, pos ~ cell_barcode, value.var = "mut_status")
+        m_b = data.matrix(d[, -1])
+        rownames(m_b) =  d[[1]]
+
+        m = memoSort(m_b, m)
+    }
+
     m
 }
 
-export_binary = function(mtmutObj, pos_list, p_binary = 0.05, ...) {
+export_binary = function(mtmutObj, pos_list, memoSort = F, ...) {
     res = export_dt(mtmutObj, pos_list, ...)
-    d = dcast(res, pos ~ cell_barcode, value.var = "pval")
-    m = data.matrix(d[, -1])
-    rownames(m) =  d[[1]]
-    m_b = m
-    m_b[m < p_binary] = T
-    m_b[m >= p_binary] = F
+    d = dcast(res, pos ~ cell_barcode, value.var = "mut_status")
+    m_b = data.matrix(d[, -1])
+    rownames(m_b) =  d[[1]]
+
+    if (memoSort) {
+        m_b = memoSort(m_b)
+    }
+
     m_b
 }
 
-export_vaf = function(mtmutObj, pos_list, ...) {
+export_vaf = function(mtmutObj, pos_list, memoSort = F, ...) {
     res = export_dt(mtmutObj, pos_list, ...)
     d = dcast(res, pos ~ cell_barcode, value.var = "vaf")
     m = data.matrix(d[, -1])
     rownames(m) =  d[[1]]
+
+    if (memoSort) {
+        d = dcast(res, pos ~ cell_barcode, value.var = "mut_status")
+        m_b = data.matrix(d[, -1])
+        rownames(m_b) =  d[[1]]
+
+        m = memoSort(m_b, m)
+    }
+
     m
 }
 
-plot_heatmap = function(mtmutObj, pos_list, cell_ann = NULL, ann_colors = NULL, type = "p", p_binary = 0.05, ...) {
-    m_b = export_binary(mtmutObj, pos_list, p_binary, ...)
-    if (type == "p") {
-        ## heatmap of p value
-        m = export_p(mtmutObj, pos_list, ...)
-        m = memoSort(m_b, m)
-
-        p = pheatmap::pheatmap(m, color = colorRampPalette((RColorBrewer::brewer.pal(n = 7, name = "RdYlBu")))(100),
-            show_colnames = F, annotation_col = cell_ann, cluster_cols = F, 
-            cluster_rows = F, annotation_colors = ann_colors)
-
-    } else if (type == "vaf") {
-        ## heatmap of vaf
-        m = export_vaf(mtmutObj, pos_list, ...)
-        m = memoSort(m_b, m)
-
-        p = pheatmap::pheatmap(m, color = colorRampPalette((RColorBrewer::brewer.pal(n = 7, name = "RdYlBu")))(100),
-            show_colnames = F, annotation_col = cell_ann, cluster_cols = F, 
-            cluster_rows = F, annotation_colors = ann_colors)
-
-    } else if (type == "binary") {
-        ## heatmap of binary mutation
-        m_b = memoSort(m_b)
-
-        p = pheatmap::pheatmap(m_b, show_colnames = F, annotation_col = cell_ann, 
-            annotation_colors = ann_colors, cluster_cols = F, cluster_rows = F, legend = F)
-
-    } else {
-        stop("type should be either p, vaf or binary")
-    }
-    return(p)
-}
 

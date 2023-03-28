@@ -133,7 +133,7 @@ process_locus_bb_bk <- function(d_select_maj_base, max_try = 1) {
 
 
 ## new fit bb function
-process_locus_bb = function(d_select_maj_base, selected_maj_cell = NULL, max_theta = 1e4) {
+process_locus_bb = function(d_select_maj_base, selected_maj_cell = NULL, max_theta = 1e4, max_iter = 100, tol = 1e-6) {
     #################################################
     ### Transform data
     ## coverage
@@ -155,18 +155,18 @@ process_locus_bb = function(d_select_maj_base, selected_maj_cell = NULL, max_the
         ## Model fitting
         # fit = vglm(cbind(y, N - y) ~ 1, family = betabinomialff, trace = T, weights = rep(1, length(N)))
         # fit = fit_bb_r(y, N, mean_vaf, max_try)
-        fit = fit_bb_cpp(y[is_selected_cell], N[is_selected_cell])
+        fit = fit_bb_cpp(y[is_selected_cell], N[is_selected_cell], max_iter = max_iter, tol = tol)
     } else {
 
         #################################################
         ## Model fitting
         # fit = vglm(cbind(y, N - y) ~ 1, family = betabinomialff, trace = T, weights = rep(1, length(N)))
         # fit = fit_bb_r(y, N, mean_vaf, max_try)
-        fit = fit_bb_cpp(y, N)
+        fit = fit_bb_cpp(y, N, tol = tol, max_iter = max_iter)
     }
 
     ## correct fit to avoid overflow
-    if (fit[[1]] + fit[[2]] > max_theta) {
+    if (!is.na(fit[[1]]) & (fit[[1]] + fit[[2]] > max_theta)) {
         scale_factor = max_theta / (fit[[1]] + fit[[2]])
         fit[[1]] = fit[[1]] * scale_factor
         fit[[2]] = fit[[2]] * scale_factor
@@ -182,6 +182,9 @@ process_locus_bb = function(d_select_maj_base, selected_maj_cell = NULL, max_the
     theta = fit[[1]] + fit[[2]]
 
     model_par <- data.table(mean_vaf, prob = prob, theta = theta)
+
+    ## if the vaf > expected prob, set pval to 1
+    pval[y/N > prob] <- 1
 
     ## output the list
     list(

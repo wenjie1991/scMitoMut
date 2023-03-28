@@ -58,9 +58,9 @@ plot_vaf_coverage = function(mtmutObj, loc, p_threshold = 0.05, p_adj_method = "
 #' @param p_adj_method a string of p-value adjustment method
 #' @export
 #' @examples
-#' try_plot("chr1_10000", mtmutObj, p = 0.05, p_adj_method = "holm")
+#' try_plot("chr1_10000", mtmutObj, p = 0.05, p_adj_method = "fdr")
 #' ##
-plot_locus_profile = function(loc, mtmutObj, seuratObj, p_threshold = 0.05, p_adj_method = "holm") {
+plot_locus_profile = function(loc, mtmutObj, seuratObj, p_threshold = 0.05, p_adj_method = "fdr") {
     y = process_locus_ensemble(loc, mtmutObj)
 
     p_depth_vaf = plot_locus(y$d, p = p.adjust(y$model$beta_binom$pval, p_adj_method), p_threshold = p_threshold)
@@ -70,3 +70,37 @@ plot_locus_profile = function(loc, mtmutObj, seuratObj, p_threshold = 0.05, p_ad
 
     egg::ggarrange(p_depth_vaf, p_umap, ncol = 2)
 }
+
+#' @export
+plot_heatmap = function(mtmutObj, pos_list, cell_ann = NULL, ann_colors = NULL, type = "p", ...) {
+
+    if (type == "p") {
+        ## heatmap of p value
+        m = export_pval(mtmutObj, pos_list, memoSort = T, ...)
+
+        p = pheatmap::pheatmap(m, color = colorRampPalette((RColorBrewer::brewer.pal(n = 7, name = "RdYlBu")))(100),
+            show_colnames = F, annotation_col = cell_ann, cluster_cols = F, 
+            cluster_rows = F, annotation_colors = ann_colors)
+
+    } else if (type == "vaf") {
+        ## heatmap of vaf
+        m = export_vaf(mtmutObj, pos_list, memoSort = T, ...)
+
+        p = pheatmap::pheatmap(m, color = colorRampPalette((RColorBrewer::brewer.pal(n = 7, name = "RdYlBu")))(100),
+            show_colnames = F, annotation_col = cell_ann, cluster_cols = F, 
+            cluster_rows = F, annotation_colors = ann_colors)
+
+    } else if (type == "binary") {
+        ## heatmap of binary mutation
+        m_b = export_binary(mtmutObj, pos_list, memoSort = T, ...)
+        m_b %<>% as.data.frame() %>% data.matrix()
+
+        p = pheatmap::pheatmap(m_b, show_colnames = F, annotation_col = cell_ann, 
+            annotation_colors = ann_colors, cluster_cols = F, cluster_rows = F, legend = F)
+
+    } else {
+        stop("type should be either p, vaf or binary")
+    }
+    return(p)
+}
+
