@@ -13,6 +13,9 @@
 #' @importFrom stringr str_glue str_match str_split_fixed str_c
 #' @importFrom utils combn aregexec
 #' @import stats
+#' @importFrom Seurat DimPlot
+#' @import rhdf5
+#' @import readr
 #' @import methods
 #' @import Rcpp
 #' @import ggplot2
