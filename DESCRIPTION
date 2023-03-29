@@ -10,24 +10,24 @@ Description: This package is for analysing mitochondrial mutations using single 
 License: MIT + file LICENSE
 Encoding: UTF-8
 Depends: R (>= 4.1.0)
-Imports:
-  data.table
-  magrittr
-  plyr
-  string
-  utils
-  stats
-  methods
-  Rcpp
-  ggplot2
-  pheatmap
-  zlibbioc
-  Seurat
-  egg
-  RColorBrewer
-  rhdf5
-  readr
-Imports: Rcpp (>= 1.0.9.1)
+Imports: 
+    Rcpp,
+    data.table,
+    magrittr,
+    plyr,
+    stringr,
+    utils,
+    stats,
+    methods,
+    Rcpp,
+    ggplot2,
+    pheatmap,
+    zlibbioc,
+    Seurat,
+    egg,
+    RColorBrewer,
+    rhdf5,
+    readr
 LinkingTo: Rcpp, RcppArmadillo
 NeedsCompilation: yes
 Roxygen: list(markdown = TRUE)
