@@ -78,7 +78,8 @@ plot_heatmap = function(mtmutObj, pos_list, cell_ann = NULL, ann_colors = NULL, 
         ## heatmap of p value
         m = export_pval(mtmutObj, pos_list, memoSort = T, ...)
 
-        p = pheatmap::pheatmap(m, color = colorRampPalette((RColorBrewer::brewer.pal(n = 7, name = "RdYlBu")))(100),
+        p = pheatmap::pheatmap(m, 
+            color = colorRampPalette((RColorBrewer::brewer.pal(n = 7, name = "RdYlBu")))(100),
             show_colnames = F, annotation_col = cell_ann, cluster_cols = F, 
             cluster_rows = F, annotation_colors = ann_colors)
 

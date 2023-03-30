@@ -32,7 +32,7 @@ process_locus_ensemble <- function(loc, mtmutObj, maj_base = NULL) {
 #' @export
 run_ensemble_calling <- function(mtmutObj, mc.cores = getOption("mc.cores", 2L)) {
     ## get the list of loci
-    loc_list <- mtmutObj$loc_list
+    loc_list <- mtmutObj$loc_selected
 
     ## create a h5g to keep p value
     if ("pval" %in% h5ls(mtmutObj$h5f, recursive = F)$name) {
@@ -41,7 +41,9 @@ run_ensemble_calling <- function(mtmutObj, mc.cores = getOption("mc.cores", 2L))
     h5g <- H5Gcreate(h5loc = mtmutObj$h5f, name = "pval")
 
     ## run the ensemble calling
+    # pb <- progress::progress_bar$new(total = length(loc_list))
     res_l = mclapply(loc_list, function(xi) {
+        # pb$tick()
         res = process_locus_ensemble(xi, mtmutObj)
         res$data = NULL
 
@@ -61,8 +63,8 @@ run_ensemble_calling <- function(mtmutObj, mc.cores = getOption("mc.cores", 2L))
     }) %>% rbindlist #%>% do.call(rbind, .) %>% data.frame
     model_par_bm = cbind(loc = loc_list, model_par_bm)
 
-    lapply(seq_along(mtmutObj$loc_list), function(i) {
-        loc_i = mtmutObj$loc_list[i]
+    lapply(seq_along(loc_list), function(i) {
+        loc_i = loc_list[i]
         res_i = res_l[[i]]$pval
         h5write(res_i, h5g, loc_i)
     })
