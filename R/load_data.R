@@ -83,10 +83,14 @@ parse_mgatk = function(dir, prefix, h5_file = "mut.h5") {
     })
 
     ## cell list
-    cell_id = merge_d$cell_barcode %>% unique
-    selected_cell = cell_id
-    h5write(cell_id, h5f, "cell_id_list")
-    h5write(selected_cell, h5f, "selected_cell")
+    cell_list = merge_d$cell_barcode %>% unique
+    h5write(cell_list, h5f, "cell_list")
+    h5write(cell_list, h5f, "cell_selected")
+
+    ## loc list
+    loc_list = merge_d$loc %>% unique %>% paste0("mt", .)
+    h5write(loc_list, h5f, "loc_list")
+    h5write(loc_list, h5f, "loc_selected")
 
     #     H5Fclose(h5f)
     #     H5Gclose(h5g)
@@ -109,16 +113,17 @@ parse_mgatk = function(dir, prefix, h5_file = "mut.h5") {
 open_h5_file <- function(h5_file) {
     h5f <- H5Fopen(h5_file)
     h5g <- h5f & "mut_table"
-    loc_list <- h5ls(h5g, recursive=F)$name 
-    cell_id_list <- h5f$cell_id_list
-    selected_cell <- h5f$selected_cell
+    loc_list <- h5f$loc_list
+    loc_selected = h5f$loc_selected
+    cell_list <- h5f$cell_list
+    cell_selected <- h5f$cell_selected
     ## we call the output as mtmutObj
     mtmutObj = list(h5f = h5f, 
         mut_table = h5g,
         loc_list = loc_list, 
-        loc_selected = loc_list,
-        cell_id_list = cell_id_list, 
-        selected_cell = selected_cell
+        loc_selected = loc_selected,
+        cell_list = cell_list, 
+        cell_selected = cell_selected
     )
     class(mtmutObj) = "mtmutObj"
     mtmutObj
@@ -142,10 +147,12 @@ is.mtmutObj <- function(x) inherits(x, "mtmutObj")
 #' Select cell
 #'
 #' @export
-subset_cell <- function(mtmutObj, cell_id_list) {
-    h5delete(mtmutObj$h5f, "selected_cell")
-    h5write(cell_id_list, mtmutObj$h5f, "selected_cell")
-    mtmutObj$selected_cell <- cell_id_list
+subset_cell <- function(mtmutObj, cell_list) {
+    if ("cell_selected" %in% h5ls(mtmutObj$h5f, recursive = F)$name) {
+        h5delete(mtmutObj$h5f, "cell_selected")
+    }
+    h5write(cell_list, mtmutObj$h5f, "cell_selected")
+    mtmutObj$cell_selected <- cell_list
     mtmutObj
 }
 
@@ -153,6 +160,10 @@ subset_cell <- function(mtmutObj, cell_id_list) {
 #'
 #' @export
 subset_loc <- function(mtmutObj, loc_list) {
+    if ("loc_selected" %in% h5ls(mtmutObj$h5f, recursive = F)$name) {
+        h5delete(mtmutObj$h5f, "loc_selected")
+    }
+    h5write(cell_list, mtmutObj$h5f, "loc_list")
     mtmutObj$loc_selected <- loc_list
     mtmutObj
 }
@@ -168,7 +179,7 @@ get_pval = function(mtmutObj, loc, method = "fdr") {
 #'
 #' @export
 mut_filter = function(
-    mtmutObj, min_cell = 1, p_threshold = 0.05, p_adj_method = "fdr") {
+    mtmutObj, min_cell = 1, p_threshold = 0.05, p_adj_method = "fdr", af_threshold = 1) {
     loc_list = mtmutObj$loc_selected
     res = mclapply(loc_list, function(xi) {
         pval = get_pval(mtmutObj, xi, method = p_adj_method)
@@ -182,15 +193,15 @@ mut_filter = function(
 #' Read one locus
 read_locus = function(mtmutObj, loc, maj_base = NULL) {
 
-    d_sub <- data.table((mtmutObj$mut_table&loc)[])[cell_barcode %in% mtmutObj$selected_cell]
+    d_sub <- data.table((mtmutObj$mut_table&loc)[])[cell_barcode %in% mtmutObj$cell_selected]
 
     ## maj_base is the base with max frequency
     if (is.null(maj_base)) {
         # base_f <- table(d_sub$alt)
         # maj_base <- names(base_f)[which.max(base_f)]
         maj_base <- d_sub[, 
-            .(vaf = median((fwd_depth + rev_depth) / coverage)), 
-            by = alt][which.max(vaf), alt]
+            .(af = median((fwd_depth + rev_depth) / coverage)), 
+            by = alt][which.max(af), alt]
     }
 
     d_coverage <- unique(d_sub[, .(cell_barcode, coverage)])
@@ -233,37 +244,45 @@ memoSort <- function(M, m = NULL) {
 #' Export the mutation matrix
 #' 
 #' @param mtmutObj The scMtioMut object
-#' @param pos_list The list of positions
+#' @param loc_list The list of loci
 #' @param p_threshold The p value threshold
 #' @param min_cell_n The minimum number of cells with mutation
 #' @param p_adj_method The method to adjust p value
 #' @return The mutation matrix
 #' @export
 #' @examples
-#' # d_plot = export_p(x, pos_list)
-#' # d_plot_vaf = export_vaf(x, pos_list)
-#' # d_plot_bin = export_binary(x, pos_list, 0.05)
-export_dt = function(mtmutObj, pos_list, p_threshold = 0.05, percent_interp = 0.2, n_interp = 2, min_cell_n = 0, p_adj_method = "fdr", all_cell = F) {
-    res = mclapply(pos_list, function(pos_i) {
-        d = read_locus(mtmutObj, pos_i)
-        d$pval = get_pval(mtmutObj, pos_i, method = "fdr")
-        d$pos = pos_i
+#' # d_plot = export_p(x, loc_list)
+#' # d_plot_af = export_af(x, loc_list)
+#' # d_plot_bin = export_binary(x, loc_list, 0.05)
+export_dt = function(mtmutObj, loc_list, p_threshold = 0.05, percent_interp = 0.2, n_interp = 2, min_cell_n = 0, p_adj_method = "fdr", af_threshold = 1, all_cell = F) {
+    res = mclapply(loc_list, function(loc_i) {
+        d = read_locus(mtmutObj, loc_i)
+        d$pval = get_pval(mtmutObj, loc_i, method = "fdr")
+        d$loc = loc_i
         d
     }) %>% rbindlist
     
-    res[, vaf := ((fwd_depth + rev_depth) / coverage)]
+    res[, af := ((fwd_depth + rev_depth) / coverage)]
 
     # if (!all_cell) {
         # cell_list = res[, .(n = sum(pval < p_threshold, na.rm=T)), by = cell_barcode][n > 0, cell_barcode]
-        # pos_list = res[, .(n = sum(pval < p_threshold, na.rm=T)), by = pos][n >= min_cell_n, pos]
-        # res = res[cell_barcode %in% cell_list & pos %in% pos_list]
+        # loc_list = res[, .(n = sum(pval < p_threshold, na.rm=T)), by = loc][n >= min_cell_n, loc]
+        # res = res[cell_barcode %in% cell_list & loc %in% loc_list]
     # }
 
-    ## get binary mutation
-    d = dcast(res, pos ~ cell_barcode, value.var = "pval")
-    m = data.matrix(d[, -1])
-    rownames(m) =  d[[1]]
-    m_b = m < p_threshold
+
+    ## matrix pval
+    d = dcast(res, loc ~ cell_barcode, value.var = "pval")
+    m_p = data.matrix(d[, -1])
+    rownames(m_p) =  d[[1]]
+
+    ## matrix af
+    d = dcast(res, loc ~ cell_barcode, value.var = "af")
+    m_a = data.matrix(d[, -1])
+    rownames(m_a) =  d[[1]]
+
+    ## matrix binary
+    m_b = m_p < p_threshold & m_a < af_threshold
 
     ## interpolate the mutation has higher frequency with the mutation has lower frequency
     if (percent_interp < 1) {
@@ -298,29 +317,29 @@ export_dt = function(mtmutObj, pos_list, p_threshold = 0.05, percent_interp = 0.
 
     }
     m_b_dt = m_b %>% data.table(keep.rownames=T) %>% melt(id.var = 'rn', value.name = "mut_status") 
-    res = merge(res, m_b_dt, by.x = c('pos', "cell_barcode"), by.y = c('rn', "variable"), all = T)
+    res = merge(res, m_b_dt, by.x = c('loc', "cell_barcode"), by.y = c('rn', "variable"), all = T)
 
     if (!all_cell) {
         cell_list = res[, .(n = sum(mut_status, na.rm=T)), by = cell_barcode][n > 0, cell_barcode]
-        pos_list = res[, .(n = sum(mut_status, na.rm=T)), by = pos][n >= min_cell_n, pos]
-        res = res[cell_barcode %in% cell_list & pos %in% pos_list]
+        loc_list = res[, .(n = sum(mut_status, na.rm=T)), by = loc][n >= min_cell_n, loc]
+        res = res[cell_barcode %in% cell_list & loc %in% loc_list]
     }
 
     return(res)
 }
 
-export_df = function(mtmutObj, pos_list, ...) {
-    data.frame(export_dt(mtmutObj, pos_list, ...))
+export_df = function(mtmutObj, loc_list, ...) {
+    data.frame(export_dt(mtmutObj, loc_list, ...))
 }
 
-export_pval = function(mtmutObj, pos_list, memoSort = F, ...) {
-    res = export_dt(mtmutObj, pos_list, ...)
-    d = dcast(res, pos ~ cell_barcode, value.var = "pval")
+export_pval = function(mtmutObj, loc_list, memoSort = F, ...) {
+    res = export_dt(mtmutObj, loc_list, ...)
+    d = dcast(res, loc ~ cell_barcode, value.var = "pval")
     m = data.matrix(d[, -1])
     rownames(m) =  d[[1]]
 
     if (memoSort) {
-        d = dcast(res, pos ~ cell_barcode, value.var = "mut_status")
+        d = dcast(res, loc ~ cell_barcode, value.var = "mut_status")
         m_b = data.matrix(d[, -1])
         rownames(m_b) =  d[[1]]
 
@@ -330,9 +349,9 @@ export_pval = function(mtmutObj, pos_list, memoSort = F, ...) {
     m
 }
 
-export_binary = function(mtmutObj, pos_list, memoSort = F, ...) {
-    res = export_dt(mtmutObj, pos_list, ...)
-    d = dcast(res, pos ~ cell_barcode, value.var = "mut_status")
+export_binary = function(mtmutObj, loc_list, memoSort = F, ...) {
+    res = export_dt(mtmutObj, loc_list, ...)
+    d = dcast(res, loc ~ cell_barcode, value.var = "mut_status")
     m_b = data.matrix(d[, -1])
     rownames(m_b) =  d[[1]]
 
@@ -343,14 +362,14 @@ export_binary = function(mtmutObj, pos_list, memoSort = F, ...) {
     m_b
 }
 
-export_vaf = function(mtmutObj, pos_list, memoSort = F, ...) {
-    res = export_dt(mtmutObj, pos_list, ...)
-    d = dcast(res, pos ~ cell_barcode, value.var = "vaf")
+export_af = function(mtmutObj, loc_list, memoSort = F, ...) {
+    res = export_dt(mtmutObj, loc_list, ...)
+    d = dcast(res, loc ~ cell_barcode, value.var = "af")
     m = data.matrix(d[, -1])
     rownames(m) =  d[[1]]
 
     if (memoSort) {
-        d = dcast(res, pos ~ cell_barcode, value.var = "mut_status")
+        d = dcast(res, loc ~ cell_barcode, value.var = "mut_status")
         m_b = data.matrix(d[, -1])
         rownames(m_b) =  d[[1]]
 

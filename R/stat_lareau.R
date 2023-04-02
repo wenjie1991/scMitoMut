@@ -4,12 +4,12 @@ calc_strand_concordance <- function(y_fwd, y_rev) {
     cor(y_fwd, y_rev)
 }
 
-#' Calculate VAF variant
+#' Calculate AF variant
 calc_vmr <- function(y, N) {
-    vaf_v = y / N
-    bulk_vaf = mean(vaf_v)
+    af_v = y / N
+    bulk_af = mean(af_v)
 
-    var(vaf_v) / (bulk_vaf + 1e-12)
+    var(af_v) / (bulk_af + 1e-12)
 }
 
 process_locus_summary <- function(d_select_maj_base) {
@@ -24,14 +24,14 @@ process_locus_summary <- function(d_select_maj_base) {
     y_fwd <- d_select_maj_base[, fwd_depth]
     ## majority base reverse depth
     y_rev <- d_select_maj_base[, rev_depth]
-    ## averrage vaf
-    mean_vaf <- sum(y) / sum(N)
+    ## averrage af
+    mean_af <- sum(y) / sum(N)
 
     cor = calc_strand_concordance(y_fwd, y_rev)
     vmr = calc_vmr(y, N)
 
     res <- list(
-        mean_vaf = mean_vaf,
+        mean_af = mean_af,
         cor = cor,
         vmr = vmr
     )

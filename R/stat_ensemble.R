@@ -5,7 +5,7 @@ get_bm_pval = function(x, method = "none") {
 
 
 #' @export
-process_locus_ensemble <- function(loc, mtmutObj, maj_base = NULL) {
+process_locus_bmbb <- function(loc, mtmutObj, maj_base = NULL) {
     d_select_maj_base <- read_locus(mtmutObj, loc, maj_base)
 
     ## fit binomial mixture model
@@ -30,7 +30,7 @@ process_locus_ensemble <- function(loc, mtmutObj, maj_base = NULL) {
 
 
 #' @export
-run_ensemble_calling <- function(mtmutObj, mc.cores = getOption("mc.cores", 2L)) {
+run_model_fit <- function(mtmutObj, mc.cores = getOption("mc.cores", 2L)) {
     ## get the list of loci
     loc_list <- mtmutObj$loc_selected
 
@@ -43,8 +43,9 @@ run_ensemble_calling <- function(mtmutObj, mc.cores = getOption("mc.cores", 2L))
     ## run the ensemble calling
     # pb <- progress::progress_bar$new(total = length(loc_list))
     res_l = mclapply(loc_list, function(xi) {
+        print(xi)
         # pb$tick()
-        res = process_locus_ensemble(xi, mtmutObj)
+        res = process_locus_bmbb(xi, mtmutObj)
         res$data = NULL
 
         pval = res$model$beta_binom$pval

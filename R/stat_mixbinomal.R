@@ -27,8 +27,8 @@ process_locus_bm = function(d_select_maj_base) {
     y_fwd <- d_select_maj_base[, fwd_depth]
     ## majority base reverse depth
     y_rev <- d_select_maj_base[, rev_depth]
-    ## averrage vaf
-    mean_vaf <- sum(x) / sum(n)
+    ## averrage af
+    mean_af <- sum(x) / sum(n)
 
     #################################################
     ### Model fitting

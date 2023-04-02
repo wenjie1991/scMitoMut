@@ -28,14 +28,14 @@ library(rhdf5)
 #     # MLE of theta
 #     bbmle::coef(m0)
 # }
-# fit_bb_r <- function(y, N, init_vaf, max_try = 1) {
+# fit_bb_r <- function(y, N, init_af, max_try = 1) {
 #     fit <- NULL
 #     try_num <- 0
 #     while (try_num < max_try) {
 #         try_num <- try_num + 1
 #         tryCatch(
 #             {
-#                 fit <- betaBinomEst(y, N, init_vaf)
+#                 fit <- betaBinomEst(y, N, init_af)
 #                 break
 #             },
 #             error = function(e) {
@@ -43,7 +43,7 @@ library(rhdf5)
 #                 print(paste0("Try ", try_num, " times."))
 #             }
 #         )
-#         init_vaf <- init_vaf - 0.001
+#         init_af <- init_af - 0.001
 #     }
 #     fit
 # }
@@ -101,13 +101,13 @@ process_locus_bb_bk <- function(d_select_maj_base, max_try = 1) {
     y_fwd <- d_select_maj_base[, fwd_depth]
     ## majority base reverse depth
     y_rev <- d_select_maj_base[, rev_depth]
-    ## averrage vaf
-    mean_vaf <- sum(y) / sum(N)
+    ## averrage af
+    mean_af <- sum(y) / sum(N)
 
     #################################################
     ## Model fitting
     # fit = vglm(cbind(y, N - y) ~ 1, family = betabinomialff, trace = T, weights = rep(1, length(N)))
-	# fit = fit_bb_r(y, N, mean_vaf, max_try)
+	# fit = fit_bb_r(y, N, mean_af, max_try)
     fit = fit_bb_cpp(y, N)
 
     # pval <- calc_pval_r(y, N, fit)
@@ -118,7 +118,7 @@ process_locus_bb_bk <- function(d_select_maj_base, max_try = 1) {
     prob = fit[[1]] / (fit[[1]] + fit[[2]])
     theta = fit[[1]] + fit[[2]]
 
-    model_par <- data.table(mean_vaf, prob = prob, theta = theta)
+    model_par <- data.table(mean_af, prob = prob, theta = theta)
 
     ## do p value adjust later
     ## and join the p value to the table later
@@ -144,8 +144,8 @@ process_locus_bb = function(d_select_maj_base, selected_maj_cell = NULL, max_the
     y_fwd <- d_select_maj_base[, fwd_depth]
     ## majority base reverse depth
     y_rev <- d_select_maj_base[, rev_depth]
-    ## averrage vaf
-    mean_vaf <- sum(y) / sum(N)
+    ## averrage af
+    mean_af <- sum(y) / sum(N)
 
     if (!is.null(selected_maj_cell)) {
         ## vector of selected cell
@@ -154,14 +154,14 @@ process_locus_bb = function(d_select_maj_base, selected_maj_cell = NULL, max_the
         #################################################
         ## Model fitting
         # fit = vglm(cbind(y, N - y) ~ 1, family = betabinomialff, trace = T, weights = rep(1, length(N)))
-        # fit = fit_bb_r(y, N, mean_vaf, max_try)
+        # fit = fit_bb_r(y, N, mean_af, max_try)
         fit = fit_bb_cpp(y[is_selected_cell], N[is_selected_cell], max_iter = max_iter, tol = tol)
     } else {
 
         #################################################
         ## Model fitting
         # fit = vglm(cbind(y, N - y) ~ 1, family = betabinomialff, trace = T, weights = rep(1, length(N)))
-        # fit = fit_bb_r(y, N, mean_vaf, max_try)
+        # fit = fit_bb_r(y, N, mean_af, max_try)
         fit = fit_bb_cpp(y, N, tol = tol, max_iter = max_iter)
     }
 
@@ -172,18 +172,26 @@ process_locus_bb = function(d_select_maj_base, selected_maj_cell = NULL, max_the
         fit[[2]] = fit[[2]] * scale_factor
     }
 
-
-    # pval <- calc_pval_r(y, N, fit)
-    pval <- calc_pval_cpp(y, N, fit)
-
-    #################################################
-    ## Output
+    ## the prob and theta
     prob = fit[[1]] / (fit[[1]] + fit[[2]])
     theta = fit[[1]] + fit[[2]]
 
-    model_par <- data.table(mean_vaf, prob = prob, theta = theta)
+    # pval <- calc_pval_r(y, N, fit)
 
-    ## if the vaf > expected prob, set pval to 1
+    ## if the bb model prob is too small, set pval to 1
+    if (is.na(prob)) {
+        pval = rep(NA, length(y))
+    } else if (1 - prob < 1e-3) {
+        pval = rep(1, length(y))
+    } else {
+        pval <- calc_pval_cpp(y, N, fit)
+    }
+
+    #################################################
+    ## Output
+    model_par <- data.table(mean_af, prob = prob, theta = theta)
+
+    ## if the af > expected prob, set pval to 1
     pval[y/N > prob] <- 1
 
     ## output the list

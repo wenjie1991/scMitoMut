@@ -23,20 +23,20 @@ if (F) {
 
 #' @export
 plot_locus <- function(
-    d_select_maj_base, p, p_threshold = 0.05, loc_i = NA, maj_base= NA) {
+    d_select_maj_base, p, p_threshold = 0.05, loc = NA, maj_base= NA) {
     ## alt / depth
     N = d_select_maj_base$coverage
     y = d_select_maj_base[, alt_depth]
     d_plot = data.table(
         depth = N,
-        vaf = y / (N + 0.001),
+        af = y / (N + 0.001),
         highlight = p < p_threshold
     )
-    ggplot(d_plot, aes(x = depth, y = vaf, color = highlight)) + 
+    ggplot(d_plot, aes(x = depth, y = af, color = highlight)) + 
         geom_point() + 
         scale_color_manual(values = c("black", "red")) + 
         scale_x_log10() + 
-        labs(x = "Seq Depth", y = "p", title = paste0(loc_i, "_", maj_base))
+        labs(x = "Seq Depth", y = "p", title = paste0(loc))#, "_", maj_base))
     # plot(N, y / (N + 0.001), log = "x", xlab = "Seq Depth", ylab = "p", 
         # main = paste0(loc_i, "_", maj_base))
     # points(N[p< p_threshold], (y / (N + 0.001))[p < p_threshold], 
@@ -45,15 +45,15 @@ plot_locus <- function(
 
 
 #' @export
-plot_vaf_coverage = function(mtmutObj, loc, p_threshold = 0.05, p_adj_method = "fdr") {
+plot_af_coverage = function(mtmutObj, loc, p_threshold = 0.05, p_adj_method = "fdr") {
     d = read_locus(mtmutObj, loc)
-    plot_locus(d, p = get_pval(mtmutObj, loc, p_adj_method), p_threshold = p_threshold)
+    plot_locus(d, p = get_pval(mtmutObj, loc, p_adj_method), p_threshold = p_threshold, loc = loc)
 }
 
-#' QC plot: 2D scatter plot for coverage ~ VAF and UMAP
+#' QC plot: 2D scatter plot for coverage ~ AF and UMAP
 #'
 #' @param mtmutObj an object of class "mtmutObj"
-#' @param loc a string of mitochondrial position, e.g. "mt1000"
+#' @param loc a string of genome location, e.g. "mt1000"
 #' @param p_threshold a numeric value of p-value threshold
 #' @param p_adj_method a string of p-value adjustment method
 #' @export
@@ -61,31 +61,31 @@ plot_vaf_coverage = function(mtmutObj, loc, p_threshold = 0.05, p_adj_method = "
 #' try_plot("chr1_10000", mtmutObj, p = 0.05, p_adj_method = "fdr")
 #' ##
 plot_locus_profile = function(loc, mtmutObj, seuratObj, p_threshold = 0.05, p_adj_method = "fdr") {
-    y = process_locus_ensemble(loc, mtmutObj)
+    y = process_locus_bmbb(loc, mtmutObj)
 
-    p_depth_vaf = plot_locus(y$d, p = p.adjust(y$model$beta_binom$pval, p_adj_method), p_threshold = p_threshold)
+    p_depth_af = plot_locus(y$d, p = p.adjust(y$model$beta_binom$pval, p_adj_method), p_threshold = p_threshold)
     cell_select_bb = y[[1]]$cell_barcode[p.adjust(y$model$beta_binom$pval, p_adj_method) < p_threshold]
 
     p_umap = Seurat::DimPlot(seuratObj, cells.highlight = cell_select_bb)
 
-    egg::ggarrange(p_depth_vaf, p_umap, ncol = 2)
+    egg::ggarrange(p_depth_af, p_umap, ncol = 2)
 }
 
 #' @export
-plot_heatmap = function(mtmutObj, pos_list, cell_ann = NULL, ann_colors = NULL, type = "p", ...) {
+plot_heatmap = function(mtmutObj, loc_list, cell_ann = NULL, ann_colors = NULL, type = "p", ...) {
 
     if (type == "p") {
         ## heatmap of p value
-        m = export_pval(mtmutObj, pos_list, memoSort = T, ...)
+        m = export_pval(mtmutObj, loc_list, memoSort = T, ...)
 
         p = pheatmap::pheatmap(m, 
             color = colorRampPalette((RColorBrewer::brewer.pal(n = 7, name = "RdYlBu")))(100),
             show_colnames = F, annotation_col = cell_ann, cluster_cols = F, 
             cluster_rows = F, annotation_colors = ann_colors)
 
-    } else if (type == "vaf") {
-        ## heatmap of vaf
-        m = export_vaf(mtmutObj, pos_list, memoSort = T, ...)
+    } else if (type == "af") {
+        ## heatmap of af
+        m = export_af(mtmutObj, loc_list, memoSort = T, ...)
 
         p = pheatmap::pheatmap(m, color = colorRampPalette((RColorBrewer::brewer.pal(n = 7, name = "RdYlBu")))(100),
             show_colnames = F, annotation_col = cell_ann, cluster_cols = F, 
@@ -93,14 +93,14 @@ plot_heatmap = function(mtmutObj, pos_list, cell_ann = NULL, ann_colors = NULL, 
 
     } else if (type == "binary") {
         ## heatmap of binary mutation
-        m_b = export_binary(mtmutObj, pos_list, memoSort = T, ...)
+        m_b = export_binary(mtmutObj, loc_list, memoSort = T, ...)
         m_b %<>% as.data.frame() %>% data.matrix()
 
         p = pheatmap::pheatmap(m_b, show_colnames = F, annotation_col = cell_ann, 
             annotation_colors = ann_colors, cluster_cols = F, cluster_rows = F, legend = F)
 
     } else {
-        stop("type should be either p, vaf or binary")
+        stop("type should be either p, af or binary")
     }
     return(p)
 }
