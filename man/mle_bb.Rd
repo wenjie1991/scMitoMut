@@ -4,7 +4,7 @@
 \alias{mle_bb}
 \title{mle beta-binomial distribution}
 \usage{
-mle_bb(x, n, max_iter = 100L, tol = 1e-06)
+mle_bb(x, n, max_iter = 100L, tol = 0.001)
 }
 \description{
 mle beta-binomial distribution

@@ -2,12 +2,22 @@
 % Please edit documentation in R/load_data.R
 \name{parse_mgatk}
 \alias{parse_mgatk}
-\title{Load mgatk}
+\title{Load mtGATK output save to H5 file}
 \usage{
 parse_mgatk(dir, prefix, h5_file = "mut.h5")
 }
+\arguments{
+\item{dir}{a string of the mtGATK output}
+
+\item{prefix}{a string of the prefix of the mtGATK output directory}
+
+\item{h5_file}{a string of the output h5 file directory}
+}
+\value{
+a string of the output h5 file directory
+}
 \description{
-Load mgatk
+Load mtGATK output save to H5 file
 }
 \examples{
 

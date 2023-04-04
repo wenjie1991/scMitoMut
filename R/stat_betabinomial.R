@@ -1,21 +1,35 @@
+#######################################################################
+#                          Private function                           #
+#######################################################################
+
+## mutation preprocess mgatk output to HDR5
 # library(data.table)
-# library(ggplot2)
 # library(plyr)
 # library(magrittr)
 # library(readr)
 # library(stringr)
-# library(pheatmap)
 # library(rhdf5)
-# library(qvalue)
 
-## mutation preprocess mgatk output to HDR5
-library(data.table)
-library(plyr)
-library(magrittr)
-library(readr)
-library(stringr)
-library(rhdf5)
-
+# Calculate p-value
+# calc_pval_r <- function(y, N, fit) {
+#
+#     pval <- NULL
+#
+#     if (class(fit) != "try-error") {
+#
+#         a = fit[[1]]
+#         b = fit[[2]]
+#
+#         prob <- a / (a + b)
+#         theta <- a + b
+#
+#         pval <- lapply(seq_along(y), function(i) {
+#             sum(emdbook::dbetabinom(0:(y[i]), prob, N[i], theta))
+#         }) %>% unlist()
+#     }
+#
+#     pval
+# }
 
 # Fit betabinomial distribution
 # betaBinomEst <- function(counts, total, prob_start = 0.99, theta_start = 10) {
@@ -48,32 +62,53 @@ library(rhdf5)
 #     fit
 # }
 
-#' Fit betaBinomial distribution
+## Fit one locus
+# process_locus_bb_bk <- function(d_select_maj_base, max_try = 1) {
+#
+#     #################################################
+#     ### Transform data
+#     ## coverage
+#     N <- d_select_maj_base$coverage
+#     ## majority base depth
+#     y <- d_select_maj_base[, alt_depth]
+#     ## majority base forward depth
+#     y_fwd <- d_select_maj_base[, fwd_depth]
+#     ## majority base reverse depth
+#     y_rev <- d_select_maj_base[, rev_depth]
+#     ## averrage af
+#     mean_af <- sum(y) / sum(N)
+#
+#     #################################################
+#     ## Model fitting
+#     # fit = vglm(cbind(y, N - y) ~ 1, family = betabinomialff, trace = T, weights = rep(1, length(N)))
+# 	# fit = fit_bb_r(y, N, mean_af, max_try)
+#     fit = fit_bb_cpp(y, N)
+#
+#     # pval <- calc_pval_r(y, N, fit)
+#     pval <- calc_pval_cpp(y, N, fit)
+#
+#     #################################################
+#     ## Output
+#     prob = fit[[1]] / (fit[[1]] + fit[[2]])
+#     theta = fit[[1]] + fit[[2]]
+#
+#     model_par <- data.table(mean_af, prob = prob, theta = theta)
+#
+#     ## do p value adjust later
+#     ## and join the p value to the table later
+#     # d_select_maj_base$p <- pval
+#
+#     ## output the list
+#     list(
+#         pval = pval,
+#         parameters = model_par
+#     )
+# }
+
+
+# Fit betaBinomial distribution
 fit_bb_cpp <- function(y, N, max_iter = 100, tol = 1e-6) {
     mle_bb(y, N, max_iter, tol)
-}
-
-
-#' Calculate p-value
-#'
-calc_pval_r <- function(y, N, fit) {
-
-    pval <- NULL
-
-    if (class(fit) != "try-error") {
-
-        a = fit[[1]]
-        b = fit[[2]]
-
-        prob <- a / (a + b)
-        theta <- a + b
-
-        pval <- lapply(seq_along(y), function(i) {
-            sum(emdbook::dbetabinom(0:(y[i]), prob, N[i], theta))
-        }) %>% unlist()
-    }
-
-    pval
 }
 
 calc_pval_cpp = function(y, N, fit) {
@@ -82,58 +117,28 @@ calc_pval_cpp = function(y, N, fit) {
     pbetabinom(y, N, a, b)
 }
 
-#' Fit one location
+
+#' Fit beta-binomial distribution for one locus
 #'
+#' @param d_select_maj_base data.frame of one locus
+#' @param selected_maj_cell vector of selected cell
+#' @param max_theta maximum theta
+#' @param max_iter maximum iteration
+#' @param tol tolerance of log likelihood to stop iteration
+#' @return list of p-value and model parameters
+#' @export
 #' @examples
 #'
 #' process_locus("mt1000", mtmutObj, maj_base = NULL, max_try = 1)
 #'
 #' ##
-process_locus_bb_bk <- function(d_select_maj_base, max_try = 1) {
-
-    #################################################
-    ### Transform data
-    ## coverage
-    N <- d_select_maj_base$coverage
-    ## majority base depth
-    y <- d_select_maj_base[, alt_depth]
-    ## majority base forward depth
-    y_fwd <- d_select_maj_base[, fwd_depth]
-    ## majority base reverse depth
-    y_rev <- d_select_maj_base[, rev_depth]
-    ## averrage af
-    mean_af <- sum(y) / sum(N)
-
-    #################################################
-    ## Model fitting
-    # fit = vglm(cbind(y, N - y) ~ 1, family = betabinomialff, trace = T, weights = rep(1, length(N)))
-	# fit = fit_bb_r(y, N, mean_af, max_try)
-    fit = fit_bb_cpp(y, N)
-
-    # pval <- calc_pval_r(y, N, fit)
-    pval <- calc_pval_cpp(y, N, fit)
-
-    #################################################
-    ## Output
-    prob = fit[[1]] / (fit[[1]] + fit[[2]])
-    theta = fit[[1]] + fit[[2]]
-
-    model_par <- data.table(mean_af, prob = prob, theta = theta)
-
-    ## do p value adjust later
-    ## and join the p value to the table later
-    # d_select_maj_base$p <- pval
-
-    ## output the list
-    list(
-        pval = pval,
-        parameters = model_par
-    )
-}
-
-
-## new fit bb function
-process_locus_bb = function(d_select_maj_base, selected_maj_cell = NULL, max_theta = 1e4, max_iter = 100, tol = 1e-6) {
+process_locus_bb = function(
+    d_select_maj_base, 
+    selected_maj_cell = NULL, 
+    max_theta = 1e4, 
+    max_iter = 100, 
+    tol = 1e-6
+    ) {
     #################################################
     ### Transform data
     ## coverage

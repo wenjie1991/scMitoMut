@@ -1,7 +1,12 @@
-## read data from mtGATK
+#######################################################################
+#                          Internal function                          #
+#######################################################################
 
+## Parse the output of mtGATK into a data.table
 read_mgatk = function(mgatk_output_dir, prefix) {
+    mgatk_output_dir = paste0(mgatk_output_dir, "/final/")
     base_reads_files = dir(mgatk_output_dir, str_glue("{prefix}.[ACTG].txt.gz"), full=T)
+    print(base_reads_files)
     names(base_reads_files) = str_split_fixed(base_reads_files %>% basename, "\\.", 4)[, 2]
     ref_file = dir(mgatk_output_dir, "ref", full=T)
     coverage_file = dir(mgatk_output_dir, "coverage", full=T)
@@ -37,8 +42,63 @@ read_mgatk = function(mgatk_output_dir, prefix) {
     merge_d
 }
 
+## This function sorts the matrix for better visualization of mutual exclusivity across genes
+## Adaptoed from: https://gist.github.com/armish/564a65ab874a770e2c26
+memoSort <- function(M, m = NULL) {
+	geneOrder <- sort(rowSums(M, na.rm=T), decreasing=TRUE, index.return=TRUE)$ix;
+	scoreCol <- function(x) {
+		score <- 0;
+		for(i in 1:length(x)) {
+			if(x[i] & !is.na(x[i])) {
+				score <- score + 2^(length(x)-i);
+			}
+		}
+		return(score);
+	}
+	scores <- apply(M[geneOrder, ], 2, scoreCol);
+	sampleOrder <- sort(scores, decreasing=TRUE, index.return=TRUE)$ix;
+    if (is.null(m)) {
+        return(M[geneOrder, sampleOrder]);
+    } else {
+        return(m[geneOrder, sampleOrder]);
+    }
+}
 
-#' Load mgatk 
+## Read one locus
+read_locus = function(mtmutObj, loc, maj_base = NULL) {
+
+    d_sub <- data.table((mtmutObj$mut_table&loc)[])[cell_barcode %in% mtmutObj$cell_selected]
+
+    ## maj_base is the base with max frequency
+    if (is.null(maj_base)) {
+        # base_f <- table(d_sub$alt)
+        # maj_base <- names(base_f)[which.max(base_f)]
+        maj_base <- d_sub[, 
+            .(af = median((fwd_depth + rev_depth) / coverage)), 
+            by = alt][which.max(af), alt]
+    }
+
+    d_coverage <- unique(d_sub[, .(cell_barcode, coverage)])
+
+    d_select_maj_base <- d_sub[alt == maj_base, .(cell_barcode, alt_depth = fwd_depth + rev_depth, fwd_depth, rev_depth)]
+    d_select_maj_base <- merge(d_select_maj_base, d_coverage, by = "cell_barcode", all = T)
+    d_select_maj_base[is.na(d_select_maj_base)] <- 0
+
+    ## TODO: do we need this?
+    # d_select_maj_base = d_select_maj_base[alt_depth / coverage > 0.8]
+
+    d_select_maj_base
+}
+
+
+
+
+#' Load mtGATK output save to H5 file
+#'
+#' @param dir a string of the mtGATK output
+#' @param prefix a string of the prefix of the mtGATK output directory
+#' @param h5_file a string of the output h5 file directory
+#' @return a string of the output h5 file directory
 #'
 #' @examples
 #' 
@@ -62,7 +122,6 @@ parse_mgatk = function(dir, prefix, h5_file = "mut.h5") {
     ##############################
     ## Read in data
     merge_d = read_mgatk(mgatk_output_ = dir, prefix = prefix)
-
 
     ##############################
     ## save to h5 file
@@ -92,22 +151,22 @@ parse_mgatk = function(dir, prefix, h5_file = "mut.h5") {
     h5write(loc_list, h5f, "loc_list")
     h5write(loc_list, h5f, "loc_selected")
 
+    ## TODO: Do we need to close the H5 file?
     #     H5Fclose(h5f)
     #     H5Gclose(h5g)
     #     h5closeAll()
 
-    h5_file = h5_file
+    ## Remove the big data
+    rm("merge_d")
+    gc()
+
+    h5_file
 }
 
-## test read out
-# h5f = H5Fopen(h5_file)
-# h5f
-# h5g = h5f&"mut_table"
-# h5g$x1600
-# h5f$cell_id_list
-# h5closeAll()
-
-#' Open h5 file
+#' Open H5 file
+#'
+#' @param h5_file a string of the h5 file directory
+#' @return a mtmutObj object
 #'
 #' @export
 open_h5_file <- function(h5_file) {
@@ -129,22 +188,42 @@ open_h5_file <- function(h5_file) {
     mtmutObj
 }
 
+## TODO: make the H5 file S3 class
+
+#' Mitochondiral mutation object
+#'
+#' A S3 class for handling mitochondrial mutation data
+#'
+#' @format A list with the following elements:
+#' \describe{
+#'   \item{h5f}{H5 file handle}
+#'   \item{mut_table}{allele count table H5 group handle}
+#'   \item{loc_list}{list of available loci}
+#'   \item{loc_selected}{selected loci}
+#'   \item{cell_list}{list of available cell ids}
+#'   \item{cell_selected}{selected cell ids}
+#' }
+
 #' @export
-format.mtmutObj <- function(x, ...) {
+format.mtmutObj <- function(x) {
     cat("h5 file: mtmutObj\n")
 }
 
 #' @export
-print.mtmutObj <- function(x, ...) {
+print.mtmutObj <- function(x) {
     cat("h5 file: mtmutObj\n")
 }
-
 
 #' @export
 is.mtmutObj <- function(x) inherits(x, "mtmutObj")
 
 
-#' Select cell
+#' Subset cell and loci
+#' 
+#' @param mtmutObj a mtmutObj object
+#' @param cell_list a list of cell barcodes
+#' @param loc_list a list of loci
+#' @return a mtmutObj object with cell and loci selected
 #'
 #' @export
 subset_cell <- function(mtmutObj, cell_list) {
@@ -156,26 +235,38 @@ subset_cell <- function(mtmutObj, cell_list) {
     mtmutObj
 }
 
-#' Select loci
-#'
+#' @rdname subset_cell
 #' @export
 subset_loc <- function(mtmutObj, loc_list) {
     if ("loc_selected" %in% h5ls(mtmutObj$h5f, recursive = F)$name) {
         h5delete(mtmutObj$h5f, "loc_selected")
     }
-    h5write(cell_list, mtmutObj$h5f, "loc_list")
+    h5write(loc_list, mtmutObj$h5f, "loc_selected")
     mtmutObj$loc_selected <- loc_list
     mtmutObj
 }
 
-#' Get pval for single locus
+#' Get p-value list for single locus
+#'
+#' @param mtmutObj a mtmutObj object
+#' @param loc a string of the locus
+#' @param method a string of the method for p-value adjustment
 #'
 #' @export
 get_pval = function(mtmutObj, loc, method = "fdr") {
     p.adjust((mtmutObj$h5f & "pval" & loc)[], method)
 }
 
-#' Call mutation
+#' Filter and visualize mutations
+#'
+#' @param mtmutObj a mtmutObj object
+#' @param min_cell a integer of the minimum number of cells with mutation
+#' @param p_threshold a numeric of the p-value threshold
+#' @param p_adj_method a string of the method for p-value adjustment, 
+#'   refer to \code{\link[p.adjust]{p.adjust}}
+#' @param af_threshold a numeric of the majority allele frequency threshold,
+#'   the major allele af < af_threshold will be considered as mutation.
+#'   The default is 1, which means no filtering
 #'
 #' @export
 mut_filter = function(
@@ -189,55 +280,6 @@ mut_filter = function(
 }
 
 
-
-#' Read one locus
-read_locus = function(mtmutObj, loc, maj_base = NULL) {
-
-    d_sub <- data.table((mtmutObj$mut_table&loc)[])[cell_barcode %in% mtmutObj$cell_selected]
-
-    ## maj_base is the base with max frequency
-    if (is.null(maj_base)) {
-        # base_f <- table(d_sub$alt)
-        # maj_base <- names(base_f)[which.max(base_f)]
-        maj_base <- d_sub[, 
-            .(af = median((fwd_depth + rev_depth) / coverage)), 
-            by = alt][which.max(af), alt]
-    }
-
-    d_coverage <- unique(d_sub[, .(cell_barcode, coverage)])
-
-    d_select_maj_base <- d_sub[alt == maj_base, .(cell_barcode, alt_depth = fwd_depth + rev_depth, fwd_depth, rev_depth)]
-    d_select_maj_base <- merge(d_select_maj_base, d_coverage, by = "cell_barcode", all = T)
-    d_select_maj_base[is.na(d_select_maj_base)] <- 0
-
-    ## TODO: do we need this?
-    # d_select_maj_base = d_select_maj_base[alt_depth / coverage > 0.8]
-
-    d_select_maj_base
-}
-
-
-# This function sorts the matrix for better visualization of mutual exclusivity across genes
-# Adaptoed from: https://gist.github.com/armish/564a65ab874a770e2c26
-memoSort <- function(M, m = NULL) {
-	geneOrder <- sort(rowSums(M, na.rm=T), decreasing=TRUE, index.return=TRUE)$ix;
-	scoreCol <- function(x) {
-		score <- 0;
-		for(i in 1:length(x)) {
-			if(x[i] & !is.na(x[i])) {
-				score <- score + 2^(length(x)-i);
-			}
-		}
-		return(score);
-	}
-	scores <- apply(M[geneOrder, ], 2, scoreCol);
-	sampleOrder <- sort(scores, decreasing=TRUE, index.return=TRUE)$ix;
-    if (is.null(m)) {
-        return(M[geneOrder, sampleOrder]);
-    } else {
-        return(m[geneOrder, sampleOrder]);
-    }
-}
 
 
 
@@ -257,7 +299,7 @@ memoSort <- function(M, m = NULL) {
 export_dt = function(mtmutObj, loc_list, p_threshold = 0.05, percent_interp = 0.2, n_interp = 2, min_cell_n = 0, p_adj_method = "fdr", af_threshold = 1, all_cell = F) {
     res = mclapply(loc_list, function(loc_i) {
         d = read_locus(mtmutObj, loc_i)
-        d$pval = get_pval(mtmutObj, loc_i, method = "fdr")
+        d$pval = get_pval(mtmutObj, loc_i, method = p_adj_method)
         d$loc = loc_i
         d
     }) %>% rbindlist
@@ -328,10 +370,14 @@ export_dt = function(mtmutObj, loc_list, p_threshold = 0.05, percent_interp = 0.
     return(res)
 }
 
+#' @export
+#' @rdname export_dt
 export_df = function(mtmutObj, loc_list, ...) {
     data.frame(export_dt(mtmutObj, loc_list, ...))
 }
 
+#' @export
+#' @rdname export_dt
 export_pval = function(mtmutObj, loc_list, memoSort = F, ...) {
     res = export_dt(mtmutObj, loc_list, ...)
     d = dcast(res, loc ~ cell_barcode, value.var = "pval")
@@ -349,6 +395,8 @@ export_pval = function(mtmutObj, loc_list, memoSort = F, ...) {
     m
 }
 
+#' @export
+#' @rdname export_dt
 export_binary = function(mtmutObj, loc_list, memoSort = F, ...) {
     res = export_dt(mtmutObj, loc_list, ...)
     d = dcast(res, loc ~ cell_barcode, value.var = "mut_status")
@@ -362,6 +410,8 @@ export_binary = function(mtmutObj, loc_list, memoSort = F, ...) {
     m_b
 }
 
+#' @export
+#' @rdname export_dt
 export_af = function(mtmutObj, loc_list, memoSort = F, ...) {
     res = export_dt(mtmutObj, loc_list, ...)
     d = dcast(res, loc ~ cell_barcode, value.var = "af")

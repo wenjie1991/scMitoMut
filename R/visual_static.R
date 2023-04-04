@@ -1,26 +1,32 @@
+#######################################################################
+#                          Private functions                          #
+#######################################################################
 ## TODO: use the code elsewhere
-if (F) {
-    par(mfrow = c(2, 2))
-    ## alt / depth
-    plot(N, y / (N + 0.001), log = "x", xlab = "Seq Depth", ylab = "p", main = paste0(loc_i, "_", maj_base))
-    points(N[p_adj < p_threshold], (y / (N + 0.001))[p_adj < p_threshold], col = "red", pch = 19)
-    ## fwd alter / depth
-    plot(N, y_fwd / (N + 0.001), log = "x", xlab = "Seq Depth", ylab = "p", main = paste0(loc_i, "_", maj_base))
-    points(N[p_adj < p_threshold], (y_fwd / (N + 0.001))[p_adj < p_threshold], col = "red", pch = 19)
-    ## rev alter / depth
-    plot(N, y_rev / (N + 0.001), log = "x", xlab = "Seq Depth", ylab = "p", main = paste0(loc_i, "_", maj_base))
-    points(N[p_adj < p_threshold], (y_rev / (N + 0.001))[p_adj < p_threshold], col = "red", pch = 19)
-    ## fwd / rev
-    plot(N, y_fwd / (y_rev + 0.001), log = "x", xlab = "Seq Depth", ylab = "p", main = paste0(loc_i, "_", maj_base))
-    points(N[p_adj < p_threshold], (y_fwd / (y_rev + 0.001))[p_adj < p_threshold], col = "red", pch = 19)
-}
+# if (F) {
+#     par(mfrow = c(2, 2))
+#     ## alt / depth
+#     plot(N, y / (N + 0.001), log = "x", xlab = "Seq Depth", ylab = "p", main = paste0(loc_i, "_", maj_base))
+#     points(N[p_adj < p_threshold], (y / (N + 0.001))[p_adj < p_threshold], col = "red", pch = 19)
+#     ## fwd alter / depth
+#     plot(N, y_fwd / (N + 0.001), log = "x", xlab = "Seq Depth", ylab = "p", main = paste0(loc_i, "_", maj_base))
+#     points(N[p_adj < p_threshold], (y_fwd / (N + 0.001))[p_adj < p_threshold], col = "red", pch = 19)
+#     ## rev alter / depth
+#     plot(N, y_rev / (N + 0.001), log = "x", xlab = "Seq Depth", ylab = "p", main = paste0(loc_i, "_", maj_base))
+#     points(N[p_adj < p_threshold], (y_rev / (N + 0.001))[p_adj < p_threshold], col = "red", pch = 19)
+#     ## fwd / rev
+#     plot(N, y_fwd / (y_rev + 0.001), log = "x", xlab = "Seq Depth", ylab = "p", main = paste0(loc_i, "_", maj_base))
+#     points(N[p_adj < p_threshold], (y_fwd / (y_rev + 0.001))[p_adj < p_threshold], col = "red", pch = 19)
+# }
 
 ## TODO: use it in the future
-if (F) {
-    plot(N, y / N, log = 'x', xlab = "Seq Depth", ylab = "p", main = paste0(loc_i, "_", alt_base))
-    points(N[i], (y / N)[i], col = 'red', pch = 19)
-}
+# if (F) {
+#     plot(N, y / N, log = 'x', xlab = "Seq Depth", ylab = "p", main = paste0(loc_i, "_", alt_base))
+#     points(N[i], (y / N)[i], col = 'red', pch = 19)
+# }
 
+#' Draw depth ~ AF scatter plot
+#'
+#'
 #' @export
 plot_locus <- function(
     d_select_maj_base, p, p_threshold = 0.05, loc = NA, maj_base= NA) {
@@ -58,7 +64,6 @@ plot_af_coverage = function(mtmutObj, loc, p_threshold = 0.05, p_adj_method = "f
 #' @param p_adj_method a string of p-value adjustment method
 #' @export
 #' @examples
-#' try_plot("chr1_10000", mtmutObj, p = 0.05, p_adj_method = "fdr")
 #' ##
 plot_locus_profile = function(loc, mtmutObj, seuratObj, p_threshold = 0.05, p_adj_method = "fdr") {
     y = process_locus_bmbb(loc, mtmutObj)
@@ -71,6 +76,15 @@ plot_locus_profile = function(loc, mtmutObj, seuratObj, p_threshold = 0.05, p_ad
     egg::ggarrange(p_depth_af, p_umap, ncol = 2)
 }
 
+#' Heatmap plot
+#' 
+#' @param mtmutObj an object of class "mtmutObj"
+#' @param loc_list a vector of mt genome location
+#' @param cell_ann a vector of cell annotation
+#' @param ann_colors a vector of cell annotation colors
+#' @param type a string of plot type, "p" for p-value, "af" for allele frequency
+#' @param ... other parameters for \code{\link{export_df}}
+#'
 #' @export
 plot_heatmap = function(mtmutObj, loc_list, cell_ann = NULL, ann_colors = NULL, type = "p", ...) {
 

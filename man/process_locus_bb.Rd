@@ -2,12 +2,32 @@
 % Please edit documentation in R/stat_betabinomial.R
 \name{process_locus_bb}
 \alias{process_locus_bb}
-\title{Fit one location}
+\title{Fit beta-binomial distribution for one locus}
 \usage{
-process_locus_bb(d_select_maj_base, max_try = 1)
+process_locus_bb(
+  d_select_maj_base,
+  selected_maj_cell = NULL,
+  max_theta = 10000,
+  max_iter = 100,
+  tol = 1e-06
+)
+}
+\arguments{
+\item{d_select_maj_base}{data.frame of one locus}
+
+\item{selected_maj_cell}{vector of selected cell}
+
+\item{max_theta}{maximum theta}
+
+\item{max_iter}{maximum iteration}
+
+\item{tol}{tolerance of log likelihood to stop iteration}
+}
+\value{
+list of p-value and model parameters
 }
 \description{
-Fit one location
+Fit beta-binomial distribution for one locus
 }
 \examples{
 

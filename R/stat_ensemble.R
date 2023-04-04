@@ -1,15 +1,23 @@
-
+#######################################################################
+#                          Private function                           #
+#######################################################################
 get_bm_pval = function(x, method = "none") {
     p.adjust(x$pval, method)
 }
 
 
+#' Fit binomial mixture model for one locus
+
+#' @param mtmutObj a mtmutObj object
+#' @param loc string given the locus name (e.g. "mt1000")
+#' @param maj_base string given the major base (e.g. "A"), if NULL auto detect the major base
+#' @return list of p-value and model parameters
 #' @export
-process_locus_bmbb <- function(loc, mtmutObj, maj_base = NULL) {
+process_locus_bmbb <- function(mtmutObj, loc, maj_base = NULL, ...) {
     d_select_maj_base <- read_locus(mtmutObj, loc, maj_base)
 
     ## fit binomial mixture model
-    res_bm <- process_locus_bm(d_select_maj_base)
+    res_bm <- process_locus_bm(d_select_maj_base, ...)
 
     ## fit beta binomial model
     selected_maj_cell = d_select_maj_base[get_bm_pval(res_bm, 'fdr') >= 0.001]$cell_barcode
@@ -29,6 +37,11 @@ process_locus_bmbb <- function(loc, mtmutObj, maj_base = NULL) {
 }
 
 
+#' Fit binomial mixture model for every candidate locus
+#'
+#' @param mtmutObj a mtmutObj object
+#' @param mc.cores number of cores to use
+#' @return NULL, the result is saved in the h5f file
 #' @export
 run_model_fit <- function(mtmutObj, mc.cores = getOption("mc.cores", 2L)) {
     ## get the list of loci
@@ -45,7 +58,7 @@ run_model_fit <- function(mtmutObj, mc.cores = getOption("mc.cores", 2L)) {
     res_l = mclapply(loc_list, function(xi) {
         print(xi)
         # pb$tick()
-        res = process_locus_bmbb(xi, mtmutObj)
+        res = process_locus_bmbb(mtmutObj, xi)
         res$data = NULL
 
         pval = res$model$beta_binom$pval

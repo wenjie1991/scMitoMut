@@ -1,3 +1,6 @@
+#######################################################################
+#                          Private functions                          #
+#######################################################################
 # fit_bm_r <- function(x, n, init_theta, init_lambda) {
 #
 #     m = data.matrix(data.frame(x, n-x))
@@ -15,7 +18,23 @@ fit_bm_cpp = function(x, n, ave_p, p1, p2, theta1, max_iter = 100, tol = 1e-6) {
     list(k1_ll = loglike_k1, k2 = em_out)
 }
 
-process_locus_bm = function(d_select_maj_base) {
+#' Fit mixture of binomial distribution for one locus
+#'
+#' @param d_select_maj_base data.frame of one locus
+#' @param theta1 initial theta for the second component
+#' @param max_iter maximum iteration
+#' @param tol tolerance of log likelihood to stop iteration
+#' @return list of p-value and model parameters
+#' @export
+#' @examples
+#'
+#' ###
+process_locus_bm = function(
+    d_select_maj_base,
+    theta1 = 0.9,
+    max_iter = 100,
+    tol = 1e-6
+    ) {
 
     #################################################
     ### Transform data
@@ -49,7 +68,7 @@ process_locus_bm = function(d_select_maj_base) {
 
     ## use the binomial estimate as the initial value
     ave_p = sum(x)/sum(n)
-    fit_l = fit_bm_cpp(x, n, ave_p = ave_p, p1 = ave_p, p2 = ave_p/1.1, theta1 = 0.90, max_iter = 100, tol = 1e-6)
+    fit_l = fit_bm_cpp(x, n, ave_p = ave_p, p1 = ave_p, p2 = ave_p/1.1, theta1 = theta1, max_iter = max_iter, tol = tol)
 
     list(
         pval = fit_l$k2$pval,

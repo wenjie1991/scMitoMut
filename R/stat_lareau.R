@@ -1,10 +1,9 @@
-
-#' Calculate strand bias
+# Calculate strand bias
 calc_strand_concordance <- function(y_fwd, y_rev) {
     cor(y_fwd, y_rev)
 }
 
-#' Calculate AF variant
+# Calculate AF variant
 calc_vmr <- function(y, N) {
     af_v = y / N
     bulk_af = mean(af_v)

@@ -2,10 +2,16 @@
 % Please edit documentation in R/load_data.R
 \name{open_h5_file}
 \alias{open_h5_file}
-\title{Open h5 file}
+\title{Open H5 file}
 \usage{
 open_h5_file(h5_file)
 }
+\arguments{
+\item{h5_file}{a string of the h5 file directory}
+}
+\value{
+a mtmutObj object
+}
 \description{
-Open h5 file
+Open H5 file
 }
