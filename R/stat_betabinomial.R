@@ -135,9 +135,9 @@ calc_pval_cpp = function(y, N, fit) {
 process_locus_bb = function(
     d_select_maj_base, 
     selected_maj_cell = NULL, 
-    max_theta = 1e4, 
+    max_theta = 1e6, 
     max_iter = 100, 
-    tol = 1e-6
+    tol = 1e-3
     ) {
     #################################################
     ### Transform data
@@ -177,6 +177,7 @@ process_locus_bb = function(
         fit[[2]] = fit[[2]] * scale_factor
     }
 
+    # print(fit)
     ## the prob and theta
     prob = fit[[1]] / (fit[[1]] + fit[[2]])
     theta = fit[[1]] + fit[[2]]
@@ -186,8 +187,8 @@ process_locus_bb = function(
     ## if the bb model prob is too small, set pval to 1
     if (is.na(prob)) {
         pval = rep(NA, length(y))
-    } else if (1 - prob < 1e-3) {
-        pval = rep(1, length(y))
+    # } else if (1 - prob < 1e-6) {
+        # pval = rep(1, length(y))
     } else {
         pval <- calc_pval_cpp(y, N, fit)
     }
@@ -201,7 +202,7 @@ process_locus_bb = function(
 
     ## output the list
     list(
-        pval = pval,
+        bb_pval = pval,
         parameters = model_par
     )
 }

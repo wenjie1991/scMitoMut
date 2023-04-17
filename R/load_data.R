@@ -253,14 +253,24 @@ subset_loc <- function(mtmutObj, loc_list) {
 #' @param method a string of the method for p-value adjustment
 #'
 #' @export
-get_pval = function(mtmutObj, loc, method = "fdr") {
-    p.adjust((mtmutObj$h5f & "pval" & loc)[], method)
+get_pval = function(mtmutObj, loc, model = "bi", method = "fdr") {
+    if (model == "bb") {
+        pval_item = "bb_pval"
+    } else if (model == "bm") {
+        pval_item = "bm_pval"
+    } else if (model == "bi") {
+        pval_item = "bi_pval"
+    } else {
+        stop("model should be bb or bi")
+    }
+    p.adjust((mtmutObj$h5f & "pval" & loc & pval_item)[], method)
 }
 
 #' Filter and visualize mutations
 #'
 #' @param mtmutObj a mtmutObj object
 #' @param min_cell a integer of the minimum number of cells with mutation
+#' @param model a string of the model for mutation calling, it can be "bb", "bm" or "bi"
 #' @param p_threshold a numeric of the p-value threshold
 #' @param p_adj_method a string of the method for p-value adjustment, 
 #'   refer to \code{\link[p.adjust]{p.adjust}}
@@ -270,10 +280,10 @@ get_pval = function(mtmutObj, loc, method = "fdr") {
 #'
 #' @export
 mut_filter = function(
-    mtmutObj, min_cell = 1, p_threshold = 0.05, p_adj_method = "fdr", af_threshold = 1) {
+    mtmutObj, min_cell = 1, model = "bb", p_threshold = 0.05, p_adj_method = "fdr", af_threshold = 1) {
     loc_list = mtmutObj$loc_selected
     res = mclapply(loc_list, function(xi) {
-        pval = get_pval(mtmutObj, xi, method = p_adj_method)
+        pval = get_pval(mtmutObj, xi, model = model, method = p_adj_method)
         data.frame(loc = xi, mut_cell_n = sum(pval < p_threshold, na.rm=T))
     }) %>% rbindlist
     res[mut_cell_n >= min_cell]
@@ -296,10 +306,10 @@ mut_filter = function(
 #' # d_plot = export_p(x, loc_list)
 #' # d_plot_af = export_af(x, loc_list)
 #' # d_plot_bin = export_binary(x, loc_list, 0.05)
-export_dt = function(mtmutObj, loc_list, p_threshold = 0.05, percent_interp = 0.2, n_interp = 2, min_cell_n = 0, p_adj_method = "fdr", af_threshold = 1, all_cell = F) {
+export_dt = function(mtmutObj, loc_list, model = "bb", p_threshold = 0.05, percent_interp = 0.2, n_interp = 3, min_cell_n = 0, p_adj_method = "fdr", af_threshold = 1, all_cell = F) {
     res = mclapply(loc_list, function(loc_i) {
         d = read_locus(mtmutObj, loc_i)
-        d$pval = get_pval(mtmutObj, loc_i, method = p_adj_method)
+        d$pval = get_pval(mtmutObj, loc_i, model = model, method = p_adj_method)
         d$loc = loc_i
         d
     }) %>% rbindlist

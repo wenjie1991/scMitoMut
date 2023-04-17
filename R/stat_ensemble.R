@@ -2,7 +2,7 @@
 #                          Private function                           #
 #######################################################################
 get_bm_pval = function(x, method = "none") {
-    p.adjust(x$pval, method)
+    p.adjust(x$bm_pval, method)
 }
 
 
@@ -20,8 +20,9 @@ process_locus_bmbb <- function(mtmutObj, loc, maj_base = NULL, ...) {
     res_bm <- process_locus_bm(d_select_maj_base, ...)
 
     ## fit beta binomial model
-    selected_maj_cell = d_select_maj_base[get_bm_pval(res_bm, 'fdr') >= 0.001]$cell_barcode
-    res_bb <- process_locus_bb(d_select_maj_base, selected_maj_cell)
+    selected_maj_cell = d_select_maj_base[get_bm_pval(res_bm, 'fdr') >= 0.05]$cell_barcode
+    # selected_maj_cell = d_select_maj_base[get_bm_pval(res_bm, 'fdr') >= 0.01]$cell_barcode
+    res_bb <- process_locus_bb(d_select_maj_base, selected_maj_cell, ...)
 
     ## VMR and consistency of fwd rev strand
     res_summary <- process_locus_summary(d_select_maj_base)
@@ -61,10 +62,13 @@ run_model_fit <- function(mtmutObj, mc.cores = getOption("mc.cores", 2L)) {
         res = process_locus_bmbb(mtmutObj, xi)
         res$data = NULL
 
-        pval = res$model$beta_binom$pval
-        model_par_bb = res$model$beta_binom$parameters
-        model_par_bm = res$model$binom_mix$parameters
-        list(pval = pval, model_par_bb = model_par_bb, model_par_bm = model_par_bm)
+        list(
+            bi_pval = res$model$binom_mix$bi_pval,
+            bm_pval = res$model$binom_mix$bm_pval,
+            bb_pval = res$model$beta_binom$bb_pval,
+            model_par_bb = res$model$beta_binom$parameters,
+            model_par_bm = res$model$binom_mix$parameters
+        )
     }, mc.cores = mc.cores)
 
     model_par_bb = lapply(res_l, function(x) {
@@ -79,7 +83,11 @@ run_model_fit <- function(mtmutObj, mc.cores = getOption("mc.cores", 2L)) {
 
     lapply(seq_along(loc_list), function(i) {
         loc_i = loc_list[i]
-        res_i = res_l[[i]]$pval
+        res_i = list(
+            bi_pval = res_l[[i]]$bi_pval,
+            bm_pval = res_l[[i]]$bm_pval,
+            bb_pval = res_l[[i]]$bb_pval
+        )
         h5write(res_i, h5g, loc_i)
     })
 
@@ -93,6 +101,7 @@ run_model_fit <- function(mtmutObj, mc.cores = getOption("mc.cores", 2L)) {
 
     h5write(model_par_bb, mtmutObj$h5f, "model_par_bb")
     h5write(model_par_bm, mtmutObj$h5f, "model_par_bm")
+    gc()
 }
 
 

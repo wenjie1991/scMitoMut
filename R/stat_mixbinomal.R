@@ -14,8 +14,16 @@ fit_bm_cpp = function(x, n, ave_p, p1, p2, theta1, max_iter = 100, tol = 1e-6) {
     em_out = em_bm(x, n, p1, p2, theta1, max_iter, tol)
 
     loglike_k1 = binomial_log_likelihood(x, n, ave_p)
+    pval_k1 = pbinom(x, n, ave_p, lower.tail = T)
 
-    list(k1_ll = loglike_k1, k2 = em_out)
+    list(
+        k1 = list(
+            loglik = loglike_k1, 
+            pval = pval_k1,
+            p = ave_p 
+        ),
+        k2 = em_out
+    )
 }
 
 #' Fit mixture of binomial distribution for one locus
@@ -71,10 +79,12 @@ process_locus_bm = function(
     fit_l = fit_bm_cpp(x, n, ave_p = ave_p, p1 = ave_p, p2 = ave_p/1.1, theta1 = theta1, max_iter = max_iter, tol = tol)
 
     list(
-        pval = fit_l$k2$pval,
+        bm_pval = fit_l$k2$pval,
+        bi_pval = fit_l$k1$pval,
         parameters = data.table(
-            loglik_k1 = fit_l$k1_ll,
+            loglik_k1 = fit_l$k1$loglik,
             loglik_k2 = fit_l$k2$loglik,
+            k1_pi = fit_l$k1$p,
             k2_pi1 = fit_l$k2$p1,
             k2_pi2 = fit_l$k2$p2,
             k2_theta1 = fit_l$k2$theta1

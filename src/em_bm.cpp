@@ -45,7 +45,7 @@ Rcpp::NumericVector estimate_posterior_p(
 ) {
     Rcpp::NumericVector pval = Rcpp::NumericVector(x.size());
     for (int i = 0; i < x.size(); i++) {
-        pval[i] = R::dbinom(x[i], n[i], p, 0);
+        pval[i] = R::pbinom(x[i], n[i], p, 1, 0);
     }
     return pval;
 }

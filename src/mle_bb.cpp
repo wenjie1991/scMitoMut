@@ -7,8 +7,6 @@
 
 using namespace std;
 
-
-
 // calculate parital derivative of log-likelihood function with respect to a
 double ll_a(
     const double a, const double b,
@@ -153,14 +151,24 @@ double log_n_choose_k(long n, long k) {
     return result;
 }
 
+long double log_combination(int n, int k) {
+    return R::lgammafn(n + 1) - R::lgammafn(k + 1) - R::lgammafn(n - k + 1);
+}
+
+long double log_beta(double a, double b) {
+    return R::lgammafn(a) + R::lgammafn(b) - R::lgammafn(a + b);
+}
+
 // likelihood beta-binomial distribution
 // [[Rcpp::export]]
 long double log_beta_binomial_pmf(
     const double a, const double b,
     const double x, const double n
 ) {
-    return log_n_choose_k(n, x) + log(R::beta(x + a, n - x + b)) -  log(R::beta(a, b));
+    // return log_n_choose_k(n, x) + log(R::beta(x + a, n - x + b)) -  log(R::beta(a, b));
+    return log_combination(n, x) + log_beta(x + a, n - x + b) -  log_beta(a, b);
 }
+
 
 long double pbetabinom_c(
 	double x, const double n,
