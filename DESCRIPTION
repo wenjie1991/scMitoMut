@@ -27,7 +27,8 @@ Imports:
     egg,
     RColorBrewer,
     rhdf5,
-    readr
+    readr,
+    parallel
 LinkingTo: Rcpp, RcppArmadillo
 NeedsCompilation: yes
 Roxygen: list(markdown = TRUE)

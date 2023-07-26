@@ -7,9 +7,9 @@
 process_locus_bb(
   d_select_maj_base,
   selected_maj_cell = NULL,
-  max_theta = 10000,
+  max_theta = 1e+06,
   max_iter = 100,
-  tol = 1e-06
+  tol = 0.001
 )
 }
 \arguments{

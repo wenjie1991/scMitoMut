@@ -4,19 +4,10 @@
 \alias{plot_heatmap}
 \title{Heatmap plot}
 \usage{
-plot_heatmap(
-  mtmutObj,
-  loc_list,
-  cell_ann = NULL,
-  ann_colors = NULL,
-  type = "p",
-  ...
-)
+plot_heatmap(mtmutObj, cell_ann = NULL, ann_colors = NULL, type = "p", ...)
 }
 \arguments{
 \item{mtmutObj}{an object of class "mtmutObj"}
-
-\item{loc_list}{a vector of mt genome location}
 
 \item{cell_ann}{a vector of cell annotation}
 

@@ -1,5 +1,5 @@
 #######################################################################
-#                          Private function                           #
+#                         Internal function                           #
 #######################################################################
 
 ## mutation preprocess mgatk output to HDR5
@@ -116,6 +116,11 @@ calc_pval_cpp = function(y, N, fit) {
     b = fit[[2]]
     pbetabinom(y, N, a, b)
 }
+
+#######################################################################
+#                   End of internal function region                   #
+#######################################################################
+
 
 
 #' Fit beta-binomial distribution for one locus

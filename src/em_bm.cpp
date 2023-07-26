@@ -126,7 +126,7 @@ Rcpp::List em_bm(
     } while (iter < max_iter);
 
     Rcpp::NumericVector pval; 
-    if (theta1 < 0.2) {
+    if (theta1 < 0.5) {
         pval = estimate_posterior_p(x, n, p2);
     } else {
         pval = estimate_posterior_p(x, n, p1);

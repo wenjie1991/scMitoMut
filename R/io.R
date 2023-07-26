@@ -1,10 +1,10 @@
-#######################################################################
+######################################################################
 #                          Internal function                          #
 #######################################################################
 
 ## Parse the output of mtGATK into a data.table
 read_mgatk = function(mgatk_output_dir, prefix) {
-    mgatk_output_dir = paste0(mgatk_output_dir, "/final/")
+    mgatk_output_dir = paste0(mgatk_output_dir)
     base_reads_files = dir(mgatk_output_dir, str_glue("{prefix}.[ACTG].txt.gz"), full=T)
     print(base_reads_files)
     names(base_reads_files) = str_split_fixed(base_reads_files %>% basename, "\\.", 4)[, 2]
@@ -91,29 +91,73 @@ read_locus = function(mtmutObj, loc, maj_base = NULL) {
 }
 
 
+#######################################################################
+#                    End internal function region                     #
+#######################################################################
+
+
+#' Load allele count table
+#' 
+#' 
+#' @export
+parse_table = function(file, h5_file = 'mut.h5', ...) {
+    merge_d = fread(file, ...)
+
+    ##############################
+    ## save to h5 file
+    if (file.exists(h5_file)) {
+        warning("\nH5 file exists, remove it.\n")
+        file.remove(h5_file)
+    }
+
+    H5Fcreate(h5_file)
+    h5f = H5Fopen(h5_file)
+
+    ## mut_table
+    h5g = H5Gcreate(h5loc = h5f, name = "mut_table")
+    plyr::d_ply(merge_d, "loc", function(x) {
+        d_name = paste0("mt", x$loc[1])
+        x$loc = NULL
+        h5write(x, h5g, d_name)
+    })
+
+    ## cell list
+    cell_list = merge_d$cell_barcode %>% unique
+    h5write(cell_list, h5f, "cell_list")
+    h5write(cell_list, h5f, "cell_selected")
+
+    ## loc list
+    loc_list = merge_d$loc %>% unique %>% paste0("mt", .)
+    h5write(loc_list, h5f, "loc_list")
+    h5write(loc_list, h5f, "loc_selected")
+
+    ## TODO: Do we need to close the H5 file?
+    #     H5Fclose(h5f)
+    #     H5Gclose(h5g)
+    #     h5closeAll()
+
+    ## Remove the big data
+    rm("merge_d")
+    gc()
+
+    h5_file
+}
 
 
 #' Load mtGATK output save to H5 file
 #'
-#' @param dir a string of the mtGATK output
+#' @param dir a string of the mtGATK output \code{final} fold
 #' @param prefix a string of the prefix of the mtGATK output directory
 #' @param h5_file a string of the output h5 file directory
 #' @return a string of the output h5 file directory
 #'
 #' @examples
 #' 
-#' y = load_mgatk(mgatk_output_dir, prefix = "lib_id", h5_file = "./mut.h5")
-#'
-#' ## cell list
-#' y$cell_id
-#' 
-#' ## test h5 file read out
-#' h5f = H5Fopen(y$h5_file)
-#' h5f
-#' h5g = h5f&"mut_table"
-#' h5g$x1600
-#' h5f$cell_id_list
-#' h5closeAll()
+#' ## Not run
+#' # y = load_mgatk("./mgatk_out/final/", prefix = "prefix_name", h5_file = "./mut.h5")
+#' # print(y)
+#' # > [1] './mut.h5',
+#' loc_pass = c(),
 #'
 #' ##
 #' @export
@@ -135,7 +179,7 @@ parse_mgatk = function(dir, prefix, h5_file = "mut.h5") {
 
     ## mut_table
     h5g = H5Gcreate(h5loc = h5f, name = "mut_table")
-    d_ply(merge_d, "loc", function(x) {
+    plyr::d_ply(merge_d, "loc", function(x) {
         d_name = paste0("mt", x$loc[1])
         x$loc = NULL
         h5write(x, h5g, d_name)
@@ -182,7 +226,15 @@ open_h5_file <- function(h5_file) {
         loc_list = loc_list, 
         loc_selected = loc_selected,
         cell_list = cell_list, 
-        cell_selected = cell_selected
+        cell_selected = cell_selected,
+        loc_pass = c(),
+        loc_filter = list(
+            min_cell = 1,
+            model = "bb",
+            p_threshold = 0.05,
+            p_adj_method = 'fdr',
+            af_threshold = 1 
+        )
     )
     class(mtmutObj) = "mtmutObj"
     mtmutObj
@@ -277,37 +329,59 @@ get_pval = function(mtmutObj, loc, model = "bi", method = "fdr") {
 #' @param af_threshold a numeric of the majority allele frequency threshold,
 #'   the major allele af < af_threshold will be considered as mutation.
 #'   The default is 1, which means no filtering
+#' @return a mtmutObj object with loci selected
 #'
 #' @export
 mut_filter = function(
-    mtmutObj, min_cell = 1, model = "bb", p_threshold = 0.05, p_adj_method = "fdr", af_threshold = 1) {
+    mtmutObj, min_cell = NULL, model = NULL, p_threshold = NULL, p_adj_method = NULL, af_threshold = NULL) {
+    ## Get the parameters from mtmutObj if they are NULL
+    min_cell = ifelse(is.null(min_cell), mtmutObj$loc_filter$min_cell, min_cell)
+    model = ifelse(is.null(model), mtmutObj$loc_filter$model, model)
+    p_threshold = ifelse(is.null(p_threshold), mtmutObj$loc_filter$p_threshold, p_threshold)
+    p_adj_method = ifelse(is.null(p_adj_method), mtmutObj$loc_filter$p_adj_method, p_adj_method)
+    af_threshold = ifelse(is.null(af_threshold), mtmutObj$loc_filter$af_threshold, af_threshold)
+
     loc_list = mtmutObj$loc_selected
-    res = mclapply(loc_list, function(xi) {
+    res = parallel::mclapply(loc_list, function(xi) {
         pval = get_pval(mtmutObj, xi, model = model, method = p_adj_method)
         data.frame(loc = xi, mut_cell_n = sum(pval < p_threshold, na.rm=T))
     }) %>% rbindlist
-    res[mut_cell_n >= min_cell]
+    res = res[mut_cell_n >= min_cell]
+    mtmutObj$loc_pass = res$loc 
+    mtmutObj$loc_filter = list(
+        min_cell = min_cell,
+        model = model,
+        p_threshold = p_threshold,
+        p_adj_method = p_adj_method,
+        af_threshold = af_threshold
+    )
+    mtmutObj
 }
-
-
-
 
 
 #' Export the mutation matrix
 #' 
-#' @param mtmutObj The scMtioMut object
-#' @param loc_list The list of loci
-#' @param p_threshold The p value threshold
-#' @param min_cell_n The minimum number of cells with mutation
-#' @param p_adj_method The method to adjust p value
-#' @return The mutation matrix
+#' @param mtmutObj The scMtioMut object.
+#' @param percent_interp A numeric value, the overlapping percentage threshold for triggering interpolation. The default is 1, which means no interpolation.
+#' @param all_cell A boolean to indicate whether to include all cells or only cells with mutation.
+#' @return data.frame, data.table or matrix
 #' @export
 #' @examples
 #' # d_plot = export_p(x, loc_list)
 #' # d_plot_af = export_af(x, loc_list)
 #' # d_plot_bin = export_binary(x, loc_list, 0.05)
-export_dt = function(mtmutObj, loc_list, model = "bb", p_threshold = 0.05, percent_interp = 0.2, n_interp = 3, min_cell_n = 0, p_adj_method = "fdr", af_threshold = 1, all_cell = F) {
-    res = mclapply(loc_list, function(loc_i) {
+export_dt = function(mtmutObj, percent_interp = 1, n_interp = 3, all_cell = F) {
+
+    loc_list = mtmutObj$loc_pass
+
+    ## Get the parameters from mtmutObj
+    min_cell = mtmutObj$loc_filter$min_cell
+    model = mtmutObj$loc_filter$model
+    p_threshold = mtmutObj$loc_filter$p_threshold
+    p_adj_method = mtmutObj$loc_filter$p_adj_method
+    af_threshold = mtmutObj$loc_filter$af_threshold
+
+    res = parallel::mclapply(loc_list, function(loc_i) {
         d = read_locus(mtmutObj, loc_i)
         d$pval = get_pval(mtmutObj, loc_i, model = model, method = p_adj_method)
         d$loc = loc_i
@@ -318,7 +392,7 @@ export_dt = function(mtmutObj, loc_list, model = "bb", p_threshold = 0.05, perce
 
     # if (!all_cell) {
         # cell_list = res[, .(n = sum(pval < p_threshold, na.rm=T)), by = cell_barcode][n > 0, cell_barcode]
-        # loc_list = res[, .(n = sum(pval < p_threshold, na.rm=T)), by = loc][n >= min_cell_n, loc]
+        # loc_list = res[, .(n = sum(pval < p_threshold, na.rm=T)), by = loc][n >= min_cell, loc]
         # res = res[cell_barcode %in% cell_list & loc %in% loc_list]
     # }
 
@@ -373,7 +447,7 @@ export_dt = function(mtmutObj, loc_list, model = "bb", p_threshold = 0.05, perce
 
     if (!all_cell) {
         cell_list = res[, .(n = sum(mut_status, na.rm=T)), by = cell_barcode][n > 0, cell_barcode]
-        loc_list = res[, .(n = sum(mut_status, na.rm=T)), by = loc][n >= min_cell_n, loc]
+        loc_list = res[, .(n = sum(mut_status, na.rm=T)), by = loc][n >= min_cell, loc]
         res = res[cell_barcode %in% cell_list & loc %in% loc_list]
     }
 
@@ -382,14 +456,14 @@ export_dt = function(mtmutObj, loc_list, model = "bb", p_threshold = 0.05, perce
 
 #' @export
 #' @rdname export_dt
-export_df = function(mtmutObj, loc_list, ...) {
-    data.frame(export_dt(mtmutObj, loc_list, ...))
+export_df = function(mtmutObj, ...) {
+    data.frame(export_dt(mtmutObj, ...))
 }
 
 #' @export
 #' @rdname export_dt
-export_pval = function(mtmutObj, loc_list, memoSort = F, ...) {
-    res = export_dt(mtmutObj, loc_list, ...)
+export_pval = function(mtmutObj, memoSort = F, ...) {
+    res = export_dt(mtmutObj, ...)
     d = dcast(res, loc ~ cell_barcode, value.var = "pval")
     m = data.matrix(d[, -1])
     rownames(m) =  d[[1]]
@@ -407,8 +481,8 @@ export_pval = function(mtmutObj, loc_list, memoSort = F, ...) {
 
 #' @export
 #' @rdname export_dt
-export_binary = function(mtmutObj, loc_list, memoSort = F, ...) {
-    res = export_dt(mtmutObj, loc_list, ...)
+export_binary = function(mtmutObj, memoSort = F, ...) {
+    res = export_dt(mtmutObj, ...)
     d = dcast(res, loc ~ cell_barcode, value.var = "mut_status")
     m_b = data.matrix(d[, -1])
     rownames(m_b) =  d[[1]]
@@ -422,8 +496,8 @@ export_binary = function(mtmutObj, loc_list, memoSort = F, ...) {
 
 #' @export
 #' @rdname export_dt
-export_af = function(mtmutObj, loc_list, memoSort = F, ...) {
-    res = export_dt(mtmutObj, loc_list, ...)
+export_af = function(mtmutObj, memoSort = F, ...) {
+    res = export_dt(mtmutObj, ...)
     d = dcast(res, loc ~ cell_barcode, value.var = "af")
     m = data.matrix(d[, -1])
     rownames(m) =  d[[1]]

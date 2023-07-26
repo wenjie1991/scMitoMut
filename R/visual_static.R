@@ -1,5 +1,5 @@
 #######################################################################
-#                          Private functions                          #
+#                         Internal functions                          #
 #######################################################################
 ## TODO: use the code elsewhere
 # if (F) {
@@ -26,10 +26,9 @@
 
 #' Draw depth ~ AF scatter plot
 #'
-#'
-#' @export
 plot_locus <- function(
     d_select_maj_base, p, p_threshold = 0.05, loc = NA, maj_base= NA) {
+
     ## alt / depth
     N = d_select_maj_base$coverage
     y = d_select_maj_base[, alt_depth]
@@ -52,8 +51,22 @@ plot_locus <- function(
 }
 
 
-#' @export
-plot_af_coverage = function(mtmutObj, loc, model = "bb", p_threshold = 0.05, p_adj_method = "fdr") {
+
+#######################################################################
+#                   End of internal function region                   #
+#######################################################################
+
+
+
+#' QC plot: 2D scatter plot for coverage ~ AF
+#'
+plot_af_coverage = function(mtmutObj, loc, model = NULL, p_threshold = NULL, p_adj_method = NULL) {
+
+    ## get parameters
+    model = ifelse(is.null(model), mtmutObj$loc_filter$model, model)
+    p_threshold = ifelse(is.null(p_threshold), mtmutObj$loc_filter$p_threshold, p_threshold)
+    p_adj_method = ifelse(is.null(p_adj_method), mtmutObj$loc_filter$p_adj_method, p_adj_method)
+
     d = read_locus(mtmutObj, loc)
     plot_locus(d, p = get_pval(mtmutObj, loc, model, p_adj_method), p_threshold = p_threshold, loc = loc)
 }
@@ -69,7 +82,13 @@ plot_af_coverage = function(mtmutObj, loc, model = "bb", p_threshold = 0.05, p_a
 #' @export
 #' @examples
 #' ##
-plot_locus_profile = function(mtmutObj, loc, seuratObj, model = "bb", p_threshold = 0.05, p_adj_method = "fdr") {
+plot_locus_profile = function(mtmutObj, loc, seuratObj, model = NULL, p_threshold = NULL, p_adj_method = NULL) {
+
+    ## get parameters
+    model = ifelse(is.null(model), mtmutObj$loc_filter$model, model)
+    p_threshold = ifelse(is.null(p_threshold), mtmutObj$loc_filter$p_threshold, p_threshold)
+    p_adj_method = ifelse(is.null(p_adj_method), mtmutObj$loc_filter$p_adj_method, p_adj_method)
+
     y = process_locus_bmbb(mtmutObj, loc)
 
     if (model == "bb") {
@@ -93,18 +112,17 @@ plot_locus_profile = function(mtmutObj, loc, seuratObj, model = "bb", p_threshol
 #' Heatmap plot
 #' 
 #' @param mtmutObj an object of class "mtmutObj"
-#' @param loc_list a vector of mt genome location
 #' @param cell_ann a vector of cell annotation
 #' @param ann_colors a vector of cell annotation colors
 #' @param type a string of plot type, "p" for p-value, "af" for allele frequency
 #' @param ... other parameters for \code{\link{export_df}}
 #'
 #' @export
-plot_heatmap = function(mtmutObj, loc_list, cell_ann = NULL, ann_colors = NULL, type = "p", ...) {
+plot_heatmap = function(mtmutObj, cell_ann = NULL, ann_colors = NULL, type = "p", ...) {
 
     if (type == "p") {
         ## heatmap of p value
-        m = export_pval(mtmutObj, loc_list, memoSort = T, ...)
+        m = export_pval(mtmutObj, memoSort = T, ...)
 
         p = pheatmap::pheatmap(m, 
             color = rev(colorRampPalette((RColorBrewer::brewer.pal(n = 7, name = "GnBu")))(100)),
@@ -113,7 +131,7 @@ plot_heatmap = function(mtmutObj, loc_list, cell_ann = NULL, ann_colors = NULL, 
 
     } else if (type == "af") {
         ## heatmap of af
-        m = export_af(mtmutObj, loc_list, memoSort = T, ...)
+        m = export_af(mtmutObj, memoSort = T, ...)
 
         p = pheatmap::pheatmap(m, 
             color = rev(colorRampPalette((RColorBrewer::brewer.pal(n = 7, name = "GnBu")))(100)),
@@ -122,7 +140,7 @@ plot_heatmap = function(mtmutObj, loc_list, cell_ann = NULL, ann_colors = NULL, 
 
     } else if (type == "binary") {
         ## heatmap of binary mutation
-        m_b = export_binary(mtmutObj, loc_list, memoSort = T, ...)
+        m_b = export_binary(mtmutObj, memoSort = T, ...)
         m_b %<>% as.data.frame() %>% data.matrix()
 
         p = pheatmap::pheatmap(m_b, color = colorRampPalette((RColorBrewer::brewer.pal(n = 7, name = "GnBu")))(100),

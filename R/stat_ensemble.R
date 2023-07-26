@@ -1,9 +1,14 @@
 #######################################################################
-#                          Private function                           #
+#                         Internal function                           #
 #######################################################################
 get_bm_pval = function(x, method = "none") {
     p.adjust(x$bm_pval, method)
 }
+
+#######################################################################
+#                   End of internal function region                   #
+#######################################################################
+
 
 
 #' Fit binomial mixture model for one locus
@@ -56,7 +61,7 @@ run_model_fit <- function(mtmutObj, mc.cores = getOption("mc.cores", 2L)) {
 
     ## run the ensemble calling
     # pb <- progress::progress_bar$new(total = length(loc_list))
-    res_l = mclapply(loc_list, function(xi) {
+    res_l = parallel::mclapply(loc_list, function(xi) {
         print(xi)
         # pb$tick()
         res = process_locus_bmbb(mtmutObj, xi)

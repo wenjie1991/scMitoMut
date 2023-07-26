@@ -5,17 +5,22 @@
 \title{QC plot: 2D scatter plot for coverage ~ AF and UMAP}
 \usage{
 plot_locus_profile(
-  loc,
   mtmutObj,
+  loc,
   seuratObj,
-  p_threshold = 0.05,
-  p_adj_method = "fdr"
+  model = NULL,
+  p_threshold = NULL,
+  p_adj_method = NULL
 )
 }
 \arguments{
+\item{mtmutObj}{an object of class "mtmutObj"}
+
 \item{loc}{a string of genome location, e.g. "mt1000"}
 
-\item{mtmutObj}{an object of class "mtmutObj"}
+\item{seuratObj}{an object of class "Seurat"}
+
+\item{model}{a string of model name, one of "bb", "bm", "bi"}
 
 \item{p_threshold}{a numeric value of p-value threshold}
 

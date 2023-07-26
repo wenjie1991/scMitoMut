@@ -1,5 +1,5 @@
 #######################################################################
-#                          Private functions                          #
+#                         Internal functions                          #
 #######################################################################
 # fit_bm_r <- function(x, n, init_theta, init_lambda) {
 #
@@ -25,6 +25,11 @@ fit_bm_cpp = function(x, n, ave_p, p1, p2, theta1, max_iter = 100, tol = 1e-6) {
         k2 = em_out
     )
 }
+
+#######################################################################
+#                   End of internal function region                   #
+#######################################################################
+
 
 #' Fit mixture of binomial distribution for one locus
 #'

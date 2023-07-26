@@ -1,3 +1,7 @@
+#######################################################################
+#                          Internal function                          #
+#######################################################################
+
 # Calculate strand bias
 calc_strand_concordance <- function(y_fwd, y_rev) {
     cor(y_fwd, y_rev)
@@ -36,4 +40,7 @@ process_locus_summary <- function(d_select_maj_base) {
     )
 }
 
+#######################################################################
+#                   End of internal function region                   #
+#######################################################################
 
