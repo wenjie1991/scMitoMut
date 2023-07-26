@@ -2,9 +2,29 @@
 % Please edit documentation in R/io.R
 \name{open_h5_file}
 \alias{open_h5_file}
+\alias{format.mtmutObj}
+\alias{print.mtmutObj}
+\alias{is.mtmutObj}
 \title{Open H5 file}
+\format{
+A list with the following elements:
+\describe{
+\item{h5f}{H5 file handle}
+\item{mut_table}{allele count table H5 group handle}
+\item{loc_list}{list of available loci}
+\item{loc_selected}{selected loci}
+\item{cell_list}{list of available cell ids}
+\item{cell_selected}{selected cell ids}
+}
+}
 \usage{
 open_h5_file(h5_file)
+
+\method{format}{mtmutObj}(x, ...)
+
+\method{print}{mtmutObj}(x, ...)
+
+is.mtmutObj(x)
 }
 \arguments{
 \item{h5_file}{a string of the h5 file directory}
@@ -13,5 +33,5 @@ open_h5_file(h5_file)
 a mtmutObj object
 }
 \description{
-Open H5 file
+A S3 class for handling mitochondrial mutation data
 }

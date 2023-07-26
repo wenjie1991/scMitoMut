@@ -157,7 +157,6 @@ parse_table = function(file, h5_file = 'mut.h5', ...) {
 #' # y = load_mgatk("./mgatk_out/final/", prefix = "prefix_name", h5_file = "./mut.h5")
 #' # print(y)
 #' # > [1] './mut.h5',
-#' loc_pass = c(),
 #'
 #' ##
 #' @export
@@ -257,16 +256,21 @@ open_h5_file <- function(h5_file) {
 #' }
 
 #' @export
-format.mtmutObj <- function(x) {
+#' @rdname open_h5_file 
+format.mtmutObj <- function(x, ...) {
     cat("h5 file: mtmutObj\n")
+    ## TODO: print more information
 }
 
 #' @export
-print.mtmutObj <- function(x) {
+#' @rdname open_h5_file 
+print.mtmutObj <- function(x, ...) {
     cat("h5 file: mtmutObj\n")
+    ## TODO: print more information
 }
 
 #' @export
+#' @rdname open_h5_file 
 is.mtmutObj <- function(x) inherits(x, "mtmutObj")
 
 

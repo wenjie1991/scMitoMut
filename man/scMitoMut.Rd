@@ -4,3 +4,6 @@
 \name{scMitoMut}
 \alias{scMitoMut}
 \title{scMitoMut}
+\description{
+scMitoMut is a tool for detecting mitochondrial mutations in single-cell sequencing data
+}

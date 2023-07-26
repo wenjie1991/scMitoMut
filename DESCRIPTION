@@ -29,10 +29,10 @@ Imports:
     rhdf5,
     readr,
     parallel
-LinkingTo: Rcpp, RcppArmadillo
-NeedsCompilation: yes
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
-Suggests: 
-    testthat (>= 3.0.0)
+Suggests: testthat (>= 3.0.0), BiocStyle, knitr, rmarkdown
 Config/testthat/edition: 3
+VignetteBuilder: knitr
+NeedsCompilation: yes
+biocViews: Preprocessing, Sequencing

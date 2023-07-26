@@ -25,7 +25,6 @@ Load mtGATK output save to H5 file
 # y = load_mgatk("./mgatk_out/final/", prefix = "prefix_name", h5_file = "./mut.h5")
 # print(y)
 # > [1] './mut.h5',
-loc_pass = c(),
 
 ##
 }
