@@ -29,9 +29,3 @@ list of p-value and model parameters
 \description{
 Fit beta-binomial distribution for one locus
 }
-\examples{
-
-process_locus("mt1000", mtmutObj, maj_base = NULL, max_try = 1)
-
-##
-}

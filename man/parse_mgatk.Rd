@@ -2,29 +2,28 @@
 % Please edit documentation in R/io.R
 \name{parse_mgatk}
 \alias{parse_mgatk}
-\title{Load mtGATK output save to H5 file}
+\title{Load mtGATK output}
 \usage{
 parse_mgatk(dir, prefix, h5_file = "mut.h5")
 }
 \arguments{
-\item{dir}{a string of the mtGATK output \code{final} fold}
+\item{dir}{a string of the mtGATK output \code{final} fold.}
 
-\item{prefix}{a string of the prefix of the mtGATK output directory}
+\item{prefix}{a string of the prefix of the mtGATK output directory.}
 
-\item{h5_file}{a string of the output h5 file directory}
+\item{h5_file}{a string of the output h5 file directory.}
 }
 \value{
-a string of the output h5 file directory
+a string of the output h5 file directory.
 }
 \description{
-Load mtGATK output save to H5 file
+This function loads the mtGATK output and save it to a H5 file.
 }
 \examples{
-
-## Not run
-# y = load_mgatk("./mgatk_out/final/", prefix = "prefix_name", h5_file = "./mut.h5")
-# print(y)
-# > [1] './mut.h5',
-
+f = system.file("extdata", "mini_mgatk_out", package = "scMitoMut")
+h5_f = load_mgatk(paste0(f, "/out/"), prefix = "sample", h5_file = "./mut.h5")
+h5_f
+x <- open_h5_file(h5_f)
+x  
 ##
 }

@@ -2,20 +2,27 @@
 % Please edit documentation in R/stat_ensemble.R
 \name{process_locus_bmbb}
 \alias{process_locus_bmbb}
-\title{Fit binomial mixture model for one locus}
+\title{Fit tree models for one locus}
 \usage{
-process_locus_bmbb(mtmutObj, loc, maj_base = NULL, ...)
+process_locus_bmbb(mtmutObj, loc, maj_base = NULL, return_data = FALSE, ...)
 }
 \arguments{
-\item{mtmutObj}{a mtmutObj object}
+\item{mtmutObj}{a mtmutObj object.}
 
-\item{loc}{string given the locus name (e.g. "mt1000")}
+\item{loc}{string given the locus name (e.g. "chrM1000").}
 
-\item{maj_base}{string given the major base (e.g. "A"), if NULL auto detect the major base}
+\item{maj_base}{string given the dominant allele (e.g. "A"), if NULL auto detect the dominant allele.}
+
+\item{return_data}{logical whether to return the allele count data, if FALSE, the \code{data} in the return value will be NULL. The default is FALSE.}
+
+\item{...}{other parameters passed to \code{\link{process_locus_bm}} and \code{\link{process_locus_bb}}.}
 }
 \value{
-list of p-value and model parameters
+A list of three elements:
+\item{data}{data.frame of the allele count data.}
+\item{locus}{data.table of the VMR and consistency of fwd rev strand.}
+\item{model}{list of the model fitting results.}
 }
 \description{
-Fit binomial mixture model for one locus
+This function fit binomial mixture model, beta binomial model and calculate the VMR and consistency of fwd rev strand for one locus.
 }

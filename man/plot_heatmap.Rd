@@ -4,18 +4,18 @@
 \alias{plot_heatmap}
 \title{Heatmap plot}
 \usage{
-plot_heatmap(mtmutObj, cell_ann = NULL, ann_colors = NULL, type = "p", ...)
+plot_heatmap(mtmutObj, type = "p", cell_ann = NULL, ann_colors = NULL, ...)
 }
 \arguments{
-\item{mtmutObj}{an object of class "mtmutObj"}
+\item{mtmutObj}{an object of class "mtmutObj".}
 
-\item{cell_ann}{a vector of cell annotation}
+\item{type}{a string of plot type, "p" for p-value, "af" for allele frequency.}
 
-\item{ann_colors}{a vector of cell annotation colors}
+\item{cell_ann}{a data.frame of cell annotation, with rownames as cell barcodes.}
 
-\item{type}{a string of plot type, "p" for p-value, "af" for allele frequency}
+\item{ann_colors}{a vector of colors for cell annotation with cell annotation as names.}
 
-\item{...}{other parameters for \code{\link{export_df}}}
+\item{...}{other parameters for \code{\link{export_df}} and \code{\link{pheatmap::pheatmap}}.}
 }
 \description{
 Heatmap plot

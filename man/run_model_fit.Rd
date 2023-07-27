@@ -7,13 +7,22 @@
 run_model_fit(mtmutObj, mc.cores = getOption("mc.cores", 2L))
 }
 \arguments{
-\item{mtmutObj}{a mtmutObj object}
+\item{mtmutObj}{a mtmutObj object.}
 
-\item{mc.cores}{number of cores to use}
+\item{mc.cores}{integer number of cores to use.}
 }
 \value{
-NULL, the result is saved in the h5f file
+NULL, the results are saved in the h5f file.
 }
 \description{
 Fit binomial mixture model for every candidate locus
+}
+\details{
+This function will fit three models for every candidate locus:
+\itemize{
+\item{binomial mixture model}{}
+\item{beta binomial model}{}
+\item{binomial model}{}
+}
+The results are saved in the h5f file.
 }

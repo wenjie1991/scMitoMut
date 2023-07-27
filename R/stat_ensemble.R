@@ -9,45 +9,45 @@ get_bm_pval = function(x, method = "none") {
 #                   End of internal function region                   #
 #######################################################################
 
-
-
 #' Fit tree models for one locus
 #' 
-#' His is a wrapper function for \code{\link{process_locus_bm}} and \code{\link{process_locus_bb}}. 
-#' It will fit binomial mixture model, beta binomial model and calculate the VMR and consistency of fwd rev strand.
+#' This function fit binomial mixture model, beta binomial model and calculate the VMR and consistency of fwd rev strand for one locus.
 #'
 #' @param mtmutObj a mtmutObj object.
-#' @param loc string given the locus name (e.g. "mt1000").
-#' @param maj_base string given the dominant allele (e.g. "A"), if NULL auto detect the dominant allele.
+#' @param loc string given the locus name (e.g. "chrM1000").
+#' @param dom_allele string given the dominant allele (e.g. "A"), if NULL auto detect the dominant allele.
 #' @param return_data logical whether to return the allele count data, if FALSE, the \code{data} in the return value will be NULL. The default is FALSE.
 #' @param ... other parameters passed to \code{\link{process_locus_bm}} and \code{\link{process_locus_bb}}.
 #' @return A list of three elements:
 #' \item{data}{data.frame of the allele count data.}
 #' \item{locus}{data.table of the VMR and consistency of fwd rev strand.}
 #' \item{model}{list of the model fitting results.}
-#' @example
+#' @examples
+#' h5_f = system.file("extdata", "mut.h5", package = "scMitoMut")
+#' x = open_h5_file(h5_f)
+#' res = process_locus_bmbb(x, loc = "chrM.1000")
+#' res
 #' 
 #' @export
-process_locus_bmbb <- function(mtmutObj, loc, maj_base = NULL, return_data = FALSE, ...) {
-    d_select_maj_base <- read_locus(mtmutObj, loc, maj_base)
+process_locus_bmbb <- function(mtmutObj, loc, dom_allele = NULL, return_data = FALSE, ...) {
+    d_dom_allele <- read_locus(mtmutObj, loc, dom_allele)
 
     ## fit binomial mixture model
-    res_bm <- process_locus_bm(d_select_maj_base, ...)
+    res_bm <- process_locus_bm(d_dom_allele, ...)
 
     ## fit beta binomial model
-    selected_maj_cell = d_select_maj_base[get_bm_pval(res_bm, 'fdr') >= 0.05]$cell_barcode
-    # selected_maj_cell = d_select_maj_base[get_bm_pval(res_bm, 'fdr') >= 0.01]$cell_barcode
-    res_bb <- process_locus_bb(d_select_maj_base, selected_maj_cell, ...)
+    selected_maj_cell = d_dom_allele[get_bm_pval(res_bm, 'fdr') >= 0.05]$cell_barcode
+    res_bb <- process_locus_bb(d_dom_allele, selected_maj_cell, ...)
 
     ## VMR and consistency of fwd rev strand
-    res_summary <- process_locus_summary(d_select_maj_base)
+    res_summary <- process_locus_summary(d_dom_allele)
 
     if (!return_data) {
-        d_select_maj_base = NULL
+        d_dom_allele= NULL
     }
 
     res <- list(
-        data = d_select_maj_base,
+        data = d_dom_allele,
         locus = res_summary,
         model = list(
             beta_binom = res_bb,
@@ -70,7 +70,17 @@ process_locus_bmbb <- function(mtmutObj, loc, maj_base = NULL, return_data = FAL
 #' \item{binomial model}{}
 #' }
 #' The results are saved in the h5f file.
-#' @example
+#' @examples
+#' # load the data
+#' h5_f = system.file("extdata", "mut.h5", package = "scMitoMut")
+#' # open the h5f file
+#' x = open_h5_file(h5_f)
+#' # run the model fit
+#' run_model_fit(x)
+#' x
+#' Filter the loci based on the model fit results
+#' x = filter_loc(x , min_cell = 5, model = "bb", p_threshold = 0.05, p_adj_method = "fdr", af_threshold = 0.05)
+#' x
 #' @export
 run_model_fit <- function(mtmutObj, mc.cores = getOption("mc.cores", 2L)) {
     ## get the list of loci

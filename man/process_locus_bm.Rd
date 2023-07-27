@@ -2,26 +2,22 @@
 % Please edit documentation in R/stat_mixbinomal.R
 \name{process_locus_bm}
 \alias{process_locus_bm}
-\title{Fit mixture of binomial distribution for one locus}
+\title{Fit binomial mixture distribution for one locus}
 \usage{
 process_locus_bm(d_select_maj_base, theta1 = 0.9, max_iter = 100, tol = 1e-06)
 }
 \arguments{
-\item{d_select_maj_base}{data.frame of one locus}
+\item{d_select_maj_base}{data.frame of one locus.}
 
-\item{theta1}{initial theta for the second component}
+\item{theta1}{initial theta for the second component.}
 
-\item{max_iter}{maximum iteration}
+\item{max_iter}{maximum iteration.}
 
-\item{tol}{tolerance of log likelihood to stop iteration}
+\item{tol}{tolerance of log-likelihood to stop iteration.}
 }
 \value{
-list of p-value and model parameters
+list of p-value and model parameters.
 }
 \description{
-Fit mixture of binomial distribution for one locus
-}
-\examples{
-
-###
+Fit binomial mixture distribution for one locus
 }

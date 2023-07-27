@@ -23,16 +23,25 @@ export_af(mtmutObj, memoSort = F, ...)
 
 \item{percent_interp}{A numeric value, the overlapping percentage threshold for triggering interpolation. The default is 1, which means no interpolation.}
 
+\item{n_interp}{A integer value, the minimum number of overlapped cells with mutation for triggering interpolation.}
+
 \item{all_cell}{A boolean to indicate whether to include all cells or only cells with mutation.}
 }
 \value{
 data.frame, data.table or matrix
 }
 \description{
-Export the mutation matrix
+The helper functions to export the mutation results for further analysis. The output format can be data.frame, data.table or matrix for p value, allele frequency or binary mutation status.
 }
 \examples{
-# d_plot = export_p(x, loc_list)
-# d_plot_af = export_af(x, loc_list)
-# d_plot_bin = export_binary(x, loc_list, 0.05)
+h5_f = system.file("extdata", "mut.h5", package = "scMitoMut")
+## open the h5 file and create a mtmutObj object
+x <- open_h5_file(f_h5)
+run_model_fit(x)
+x = filter_loc(x , min_cell = 5, model = "bb", p_threshold = 0.05, p_adj_method = "fdr", af_threshold = 0.05)
+x
+export_df(x)
+export_p(x)
+export_af(x)
+export_binary(x)
 }

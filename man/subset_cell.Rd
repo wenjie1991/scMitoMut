@@ -20,5 +20,15 @@ subset_loc(mtmutObj, loc_list)
 a mtmutObj object with cell and loci selected
 }
 \description{
-Subset cell and loci
+Functions to subset cell and loci for fitting models and plotting.
+}
+\examples{
+h5_f = system.file("extdata", "mut.h5", package = "scMitoMut")
+## open the h5 file and create a mtmutObj object
+x <- open_h5_file(f_h5)
+x
+## subset cell and loci
+x <- subset_cell(x, x$cell_list[1:10])
+x <- subset_loc(x, x$loc_list[1:10])
+x
 }

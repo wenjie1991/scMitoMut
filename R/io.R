@@ -2,7 +2,7 @@
 #                          Internal function                          #
 #######################################################################
 
-## Parse the output of mtGATK into a data.table
+## Parse the output of mtGATK into a data.table.
 read_mgatk = function(mgatk_output_dir, prefix) {
     mgatk_output_dir = paste0(mgatk_output_dir)
     base_reads_files = dir(mgatk_output_dir, str_glue("{prefix}.[ACTG].txt.gz"), full=T)
@@ -18,7 +18,6 @@ read_mgatk = function(mgatk_output_dir, prefix) {
     base_depth_d = lapply(seq_along(base_reads_files), function(i) {
         f = base_reads_files[i]
         d = fread(f)
-        ## TODO: remove fwd_depth and rev_depth
         names(d) = c("loc", "cell_barcode", "fwd_depth", "rev_depth")
         d$alt = names(base_reads_files)[i]
         d
@@ -146,7 +145,7 @@ parse_table = function(file, h5_file = 'mut.h5', ...) {
     ## mut_table
     h5g = H5Gcreate(h5loc = h5f, name = "mut_table")
     plyr::d_ply(merge_d, "loc", function(x) {
-        d_name = paste0("mt", x$loc[1])
+        d_name = paste0("chrM.", x$loc[1])
         x$loc = NULL
         h5write(x, h5g, d_name)
     })
@@ -157,7 +156,7 @@ parse_table = function(file, h5_file = 'mut.h5', ...) {
     h5write(cell_list, h5f, "cell_selected")
 
     ## loc list
-    loc_list = merge_d$loc %>% unique %>% paste0("mt", .)
+    loc_list = merge_d$loc %>% unique %>% paste0("chrM.", .)
     h5write(loc_list, h5f, "loc_list")
     h5write(loc_list, h5f, "loc_selected")
 
@@ -174,20 +173,21 @@ parse_table = function(file, h5_file = 'mut.h5', ...) {
 }
 
 
-#' Load mtGATK output save to H5 file
-#'
+#' Load mtGATK output
+#' 
+#' This function loads the mtGATK output and save it to a H5 file.
+#' 
 #' @param dir a string of the mtGATK output \code{final} fold.
 #' @param prefix a string of the prefix of the mtGATK output directory.
 #' @param h5_file a string of the output h5 file directory.
 #' @return a string of the output h5 file directory.
 #'
 #' @examples
-#' 
-#' ## Not run
-#' # y = load_mgatk("./mgatk_out/final/", prefix = "prefix_name", h5_file = "./mut.h5")
-#' # print(y)
-#' # > [1] './mut.h5',
-#'
+#' f = system.file("extdata", "mini_mgatk_out", package = "scMitoMut")
+#' h5_f = load_mgatk(paste0(f, "/out/"), prefix = "sample", h5_file = "./mut.h5")
+#' h5_f
+#' x <- open_h5_file(h5_f)
+#' x  
 #' ##
 #' @export
 parse_mgatk = function(dir, prefix, h5_file = "mut.h5") {
@@ -209,7 +209,7 @@ parse_mgatk = function(dir, prefix, h5_file = "mut.h5") {
     ## mut_table
     h5g = H5Gcreate(h5loc = h5f, name = "mut_table")
     plyr::d_ply(merge_d, "loc", function(x) {
-        d_name = paste0("mt", x$loc[1])
+        d_name = paste0("chrM.", x$loc[1])
         x$loc = NULL
         h5write(x, h5g, d_name)
     })
@@ -220,7 +220,7 @@ parse_mgatk = function(dir, prefix, h5_file = "mut.h5") {
     h5write(cell_list, h5f, "cell_selected")
 
     ## loc list
-    loc_list = merge_d$loc %>% unique %>% paste0("mt", .)
+    loc_list = merge_d$loc %>% unique %>% paste0("chrM.", .)
     h5write(loc_list, h5f, "loc_list")
     h5write(loc_list, h5f, "loc_selected")
 
@@ -237,7 +237,9 @@ parse_mgatk = function(dir, prefix, h5_file = "mut.h5") {
 }
 
 #' Open H5 file
-#'
+#' 
+#' This function opens the H5 file and create a mtmutObj object.
+#' 
 #' @param h5_file a string of the h5 file directory
 #' @return a mtmutObj object
 #' @details The mtmutObj object is a S3 class for handling mitochondrial mutation data.
@@ -246,10 +248,10 @@ parse_mgatk = function(dir, prefix, h5_file = "mut.h5") {
 #'  \item{h5f}{H5 file handle.}
 #'  \item{mut_table}{allele count table H5 group handle.}
 #'  \item{loc_list}{list of available loci.}
-#'  \item{loc_selected}{selected loci.}
+#'  \item{loc_selected}{selected loci, the default is all loci.}
 #'  \item{cell_list}{list of available cell ids.}
-#'  \item{cell_selected}{selected cell ids.}
-#'  \item{loc_pass}{loci passed the filter.}
+#'  \item{cell_selected}{selected cell ids, the default is all cells.}
+#'  \item{loc_pass}{loci passed the filter, the default is NULL}
 #'  \item{loc_filter}{filter parameters.}
 #'  \item{loc_filter$min_cell}{a integer of the minimum number of cells with mutation, the default is 1.}
 #'  \item{loc_filter$model}{a string of the model for mutation calling, it can be "bb", "bm" or "bi", the default is "bb".}
@@ -282,7 +284,7 @@ open_h5_file <- function(h5_file) {
         loc_selected = loc_selected,
         cell_list = cell_list, 
         cell_selected = cell_selected,
-        loc_pass = c(),
+        loc_pass = NULL,
         loc_filter = list(
             min_cell = 1,
             model = "bb",
@@ -328,11 +330,21 @@ is.mtmutObj <- function(x) inherits(x, "mtmutObj")
 
 #' Subset cell and loci
 #' 
+#' Functions to subset cell and loci for fitting models and plotting.
+#'
 #' @param mtmutObj a mtmutObj object
 #' @param cell_list a list of cell barcodes
 #' @param loc_list a list of loci
 #' @return a mtmutObj object with cell and loci selected
-#'
+#' @examples
+#' h5_f = system.file("extdata", "mut.h5", package = "scMitoMut")
+#' ## open the h5 file and create a mtmutObj object
+#' x <- open_h5_file(f_h5)
+#' x
+#' ## subset cell and loci
+#' x <- subset_cell(x, x$cell_list[1:10])
+#' x <- subset_loc(x, x$loc_list[1:10])
+#' x
 #' @export
 subset_cell <- function(mtmutObj, cell_list) {
     if ("cell_selected" %in% h5ls(mtmutObj$h5f, recursive = F)$name) {
@@ -355,13 +367,23 @@ subset_loc <- function(mtmutObj, loc_list) {
 }
 
 #' Get p-value list for single locus
-#'
-#' @param mtmutObj a mtmutObj object
-#' @param loc a string of the locus
-#' @param method a string of the method for p-value adjustment
-#'
+#' 
+#' This function returns the p-value list for a single locus.
+#' 
+#' @param mtmutObj a mtmutObj object.
+#' @param loc a string of the locus.
+#' @param model a string of the model for mutation calling, it can be "bb", "bm" or "bi" which stands for beta binomial, binomial mixture and binomial model respectively.
+#' @param method a string of the method for p-value adjustment, refer to \code{\link[p.adjust]{p.adjust}}.
+#' @examples
+#' h5_f = system.file("extdata", "mut.h5", package = "scMitoMut")
+#' ## open the h5 file and create a mtmutObj object
+#' x <- open_h5_file(f_h5)
+#' run_model_fit(x)
+#' get_pval(x, "chrM.1000", "bb", "fdr")
+#' get_pval(x, "chrM.1000", "bm", "fdr")
+#' get_pval(x, "chrM.1000", "bi", "fdr")
 #' @export
-get_pval = function(mtmutObj, loc, model = "bi", method = "fdr") {
+get_pval = function(mtmutObj, loc, model = "bb", method = "fdr") {
     if (model == "bb") {
         pval_item = "bb_pval"
     } else if (model == "bm") {
@@ -369,26 +391,34 @@ get_pval = function(mtmutObj, loc, model = "bi", method = "fdr") {
     } else if (model == "bi") {
         pval_item = "bi_pval"
     } else {
-        stop("model should be bb or bi")
+        stop("model should be bb, bm or bi")
     }
     p.adjust((mtmutObj$h5f & "pval" & loc & pval_item)[], method)
 }
 
-#' Filter and visualize mutations
-#'
-#' @param mtmutObj a mtmutObj object
-#' @param min_cell a integer of the minimum number of cells with mutation
-#' @param model a string of the model for mutation calling, it can be "bb", "bm" or "bi"
-#' @param p_threshold a numeric of the p-value threshold
-#' @param p_adj_method a string of the method for p-value adjustment, 
-#'   refer to \code{\link[p.adjust]{p.adjust}}
+#' Filter mutations
+#' 
+#' This function filters the mutations based on the mutation calling model and parameters. The loci passed the filter will be saved in the h5 file, together with the filter parameters.
+#' 
+#' @param mtmutObj a mtmutObj object.
+#' @param min_cell a integer of the minimum number of cells with mutation.
+#' @param model a string of the model for mutation calling, it can be "bb", "bm" or "bi" which stands for beta binomial, binomial mixture and binomial model respectively.
+#' @param p_threshold a numeric of the p-value threshold.
+#' @param p_adj_method a string of the method for p-value adjustment, .
+#'   refer to \code{\link[p.adjust]{p.adjust}}.
 #' @param af_threshold a numeric of the majority allele frequency threshold,
 #'   the major allele af < af_threshold will be considered as mutation.
-#'   The default is 1, which means no filtering
-#' @return a mtmutObj object with loci selected
-#'
+#'   The default is 1, which means no filtering.
+#' @return a mtmutObj object with loc_pass and loc_filter updated.
+#' @examples
+#' h5_f = system.file("extdata", "mut.h5", package = "scMitoMut")
+#' ## open the h5 file and create a mtmutObj object
+#' x <- open_h5_file(f_h5)
+#' run_model_fit(x)
+#' x = filter_loc(x , min_cell = 5, model = "bb", p_threshold = 0.05, p_adj_method = "fdr", af_threshold = 0.05)
+#' x
 #' @export
-mut_filter = function(
+filter_loc = function(
     mtmutObj, min_cell = NULL, model = NULL, p_threshold = NULL, p_adj_method = NULL, af_threshold = NULL) {
     ## Get the parameters from mtmutObj if they are NULL
     min_cell = ifelse(is.null(min_cell), mtmutObj$loc_filter$min_cell, min_cell)
@@ -417,15 +447,25 @@ mut_filter = function(
 
 #' Export the mutation matrix
 #' 
+#' The helper functions to export the mutation results for further analysis. The output format can be data.frame, data.table or matrix for p value, allele frequency or binary mutation status.
+#' 
 #' @param mtmutObj The scMtioMut object.
 #' @param percent_interp A numeric value, the overlapping percentage threshold for triggering interpolation. The default is 1, which means no interpolation.
+#' @param n_interp A integer value, the minimum number of overlapped cells with mutation for triggering interpolation.
 #' @param all_cell A boolean to indicate whether to include all cells or only cells with mutation.
 #' @return data.frame, data.table or matrix
 #' @export
 #' @examples
-#' # d_plot = export_p(x, loc_list)
-#' # d_plot_af = export_af(x, loc_list)
-#' # d_plot_bin = export_binary(x, loc_list, 0.05)
+#' h5_f = system.file("extdata", "mut.h5", package = "scMitoMut")
+#' ## open the h5 file and create a mtmutObj object
+#' x <- open_h5_file(f_h5)
+#' run_model_fit(x)
+#' x = filter_loc(x , min_cell = 5, model = "bb", p_threshold = 0.05, p_adj_method = "fdr", af_threshold = 0.05)
+#' x
+#' export_df(x)
+#' export_p(x)
+#' export_af(x)
+#' export_binary(x)
 export_dt = function(mtmutObj, percent_interp = 1, n_interp = 3, all_cell = F) {
 
     loc_list = mtmutObj$loc_pass

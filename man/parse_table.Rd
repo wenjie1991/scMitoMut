@@ -6,6 +6,39 @@
 \usage{
 parse_table(file, h5_file = "mut.h5", ...)
 }
+\arguments{
+\item{file}{a string of the allele count table file directory.}
+
+\item{h5_file}{a string of the output h5 file directory.}
+
+\item{...}{other parameters passed to \code{\link[data.table::fread]{fread}}.}
+}
+\value{
+a string of the output h5 file directory.
+}
 \description{
-Load allele count table
+This function loads the allele count table and save it to a H5 file.
+}
+\details{
+The allele count table should be a data.table with the following columns:
+\describe{
+\item{loc}{a string of the locus}
+\item{cell_barcode}{a string of the cell barcode.}
+\item{fwd_depth}{a integer of the forward depth.}
+\item{rev_depth}{a integer of the reverse depth.}
+\item{alt}{a string of the alternative base.}
+\item{ref}{a string of the reference base.}
+\item{coverage}{a integer of the coverage.}
+}
+}
+\examples{
+## Use the example data
+f = system.file("extdata", "mini_dataset.tsv.gz", package = "scMitoMut")
+## Load the data with parse_table function
+h5_f = parse_table(f, sep = "\t", h5_file = "./mut.h5")
+h5_f
+## open the h5 file and create a mtmutObj object
+x <- open_h5_file(f_h5)
+str(x)
+ 
 }

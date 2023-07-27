@@ -6,17 +6,6 @@
 \alias{print.mtmutObj}
 \alias{is.mtmutObj}
 \title{Open H5 file}
-\format{
-A list with the following elements:
-\describe{
-\item{h5f}{H5 file handle}
-\item{mut_table}{allele count table H5 group handle}
-\item{loc_list}{list of available loci}
-\item{loc_selected}{selected loci}
-\item{cell_list}{list of available cell ids}
-\item{cell_selected}{selected cell ids}
-}
-}
 \usage{
 open_h5_file(h5_file)
 
@@ -33,5 +22,34 @@ is.mtmutObj(x)
 a mtmutObj object
 }
 \description{
-A S3 class for handling mitochondrial mutation data
+This function opens the H5 file and create a mtmutObj object.
+}
+\details{
+The mtmutObj object is a S3 class for handling mitochondrial mutation data.
+It contains the following elements:
+\describe{
+\item{h5f}{H5 file handle.}
+\item{mut_table}{allele count table H5 group handle.}
+\item{loc_list}{list of available loci.}
+\item{loc_selected}{selected loci, the default is all loci.}
+\item{cell_list}{list of available cell ids.}
+\item{cell_selected}{selected cell ids, the default is all cells.}
+\item{loc_pass}{loci passed the filter, the default is NULL}
+\item{loc_filter}{filter parameters.}
+\item{loc_filter$min_cell}{a integer of the minimum number of cells with mutation, the default is 1.}
+\item{loc_filter$model}{a string of the model for mutation calling, it can be "bb", "bm" or "bi", the default is "bb".}
+\item{loc_filter$p_threshold}{a numeric of the p-value threshold, the default is 0.05.}
+\item{loc_filter$p_adj_method}{a string of the method for p-value adjustment, refer to \code{\link[p.adjust]{p.adjust}}, the default is "fdr".}
+\item{loc_filter$af_threshold}{a numeric of the majority allele frequency threshold, the major allele af < af_threshold will be considered as mutation. The default is 1, which means no filtering.}
+}
+}
+\examples{
+## Use the example data
+f = system.file("extdata", "mini_dataset.tsv.gz", package = "scMitoMut")
+## Load the data with parse_table function
+h5_f = parse_table(f, sep = "\t", h5_file = "./mut.h5")
+h5_f
+## open the h5 file and create a mtmutObj object
+x <- open_h5_file(f_h5)
+str(x)
 }

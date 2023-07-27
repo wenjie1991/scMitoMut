@@ -4,15 +4,26 @@
 \alias{get_pval}
 \title{Get p-value list for single locus}
 \usage{
-get_pval(mtmutObj, loc, model = "bi", method = "fdr")
+get_pval(mtmutObj, loc, model = "bb", method = "fdr")
 }
 \arguments{
-\item{mtmutObj}{a mtmutObj object}
+\item{mtmutObj}{a mtmutObj object.}
 
-\item{loc}{a string of the locus}
+\item{loc}{a string of the locus.}
 
-\item{method}{a string of the method for p-value adjustment}
+\item{model}{a string of the model for mutation calling, it can be "bb", "bm" or "bi" which stands for beta binomial, binomial mixture and binomial model respectively.}
+
+\item{method}{a string of the method for p-value adjustment, refer to \code{\link[p.adjust]{p.adjust}}.}
 }
 \description{
-Get p-value list for single locus
+This function returns the p-value list for a single locus.
+}
+\examples{
+h5_f = system.file("extdata", "mut.h5", package = "scMitoMut")
+## open the h5 file and create a mtmutObj object
+x <- open_h5_file(f_h5)
+run_model_fit(x)
+get_pval(x, "chrM.1000", "bb", "fdr")
+get_pval(x, "chrM.1000", "bm", "fdr")
+get_pval(x, "chrM.1000", "bi", "fdr")
 }

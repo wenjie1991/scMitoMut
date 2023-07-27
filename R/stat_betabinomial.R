@@ -97,7 +97,6 @@
 #     )
 # }
 
-
 # Fit betaBinomial distribution
 fit_bb_cpp <- function(y, N, max_iter = 100, tol = 1e-6) {
     mle_bb(y, N, max_iter, tol)
@@ -109,11 +108,6 @@ calc_pval_cpp = function(y, N, fit) {
     pbetabinom(y, N, a, b)
 }
 
-#######################################################################
-#                   End of internal function region                   #
-#######################################################################
-
-
 #' Fit beta-binomial distribution for one locus
 #'
 #' @param d_select_maj_base data.frame of one locus
@@ -122,12 +116,6 @@ calc_pval_cpp = function(y, N, fit) {
 #' @param max_iter maximum iteration
 #' @param tol tolerance of log likelihood to stop iteration
 #' @return list of p-value and model parameters
-#' @export
-#' @examples
-#' f = system.file("extdata", "mut.h5", package = "scMitoMut")
-#' f_h5 <- parse_table(f, h5_file = "./mut.h5")
-#' ## TODO
-#' ##
 process_locus_bb = function(
     d_select_maj_base, 
     selected_maj_cell = NULL, 
@@ -145,7 +133,7 @@ process_locus_bb = function(
     y_fwd <- d_select_maj_base[, fwd_depth]
     ## majority base reverse depth
     y_rev <- d_select_maj_base[, rev_depth]
-    ## averrage af
+    ## average af
     mean_af <- sum(y) / sum(N)
 
     if (!is.null(selected_maj_cell)) {
@@ -173,12 +161,9 @@ process_locus_bb = function(
         fit[[2]] = fit[[2]] * scale_factor
     }
 
-    # print(fit)
     ## the prob and theta
     prob = fit[[1]] / (fit[[1]] + fit[[2]])
     theta = fit[[1]] + fit[[2]]
-
-    # pval <- calc_pval_r(y, N, fit)
 
     ## if the bb model prob is too small, set pval to 1
     if (is.na(prob)) {
@@ -202,3 +187,9 @@ process_locus_bb = function(
         parameters = model_par
     )
 }
+
+#######################################################################
+#                   End of internal function region                   #
+#######################################################################
+
+

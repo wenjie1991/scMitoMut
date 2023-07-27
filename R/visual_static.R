@@ -52,8 +52,7 @@ plot_locus <- function(
 
 #' QC plot: 2D scatter plot for coverage ~ AF and UMAP
 #'
-#' @param mtmutObj an object of class "mtmutObj".
-#' @param loc a string of genome location, e.g. "mt1000".
+#' @param loc a string of genome location, e.g. "chrM.200".
 #' @param seuratObj an object of class "Seurat".
 #' @param model a string of model name, one of "bb", "bm", "bi".
 #' @param p_threshold a numeric value of p-value threshold.
@@ -90,12 +89,22 @@ plot_locus <- function(
 #' QC plot: 2D scatter plot for coverage ~ AF
 #'
 #' @param mtmutObj an object of class "mtmutObj".
-#' @param loc a string of genome location, e.g. "mt1000".
+#' @param loc a string of genome location, e.g. "chrM.200".
 #' @param model a string of model name, one of "bb", "bm", "bi".
 #' @param p_threshold a numeric value of p-value threshold.
 #' @param p_adj_method a string of p-value adjustment method.
 #' @examples
-#' ##
+#' # load the data
+#' h5_f = system.file("extdata", "mut.h5", package = "scMitoMut")
+#' # open the h5f file
+#' x = open_h5_file(h5_f)
+#' # run the model fit
+#' run_model_fit(x)
+#' x
+#' Filter the loci based on the model fit results
+#' x = filter_loc(x, min_cell = 5, model = "bb", p_threshold = 0.05, p_adj_method = "fdr", af_threshold = 0.05)
+#' # plot the locus profile for chrM.200
+#' plot_af_coverage(x, "chrM.200")
 #' @export
 plot_af_coverage = function(mtmutObj, loc, model = NULL, p_threshold = NULL, p_adj_method = NULL) {
 
@@ -112,10 +121,35 @@ plot_af_coverage = function(mtmutObj, loc, model = NULL, p_threshold = NULL, p_a
 #' 
 #' @param mtmutObj an object of class "mtmutObj".
 #' @param type a string of plot type, "p" for p-value, "af" for allele frequency.
-#' @param cell_ann a data.frame of cell annotation, with rownames as cell barcodes.
-#' @param ann_colors a vector of colors for cell annotation with cell annotation as names.
+#' @param cell_ann a data.frame of cell annotation, with rownames as cell barcodes, please refer to \code{\link{pheatmap::pheatmap}} for details.
+#' @param ann_colors a list of colors for cell annotation with cell annotation as names, please refer to \code{\link{pheatmap::pheatmap}} for details.
 #' @param ... other parameters for \code{\link{export_df}} and \code{\link{pheatmap::pheatmap}}.
+#' @examples
+#' # load the data
+#' h5_f = system.file("extdata", "mut.h5", package = "scMitoMut")
+#' # open the h5f file
+#' x = open_h5_file(h5_f)
+#' # run the model fit
+#' run_model_fit(x)
+#' x
+#' Filter the loci based on the model fit results
+#' x = filter_loc(x, min_cell = 5, model = "bb", p_threshold = 0.05, p_adj_method = "fdr", af_threshold = 0.05)
 #'
+#' # set the cell annotation
+#' f = system.file("extdata", "mini_dataset_cell_ann.csv", package = "scMitoMut")
+#' cell_ann = read.csv(f, row.names=1)
+#' # Prepare the color for cell annotation
+#' colors = c(
+#'     "Cancer Epi" = "#f28482",
+#'     Blood = "#f6bd60")
+#' ann_colors = list("SeuratCellTypes" = colors)
+#' 
+#' # plot the heatmap for p-value
+#' plot_heatmap(x, type = "p", cell_ann = cell_ann, ann_colors = ann_colors)
+#' # plot the heatmap for allele frequency
+#' plot_heatmap(x, type = "af", cell_ann = cell_ann, ann_colors = ann_colors)
+#' # plot the heatmap for binary mutation
+#' plot_heatmap(x, type = "binary", cell_ann = cell_ann, ann_colors = ann_colors)
 #' @export
 plot_heatmap = function(mtmutObj, type = 'p', cell_ann = NULL, ann_colors = NULL, ...) {
 

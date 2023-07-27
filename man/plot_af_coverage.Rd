@@ -2,7 +2,7 @@
 % Please edit documentation in R/visual_static.R
 \name{plot_af_coverage}
 \alias{plot_af_coverage}
-\title{QC plot: 2D scatter plot for coverage ~ AF}
+\title{QC plot: 2D scatter plot for coverage ~ AF and UMAP}
 \usage{
 plot_af_coverage(
   mtmutObj,
@@ -12,6 +12,22 @@ plot_af_coverage(
   p_adj_method = NULL
 )
 }
+\arguments{
+\item{mtmutObj}{an object of class "mtmutObj".}
+
+\item{loc}{a string of genome location, e.g. "chrM.1000".}
+
+\item{model}{a string of model name, one of "bb", "bm", "bi".}
+
+\item{p_threshold}{a numeric value of p-value threshold.}
+
+\item{p_adj_method}{a string of p-value adjustment method.}
+
+\item{seuratObj}{an object of class "Seurat".}
+}
 \description{
-QC plot: 2D scatter plot for coverage ~ AF
+QC plot: 2D scatter plot for coverage ~ AF and UMAP
+}
+\examples{
+##
 }
