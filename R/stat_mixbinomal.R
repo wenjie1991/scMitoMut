@@ -31,13 +31,13 @@ fit_bm_cpp = function(x, n, ave_p, p1, p2, theta1, max_iter = 100, tol = 1e-6) {
 #######################################################################
 
 
-#' Fit mixture of binomial distribution for one locus
+#' Fit binomial mixture distribution for one locus
 #'
-#' @param d_select_maj_base data.frame of one locus
-#' @param theta1 initial theta for the second component
-#' @param max_iter maximum iteration
-#' @param tol tolerance of log likelihood to stop iteration
-#' @return list of p-value and model parameters
+#' @param d_select_maj_base data.frame of one locus.
+#' @param theta1 initial theta for the second component.
+#' @param max_iter maximum iteration.
+#' @param tol tolerance of log-likelihood to stop iteration.
+#' @return list of p-value and model parameters.
 #' @export
 #' @examples
 #'
@@ -59,7 +59,7 @@ process_locus_bm = function(
     y_fwd <- d_select_maj_base[, fwd_depth]
     ## majority base reverse depth
     y_rev <- d_select_maj_base[, rev_depth]
-    ## averrage af
+    ## average af
     mean_af <- sum(x) / sum(n)
 
     #################################################

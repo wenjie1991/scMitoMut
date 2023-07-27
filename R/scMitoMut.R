@@ -1,8 +1,3 @@
-# Description: scMitoMut is a tool for detecting mitochondrial mutations in single-cell sequencing data
-
-# Load libraries
-
-
 #' scMitoMut
 #' 
 #' scMitoMut is a tool for detecting mitochondrial mutations in single-cell sequencing data

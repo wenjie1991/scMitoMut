@@ -2,14 +2,6 @@
 #                         Internal function                           #
 #######################################################################
 
-## mutation preprocess mgatk output to HDR5
-# library(data.table)
-# library(plyr)
-# library(magrittr)
-# library(readr)
-# library(stringr)
-# library(rhdf5)
-
 # Calculate p-value
 # calc_pval_r <- function(y, N, fit) {
 #
@@ -122,7 +114,6 @@ calc_pval_cpp = function(y, N, fit) {
 #######################################################################
 
 
-
 #' Fit beta-binomial distribution for one locus
 #'
 #' @param d_select_maj_base data.frame of one locus
@@ -133,9 +124,9 @@ calc_pval_cpp = function(y, N, fit) {
 #' @return list of p-value and model parameters
 #' @export
 #' @examples
-#'
-#' process_locus("mt1000", mtmutObj, maj_base = NULL, max_try = 1)
-#'
+#' f = system.file("extdata", "mut.h5", package = "scMitoMut")
+#' f_h5 <- parse_table(f, h5_file = "./mut.h5")
+#' ## TODO
 #' ##
 process_locus_bb = function(
     d_select_maj_base, 
@@ -211,4 +202,3 @@ process_locus_bb = function(
         parameters = model_par
     )
 }
-

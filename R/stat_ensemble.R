@@ -11,14 +11,24 @@ get_bm_pval = function(x, method = "none") {
 
 
 
-#' Fit binomial mixture model for one locus
-
-#' @param mtmutObj a mtmutObj object
-#' @param loc string given the locus name (e.g. "mt1000")
-#' @param maj_base string given the major base (e.g. "A"), if NULL auto detect the major base
-#' @return list of p-value and model parameters
+#' Fit tree models for one locus
+#' 
+#' His is a wrapper function for \code{\link{process_locus_bm}} and \code{\link{process_locus_bb}}. 
+#' It will fit binomial mixture model, beta binomial model and calculate the VMR and consistency of fwd rev strand.
+#'
+#' @param mtmutObj a mtmutObj object.
+#' @param loc string given the locus name (e.g. "mt1000").
+#' @param maj_base string given the dominant allele (e.g. "A"), if NULL auto detect the dominant allele.
+#' @param return_data logical whether to return the allele count data, if FALSE, the \code{data} in the return value will be NULL. The default is FALSE.
+#' @param ... other parameters passed to \code{\link{process_locus_bm}} and \code{\link{process_locus_bb}}.
+#' @return A list of three elements:
+#' \item{data}{data.frame of the allele count data.}
+#' \item{locus}{data.table of the VMR and consistency of fwd rev strand.}
+#' \item{model}{list of the model fitting results.}
+#' @example
+#' 
 #' @export
-process_locus_bmbb <- function(mtmutObj, loc, maj_base = NULL, ...) {
+process_locus_bmbb <- function(mtmutObj, loc, maj_base = NULL, return_data = FALSE, ...) {
     d_select_maj_base <- read_locus(mtmutObj, loc, maj_base)
 
     ## fit binomial mixture model
@@ -31,6 +41,10 @@ process_locus_bmbb <- function(mtmutObj, loc, maj_base = NULL, ...) {
 
     ## VMR and consistency of fwd rev strand
     res_summary <- process_locus_summary(d_select_maj_base)
+
+    if (!return_data) {
+        d_select_maj_base = NULL
+    }
 
     res <- list(
         data = d_select_maj_base,
@@ -45,9 +59,18 @@ process_locus_bmbb <- function(mtmutObj, loc, maj_base = NULL, ...) {
 
 #' Fit binomial mixture model for every candidate locus
 #'
-#' @param mtmutObj a mtmutObj object
-#' @param mc.cores number of cores to use
-#' @return NULL, the result is saved in the h5f file
+#' @param mtmutObj a mtmutObj object.
+#' @param mc.cores integer number of cores to use.
+#' @return NULL, the results are saved in the h5f file.
+#' @details
+#' This function will fit three models for every candidate locus:
+#' \itemize{
+#' \item{binomial mixture model}{}
+#' \item{beta binomial model}{}
+#' \item{binomial model}{}
+#' }
+#' The results are saved in the h5f file.
+#' @example
 #' @export
 run_model_fit <- function(mtmutObj, mc.cores = getOption("mc.cores", 2L)) {
     ## get the list of loci
@@ -64,8 +87,7 @@ run_model_fit <- function(mtmutObj, mc.cores = getOption("mc.cores", 2L)) {
     res_l = parallel::mclapply(loc_list, function(xi) {
         print(xi)
         # pb$tick()
-        res = process_locus_bmbb(mtmutObj, xi)
-        res$data = NULL
+        res = process_locus_bmbb(mtmutObj, xi, return_data = FALSE)
 
         list(
             bi_pval = res$model$binom_mix$bi_pval,

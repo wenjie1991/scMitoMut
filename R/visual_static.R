@@ -50,6 +50,36 @@ plot_locus <- function(
         # col = "red", pch = 19)
 }
 
+#' QC plot: 2D scatter plot for coverage ~ AF and UMAP
+#'
+#' @param mtmutObj an object of class "mtmutObj".
+#' @param loc a string of genome location, e.g. "mt1000".
+#' @param seuratObj an object of class "Seurat".
+#' @param model a string of model name, one of "bb", "bm", "bi".
+#' @param p_threshold a numeric value of p-value threshold.
+#' @param p_adj_method a string of p-value adjustment method.
+# plot_locus_profile = function(mtmutObj, loc, seuratObj, model = NULL, p_threshold = NULL, p_adj_method = NULL) {
+#     ## get parameters
+#     model = ifelse(is.null(model), mtmutObj$loc_filter$model, model)
+#     p_threshold = ifelse(is.null(p_threshold), mtmutObj$loc_filter$p_threshold, p_threshold)
+#     p_adj_method = ifelse(is.null(p_adj_method), mtmutObj$loc_filter$p_adj_method, p_adj_method)
+#     y = process_locus_bmbb(mtmutObj, loc, return_data = TRUE)
+#     if (model == "bb") {
+#         p_depth_af = plot_locus(y$data, p = p.adjust(y$model$beta_binom$bb_pval, p_adj_method), p_threshold = p_threshold)
+#         cell_select_bb = y$data$cell_barcode[p.adjust(y$model$beta_binom$bb_pval, p_adj_method) < p_threshold]
+#     } else if (model == "bm") {
+#         p_depth_af = plot_locus(y$data, p = p.adjust(y$model$binom_mix$bm_pval, p_adj_method), p_threshold = p_threshold)
+#         cell_select_bb = y$data$cell_barcode[p.adjust(y$model$binom_mix$bm_pval, p_adj_method) < p_threshold]
+#     } else if (model == "bi") {
+#         p_depth_af = plot_locus(y$data, p = p.adjust(y$model$binom_mix$bi_pval, p_adj_method), p_threshold = p_threshold)
+#         cell_select_bb = y$data$cell_barcode[p.adjust(y$model$binom_mix$bi_pval, p_adj_method) < p_threshold]
+#     } else {
+#         stop("model should be one of bb, bm, bi")
+#     }
+#     p_umap = Seurat::DimPlot(seuratObj, cells.highlight = cell_select_bb) + theme_bw() + NoLegend() 
+#     egg::ggarrange(p_depth_af, p_umap, ncol = 2)
+# }
+
 
 
 #######################################################################
@@ -57,9 +87,16 @@ plot_locus <- function(
 #######################################################################
 
 
-
 #' QC plot: 2D scatter plot for coverage ~ AF
 #'
+#' @param mtmutObj an object of class "mtmutObj".
+#' @param loc a string of genome location, e.g. "mt1000".
+#' @param model a string of model name, one of "bb", "bm", "bi".
+#' @param p_threshold a numeric value of p-value threshold.
+#' @param p_adj_method a string of p-value adjustment method.
+#' @examples
+#' ##
+#' @export
 plot_af_coverage = function(mtmutObj, loc, model = NULL, p_threshold = NULL, p_adj_method = NULL) {
 
     ## get parameters
@@ -71,54 +108,16 @@ plot_af_coverage = function(mtmutObj, loc, model = NULL, p_threshold = NULL, p_a
     plot_locus(d, p = get_pval(mtmutObj, loc, model, p_adj_method), p_threshold = p_threshold, loc = loc)
 }
 
-#' QC plot: 2D scatter plot for coverage ~ AF and UMAP
-#'
-#' @param mtmutObj an object of class "mtmutObj"
-#' @param loc a string of genome location, e.g. "mt1000"
-#' @param seuratObj an object of class "Seurat"
-#' @param model a string of model name, one of "bb", "bm", "bi"
-#' @param p_threshold a numeric value of p-value threshold
-#' @param p_adj_method a string of p-value adjustment method
-#' @export
-#' @examples
-#' ##
-plot_locus_profile = function(mtmutObj, loc, seuratObj, model = NULL, p_threshold = NULL, p_adj_method = NULL) {
-
-    ## get parameters
-    model = ifelse(is.null(model), mtmutObj$loc_filter$model, model)
-    p_threshold = ifelse(is.null(p_threshold), mtmutObj$loc_filter$p_threshold, p_threshold)
-    p_adj_method = ifelse(is.null(p_adj_method), mtmutObj$loc_filter$p_adj_method, p_adj_method)
-
-    y = process_locus_bmbb(mtmutObj, loc)
-
-    if (model == "bb") {
-        p_depth_af = plot_locus(y$d, p = p.adjust(y$model$beta_binom$bb_pval, p_adj_method), p_threshold = p_threshold)
-        cell_select_bb = y[[1]]$cell_barcode[p.adjust(y$model$beta_binom$bb_pval, p_adj_method) < p_threshold]
-    } else if (model == "bm") {
-        p_depth_af = plot_locus(y$d, p = p.adjust(y$model$binom_mix$bm_pval, p_adj_method), p_threshold = p_threshold)
-        cell_select_bb = y[[1]]$cell_barcode[p.adjust(y$model$binom_mix$bm_pval, p_adj_method) < p_threshold]
-    } else if (model == "bi") {
-        p_depth_af = plot_locus(y$d, p = p.adjust(y$model$binom_mix$bi_pval, p_adj_method), p_threshold = p_threshold)
-        cell_select_bb = y[[1]]$cell_barcode[p.adjust(y$model$binom_mix$bi_pval, p_adj_method) < p_threshold]
-    } else {
-        stop("model should be one of bb, bm, bi")
-    }
-
-    p_umap = Seurat::DimPlot(seuratObj, cells.highlight = cell_select_bb) + theme_bw() + NoLegend() 
-
-    egg::ggarrange(p_depth_af, p_umap, ncol = 2)
-}
-
 #' Heatmap plot
 #' 
-#' @param mtmutObj an object of class "mtmutObj"
-#' @param cell_ann a vector of cell annotation
-#' @param ann_colors a vector of cell annotation colors
-#' @param type a string of plot type, "p" for p-value, "af" for allele frequency
-#' @param ... other parameters for \code{\link{export_df}}
+#' @param mtmutObj an object of class "mtmutObj".
+#' @param type a string of plot type, "p" for p-value, "af" for allele frequency.
+#' @param cell_ann a data.frame of cell annotation, with rownames as cell barcodes.
+#' @param ann_colors a vector of colors for cell annotation with cell annotation as names.
+#' @param ... other parameters for \code{\link{export_df}} and \code{\link{pheatmap::pheatmap}}.
 #'
 #' @export
-plot_heatmap = function(mtmutObj, cell_ann = NULL, ann_colors = NULL, type = "p", ...) {
+plot_heatmap = function(mtmutObj, type = 'p', cell_ann = NULL, ann_colors = NULL, ...) {
 
     if (type == "p") {
         ## heatmap of p value
@@ -146,7 +145,7 @@ plot_heatmap = function(mtmutObj, cell_ann = NULL, ann_colors = NULL, type = "p"
         p = pheatmap::pheatmap(m_b, color = colorRampPalette((RColorBrewer::brewer.pal(n = 7, name = "GnBu")))(100),
             show_colnames = F, annotation_col = cell_ann, 
             annotation_colors = ann_colors, cluster_cols = F, cluster_rows = F, legend = F,
-            na_col = "white"
+            na_col = "white", ...
             )
 
     } else {

@@ -6,7 +6,10 @@
 read_mgatk = function(mgatk_output_dir, prefix) {
     mgatk_output_dir = paste0(mgatk_output_dir)
     base_reads_files = dir(mgatk_output_dir, str_glue("{prefix}.[ACTG].txt.gz"), full=T)
+
+    print("Allele count files are:")
     print(base_reads_files)
+
     names(base_reads_files) = str_split_fixed(base_reads_files %>% basename, "\\.", 4)[, 2]
     ref_file = dir(mgatk_output_dir, "ref", full=T)
     coverage_file = dir(mgatk_output_dir, "coverage", full=T)
@@ -15,6 +18,7 @@ read_mgatk = function(mgatk_output_dir, prefix) {
     base_depth_d = lapply(seq_along(base_reads_files), function(i) {
         f = base_reads_files[i]
         d = fread(f)
+        ## TODO: remove fwd_depth and rev_depth
         names(d) = c("loc", "cell_barcode", "fwd_depth", "rev_depth")
         d$alt = names(base_reads_files)[i]
         d
@@ -98,7 +102,33 @@ read_locus = function(mtmutObj, loc, maj_base = NULL) {
 
 #' Load allele count table
 #' 
+#' This function loads the allele count table and save it to a H5 file.
 #' 
+#' @param file a string of the allele count table file directory.
+#' @param h5_file a string of the output h5 file directory.
+#' @param ... other parameters passed to \code{\link[data.table::fread]{fread}}.
+#' @return a string of the output h5 file directory.
+#' @details The allele count table should be a data.table with the following columns:
+#' \describe{
+#'  \item{loc}{a string of the locus}
+#'  \item{cell_barcode}{a string of the cell barcode.}
+#'  \item{fwd_depth}{a integer of the forward depth.}
+#'  \item{rev_depth}{a integer of the reverse depth.}
+#'  \item{alt}{a string of the alternative base.}
+#'  \item{ref}{a string of the reference base.}
+#'  \item{coverage}{a integer of the coverage.}
+#' }
+#' 
+#' @examples 
+#' ## Use the example data
+#' f = system.file("extdata", "mini_dataset.tsv.gz", package = "scMitoMut")
+#' ## Load the data with parse_table function
+#' h5_f = parse_table(f, sep = "\t", h5_file = "./mut.h5")
+#' h5_f
+#' ## open the h5 file and create a mtmutObj object
+#' x <- open_h5_file(f_h5)
+#' str(x)
+#'  
 #' @export
 parse_table = function(file, h5_file = 'mut.h5', ...) {
     merge_d = fread(file, ...)
@@ -146,10 +176,10 @@ parse_table = function(file, h5_file = 'mut.h5', ...) {
 
 #' Load mtGATK output save to H5 file
 #'
-#' @param dir a string of the mtGATK output \code{final} fold
-#' @param prefix a string of the prefix of the mtGATK output directory
-#' @param h5_file a string of the output h5 file directory
-#' @return a string of the output h5 file directory
+#' @param dir a string of the mtGATK output \code{final} fold.
+#' @param prefix a string of the prefix of the mtGATK output directory.
+#' @param h5_file a string of the output h5 file directory.
+#' @return a string of the output h5 file directory.
 #'
 #' @examples
 #' 
@@ -210,7 +240,33 @@ parse_mgatk = function(dir, prefix, h5_file = "mut.h5") {
 #'
 #' @param h5_file a string of the h5 file directory
 #' @return a mtmutObj object
-#'
+#' @details The mtmutObj object is a S3 class for handling mitochondrial mutation data.
+#' It contains the following elements:
+#' \describe{
+#'  \item{h5f}{H5 file handle.}
+#'  \item{mut_table}{allele count table H5 group handle.}
+#'  \item{loc_list}{list of available loci.}
+#'  \item{loc_selected}{selected loci.}
+#'  \item{cell_list}{list of available cell ids.}
+#'  \item{cell_selected}{selected cell ids.}
+#'  \item{loc_pass}{loci passed the filter.}
+#'  \item{loc_filter}{filter parameters.}
+#'  \item{loc_filter$min_cell}{a integer of the minimum number of cells with mutation, the default is 1.}
+#'  \item{loc_filter$model}{a string of the model for mutation calling, it can be "bb", "bm" or "bi", the default is "bb".}
+#'  \item{loc_filter$p_threshold}{a numeric of the p-value threshold, the default is 0.05.}
+#'  \item{loc_filter$p_adj_method}{a string of the method for p-value adjustment, refer to \code{\link[p.adjust]{p.adjust}}, the default is "fdr".}
+#'  \item{loc_filter$af_threshold}{a numeric of the majority allele frequency threshold, the major allele af < af_threshold will be considered as mutation. The default is 1, which means no filtering.}
+#'  }
+#' 
+#' @examples
+#' ## Use the example data
+#' f = system.file("extdata", "mini_dataset.tsv.gz", package = "scMitoMut")
+#' ## Load the data with parse_table function
+#' h5_f = parse_table(f, sep = "\t", h5_file = "./mut.h5")
+#' h5_f
+#' ## open the h5 file and create a mtmutObj object
+#' x <- open_h5_file(f_h5)
+#' str(x)
 #' @export
 open_h5_file <- function(h5_file) {
     h5f <- H5Fopen(h5_file)
@@ -239,34 +295,30 @@ open_h5_file <- function(h5_file) {
     mtmutObj
 }
 
-## TODO: make the H5 file S3 class
-
-#' Mitochondiral mutation object
-#'
-#' A S3 class for handling mitochondrial mutation data
-#'
-#' @format A list with the following elements:
-#' \describe{
-#'   \item{h5f}{H5 file handle}
-#'   \item{mut_table}{allele count table H5 group handle}
-#'   \item{loc_list}{list of available loci}
-#'   \item{loc_selected}{selected loci}
-#'   \item{cell_list}{list of available cell ids}
-#'   \item{cell_selected}{selected cell ids}
-#' }
-
 #' @export
 #' @rdname open_h5_file 
 format.mtmutObj <- function(x, ...) {
-    cat("h5 file: mtmutObj\n")
-    ## TODO: print more information
+    cat("h5 file: ")
+    cat(x$h5f)
+    cat("\nAvailable loci:")
+    cat(length(x$loc_list))
+    cat("\nSelected loci:")
+    cat(length(x$loc_selected))
+    cat("\nAvailable cells:")
+    cat(length(x$cell_list))
+    cat("\nSelected cells:")
+    cat(length(x$cell_selected))
+    cat("\nLoci passed the filter:")
+    cat(length(x$loc_pass))
+    cat("\nfilter parameters:")
+    cat(x$loc_filter)
+    cat("\n")
 }
 
 #' @export
 #' @rdname open_h5_file 
 print.mtmutObj <- function(x, ...) {
-    cat("h5 file: mtmutObj\n")
-    ## TODO: print more information
+    format(x, ...)
 }
 
 #' @export

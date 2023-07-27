@@ -1,0 +1,7 @@
+R/.vscode/settings.json
+src/.DS_Store
+src/em_bm.o
+src/mle_bb.o
+.gitignore
+src/RcppExports.o
+src/scMitoMut.so
