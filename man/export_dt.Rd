@@ -34,14 +34,17 @@ data.frame, data.table or matrix
 The helper functions to export the mutation results for further analysis. The output format can be data.frame, data.table or matrix for p value, allele frequency or binary mutation status.
 }
 \examples{
-h5_f = system.file("extdata", "mut.h5", package = "scMitoMut")
+## Use the example data
+f = system.file("extdata", "mini_dataset.tsv.gz", package = "scMitoMut")
+## Load the data with parse_table function
+f_h5 = parse_table(f, sep = "\t", h5_file = "./mut.h5")
 ## open the h5 file and create a mtmutObj object
 x <- open_h5_file(f_h5)
 run_model_fit(x)
 x = filter_loc(x , min_cell = 5, model = "bb", p_threshold = 0.05, p_adj_method = "fdr", af_threshold = 0.05)
 x
 export_df(x)
-export_p(x)
+export_pval(x)
 export_af(x)
 export_binary(x)
 }

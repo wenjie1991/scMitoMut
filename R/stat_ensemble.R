@@ -23,8 +23,11 @@ get_bm_pval = function(x, method = "none") {
 #' \item{locus}{data.table of the VMR and consistency of fwd rev strand.}
 #' \item{model}{list of the model fitting results.}
 #' @examples
-#' h5_f = system.file("extdata", "mut.h5", package = "scMitoMut")
-#' x = open_h5_file(h5_f)
+#' ## Use the example data
+#' f = system.file("extdata", "mini_dataset.tsv.gz", package = "scMitoMut")
+#' ## Load the data with parse_table function
+#' f_h5 = parse_table(f, sep = "\t", h5_file = "./mut.h5")
+#' x = open_h5_file(f_h5)
 #' res = process_locus_bmbb(x, loc = "chrM.1000")
 #' res
 #' 
@@ -71,14 +74,16 @@ process_locus_bmbb <- function(mtmutObj, loc, dom_allele = NULL, return_data = F
 #' }
 #' The results are saved in the h5f file.
 #' @examples
-#' # load the data
-#' h5_f = system.file("extdata", "mut.h5", package = "scMitoMut")
+#' ## Use the example data
+#' f = system.file("extdata", "mini_dataset.tsv.gz", package = "scMitoMut")
+#' ## Load the data with parse_table function
+#' f_h5 = parse_table(f, sep = "\t", h5_file = "./mut.h5")
 #' # open the h5f file
-#' x = open_h5_file(h5_f)
+#' x = open_h5_file(f_h5)
 #' # run the model fit
 #' run_model_fit(x)
 #' x
-#' Filter the loci based on the model fit results
+#' # Filter the loci based on the model fit results
 #' x = filter_loc(x , min_cell = 5, model = "bb", p_threshold = 0.05, p_adj_method = "fdr", af_threshold = 0.05)
 #' x
 #' @export
@@ -128,11 +133,11 @@ run_model_fit <- function(mtmutObj, mc.cores = getOption("mc.cores", 2L)) {
         h5write(res_i, h5g, loc_i)
     })
 
-    if ("model_par_bb" %in% h5ls(x$h5f, recursive = F)$name) {
+    if ("model_par_bb" %in% h5ls(mtmutObj$h5f, recursive = F)$name) {
         h5delete(mtmutObj$h5f, "model_par_bb")
     }
 
-    if ("model_par_bm" %in% h5ls(x$h5f, recursive = F)$name) {
+    if ("model_par_bm" %in% h5ls(mtmutObj$h5f, recursive = F)$name) {
         h5delete(mtmutObj$h5f, "model_par_bm")
     }
 

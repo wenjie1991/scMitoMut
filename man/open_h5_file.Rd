@@ -28,6 +28,7 @@ This function opens the H5 file and create a mtmutObj object.
 The mtmutObj object is a S3 class for handling mitochondrial mutation data.
 It contains the following elements:
 \describe{
+\item{file}{a string of the h5 file directory.}
 \item{h5f}{H5 file handle.}
 \item{mut_table}{allele count table H5 group handle.}
 \item{loc_list}{list of available loci.}
@@ -47,9 +48,9 @@ It contains the following elements:
 ## Use the example data
 f = system.file("extdata", "mini_dataset.tsv.gz", package = "scMitoMut")
 ## Load the data with parse_table function
-h5_f = parse_table(f, sep = "\t", h5_file = "./mut.h5")
-h5_f
+f_h5 = parse_table(f, sep = "\t", h5_file = "./mut.h5")
+f_h5
 ## open the h5 file and create a mtmutObj object
 x <- open_h5_file(f_h5)
-str(x)
+x
 }

@@ -19,7 +19,10 @@ get_pval(mtmutObj, loc, model = "bb", method = "fdr")
 This function returns the p-value list for a single locus.
 }
 \examples{
-h5_f = system.file("extdata", "mut.h5", package = "scMitoMut")
+## Use the example data
+f = system.file("extdata", "mini_dataset.tsv.gz", package = "scMitoMut")
+## Load the data with parse_table function
+f_h5 = parse_table(f, sep = "\t", h5_file = "./mut.h5")
 ## open the h5 file and create a mtmutObj object
 x <- open_h5_file(f_h5)
 run_model_fit(x)

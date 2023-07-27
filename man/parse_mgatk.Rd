@@ -20,10 +20,16 @@ a string of the output h5 file directory.
 This function loads the mtGATK output and save it to a H5 file.
 }
 \examples{
+## Use the allele count table data
+f = system.file("extdata", "mini_dataset.tsv.gz", package = "scMitoMut")
+## Load the data with parse_table function
+f_h5 = parse_table(f, sep = "\t", h5_file = "./mut.h5")
+f_h5
+## Use the mgatk output 
 f = system.file("extdata", "mini_mgatk_out", package = "scMitoMut")
-h5_f = load_mgatk(paste0(f, "/out/"), prefix = "sample", h5_file = "./mut.h5")
-h5_f
-x <- open_h5_file(h5_f)
+f_h5 = parse_mgatk(paste0(f, "/final/"), prefix = "sample", h5_file = "./mut.h5")
+f_h5
+x <- open_h5_file(f_h5)
 x  
 ##
 }

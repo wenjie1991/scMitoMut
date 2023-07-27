@@ -27,8 +27,11 @@ A list of three elements:
 This function fit binomial mixture model, beta binomial model and calculate the VMR and consistency of fwd rev strand for one locus.
 }
 \examples{
-h5_f = system.file("extdata", "mut.h5", package = "scMitoMut")
-x = open_h5_file(h5_f)
+## Use the example data
+f = system.file("extdata", "mini_dataset.tsv.gz", package = "scMitoMut")
+## Load the data with parse_table function
+f_h5 = parse_table(f, sep = "\t", h5_file = "./mut.h5")
+x = open_h5_file(f_h5)
 res = process_locus_bmbb(x, loc = "chrM.1000")
 res
 

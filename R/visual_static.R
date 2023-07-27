@@ -94,14 +94,16 @@ plot_locus <- function(
 #' @param p_threshold a numeric value of p-value threshold.
 #' @param p_adj_method a string of p-value adjustment method.
 #' @examples
-#' # load the data
-#' h5_f = system.file("extdata", "mut.h5", package = "scMitoMut")
+#' ## Use the example data
+#' f = system.file("extdata", "mini_dataset.tsv.gz", package = "scMitoMut")
+#' ## Load the data with parse_table function
+#' f_h5 = parse_table(f, sep = "\t", h5_file = "./mut.h5")
 #' # open the h5f file
-#' x = open_h5_file(h5_f)
+#' x = open_h5_file(f_h5)
 #' # run the model fit
 #' run_model_fit(x)
 #' x
-#' Filter the loci based on the model fit results
+#' # Filter the loci based on the model fit results
 #' x = filter_loc(x, min_cell = 5, model = "bb", p_threshold = 0.05, p_adj_method = "fdr", af_threshold = 0.05)
 #' # plot the locus profile for chrM.200
 #' plot_af_coverage(x, "chrM.200")
@@ -126,13 +128,16 @@ plot_af_coverage = function(mtmutObj, loc, model = NULL, p_threshold = NULL, p_a
 #' @param ... other parameters for \code{\link{export_df}} and \code{\link{pheatmap::pheatmap}}.
 #' @examples
 #' # load the data
-#' h5_f = system.file("extdata", "mut.h5", package = "scMitoMut")
+#' ## Use the example data
+#' f = system.file("extdata", "mini_dataset.tsv.gz", package = "scMitoMut")
+#' ## Load the data with parse_table function
+#' f_h5 = parse_table(f, sep = "\t", h5_file = "./mut.h5")
 #' # open the h5f file
-#' x = open_h5_file(h5_f)
+#' x = open_h5_file(f_h5)
 #' # run the model fit
 #' run_model_fit(x)
 #' x
-#' Filter the loci based on the model fit results
+#' # Filter the loci based on the model fit results
 #' x = filter_loc(x, min_cell = 5, model = "bb", p_threshold = 0.05, p_adj_method = "fdr", af_threshold = 0.05)
 #'
 #' # set the cell annotation

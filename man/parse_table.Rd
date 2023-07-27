@@ -34,11 +34,11 @@ The allele count table should be a data.table with the following columns:
 \examples{
 ## Use the example data
 f = system.file("extdata", "mini_dataset.tsv.gz", package = "scMitoMut")
+f_h5 = parse_table(f, sep = "\t", h5_file = "./mut.h5")
 ## Load the data with parse_table function
-h5_f = parse_table(f, sep = "\t", h5_file = "./mut.h5")
-h5_f
+f_h5 = parse_table(f, sep = "\t", h5_file = "./mut.h5")
+f_h5
 ## open the h5 file and create a mtmutObj object
 x <- open_h5_file(f_h5)
-str(x)
- 
+x
 }

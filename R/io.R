@@ -17,21 +17,21 @@ read_mgatk = function(mgatk_output_dir, prefix) {
     ## base-wise sequence depth
     base_depth_d = lapply(seq_along(base_reads_files), function(i) {
         f = base_reads_files[i]
-        d = fread(f)
+        d = data.table::fread(f)
         names(d) = c("loc", "cell_barcode", "fwd_depth", "rev_depth")
         d$alt = names(base_reads_files)[i]
         d
     }) %>% rbindlist
 
     ## reference sequence
-    ref_d = fread(ref_file)
+    ref_d = data.table::fread(ref_file)
     names(ref_d) = c("loc", "ref")
 
     ## base-wise coverage
     if (length(coverage_file) == 0) {
         coverage_d = base_depth_d[, .(coverage = sum(fwd_depth + rev_depth, na.rm=T)), by = c("loc", "cell_barcode")]
     } else {
-        coverage_d = fread(coverage_file)
+        coverage_d = data.table::fread(coverage_file)
         names(coverage_d) = c("loc", "cell_barcode", "coverage")
     }
 
@@ -121,16 +121,16 @@ read_locus = function(mtmutObj, loc, maj_base = NULL) {
 #' @examples 
 #' ## Use the example data
 #' f = system.file("extdata", "mini_dataset.tsv.gz", package = "scMitoMut")
+#' f_h5 = parse_table(f, sep = "\t", h5_file = "./mut.h5")
 #' ## Load the data with parse_table function
-#' h5_f = parse_table(f, sep = "\t", h5_file = "./mut.h5")
-#' h5_f
+#' f_h5 = parse_table(f, sep = "\t", h5_file = "./mut.h5")
+#' f_h5
 #' ## open the h5 file and create a mtmutObj object
 #' x <- open_h5_file(f_h5)
-#' str(x)
-#'  
+#' x
 #' @export
 parse_table = function(file, h5_file = 'mut.h5', ...) {
-    merge_d = fread(file, ...)
+    merge_d = data.table::fread(file, ...)
 
     ##############################
     ## save to h5 file
@@ -183,10 +183,16 @@ parse_table = function(file, h5_file = 'mut.h5', ...) {
 #' @return a string of the output h5 file directory.
 #'
 #' @examples
+#' ## Use the allele count table data
+#' f = system.file("extdata", "mini_dataset.tsv.gz", package = "scMitoMut")
+#' ## Load the data with parse_table function
+#' f_h5 = parse_table(f, sep = "\t", h5_file = "./mut.h5")
+#' f_h5
+#' ## Use the mgatk output 
 #' f = system.file("extdata", "mini_mgatk_out", package = "scMitoMut")
-#' h5_f = load_mgatk(paste0(f, "/out/"), prefix = "sample", h5_file = "./mut.h5")
-#' h5_f
-#' x <- open_h5_file(h5_f)
+#' f_h5 = parse_mgatk(paste0(f, "/final/"), prefix = "sample", h5_file = "./mut.h5")
+#' f_h5
+#' x <- open_h5_file(f_h5)
 #' x  
 #' ##
 #' @export
@@ -245,6 +251,7 @@ parse_mgatk = function(dir, prefix, h5_file = "mut.h5") {
 #' @details The mtmutObj object is a S3 class for handling mitochondrial mutation data.
 #' It contains the following elements:
 #' \describe{
+#'  \item{file}{a string of the h5 file directory.}
 #'  \item{h5f}{H5 file handle.}
 #'  \item{mut_table}{allele count table H5 group handle.}
 #'  \item{loc_list}{list of available loci.}
@@ -264,11 +271,11 @@ parse_mgatk = function(dir, prefix, h5_file = "mut.h5") {
 #' ## Use the example data
 #' f = system.file("extdata", "mini_dataset.tsv.gz", package = "scMitoMut")
 #' ## Load the data with parse_table function
-#' h5_f = parse_table(f, sep = "\t", h5_file = "./mut.h5")
-#' h5_f
+#' f_h5 = parse_table(f, sep = "\t", h5_file = "./mut.h5")
+#' f_h5
 #' ## open the h5 file and create a mtmutObj object
 #' x <- open_h5_file(f_h5)
-#' str(x)
+#' x
 #' @export
 open_h5_file <- function(h5_file) {
     h5f <- H5Fopen(h5_file)
@@ -278,7 +285,9 @@ open_h5_file <- function(h5_file) {
     cell_list <- h5f$cell_list
     cell_selected <- h5f$cell_selected
     ## we call the output as mtmutObj
-    mtmutObj = list(h5f = h5f, 
+    mtmutObj = list(
+        file = h5_file,
+        h5f = h5f, 
         mut_table = h5g,
         loc_list = loc_list, 
         loc_selected = loc_selected,
@@ -300,8 +309,10 @@ open_h5_file <- function(h5_file) {
 #' @export
 #' @rdname open_h5_file 
 format.mtmutObj <- function(x, ...) {
+    cat("mtmutObj object\n")
+    cat("-------------------------------------------------\n")
     cat("h5 file: ")
-    cat(x$h5f)
+    cat(x$file)
     cat("\nAvailable loci:")
     cat(length(x$loc_list))
     cat("\nSelected loci:")
@@ -313,8 +324,12 @@ format.mtmutObj <- function(x, ...) {
     cat("\nLoci passed the filter:")
     cat(length(x$loc_pass))
     cat("\nfilter parameters:")
-    cat(x$loc_filter)
     cat("\n")
+    cat("\t", "min_cell: ", x$loc_filter$min_cell, "\n", sep = "")
+    cat("\t", "model: ", x$loc_filter$model, "\n", sep = "")
+    cat("\t", "p_threshold: ", x$loc_filter$p_threshold, "\n", sep = "")
+    cat("\t", "p_adj_method: ", x$loc_filter$p_adj_method, "\n", sep = "")
+    cat("\t", "af_threshold: ", x$loc_filter$af_threshold, "\n", sep = "")
 }
 
 #' @export
@@ -337,7 +352,11 @@ is.mtmutObj <- function(x) inherits(x, "mtmutObj")
 #' @param loc_list a list of loci
 #' @return a mtmutObj object with cell and loci selected
 #' @examples
-#' h5_f = system.file("extdata", "mut.h5", package = "scMitoMut")
+#' ## Use the example data
+#' f = system.file("extdata", "mini_dataset.tsv.gz", package = "scMitoMut")
+#' ## Load the data with parse_table function
+#' f_h5 = parse_table(f, sep = "\t", h5_file = "./mut.h5")
+#
 #' ## open the h5 file and create a mtmutObj object
 #' x <- open_h5_file(f_h5)
 #' x
@@ -375,7 +394,11 @@ subset_loc <- function(mtmutObj, loc_list) {
 #' @param model a string of the model for mutation calling, it can be "bb", "bm" or "bi" which stands for beta binomial, binomial mixture and binomial model respectively.
 #' @param method a string of the method for p-value adjustment, refer to \code{\link[p.adjust]{p.adjust}}.
 #' @examples
-#' h5_f = system.file("extdata", "mut.h5", package = "scMitoMut")
+#' ## Use the example data
+#' f = system.file("extdata", "mini_dataset.tsv.gz", package = "scMitoMut")
+#' ## Load the data with parse_table function
+#' f_h5 = parse_table(f, sep = "\t", h5_file = "./mut.h5")
+#
 #' ## open the h5 file and create a mtmutObj object
 #' x <- open_h5_file(f_h5)
 #' run_model_fit(x)
@@ -411,7 +434,11 @@ get_pval = function(mtmutObj, loc, model = "bb", method = "fdr") {
 #'   The default is 1, which means no filtering.
 #' @return a mtmutObj object with loc_pass and loc_filter updated.
 #' @examples
-#' h5_f = system.file("extdata", "mut.h5", package = "scMitoMut")
+#' ## Use the example data
+#' f = system.file("extdata", "mini_dataset.tsv.gz", package = "scMitoMut")
+#' ## Load the data with parse_table function
+#' f_h5 = parse_table(f, sep = "\t", h5_file = "./mut.h5")
+#'
 #' ## open the h5 file and create a mtmutObj object
 #' x <- open_h5_file(f_h5)
 #' run_model_fit(x)
@@ -456,14 +483,17 @@ filter_loc = function(
 #' @return data.frame, data.table or matrix
 #' @export
 #' @examples
-#' h5_f = system.file("extdata", "mut.h5", package = "scMitoMut")
+#' ## Use the example data
+#' f = system.file("extdata", "mini_dataset.tsv.gz", package = "scMitoMut")
+#' ## Load the data with parse_table function
+#' f_h5 = parse_table(f, sep = "\t", h5_file = "./mut.h5")
 #' ## open the h5 file and create a mtmutObj object
 #' x <- open_h5_file(f_h5)
 #' run_model_fit(x)
 #' x = filter_loc(x , min_cell = 5, model = "bb", p_threshold = 0.05, p_adj_method = "fdr", af_threshold = 0.05)
 #' x
 #' export_df(x)
-#' export_p(x)
+#' export_pval(x)
 #' export_af(x)
 #' export_binary(x)
 export_dt = function(mtmutObj, percent_interp = 1, n_interp = 3, all_cell = F) {
@@ -494,12 +524,12 @@ export_dt = function(mtmutObj, percent_interp = 1, n_interp = 3, all_cell = F) {
 
 
     ## matrix pval
-    d = dcast(res, loc ~ cell_barcode, value.var = "pval")
+    d = data.table::dcast(res, loc ~ cell_barcode, value.var = "pval")
     m_p = data.matrix(d[, -1])
     rownames(m_p) =  d[[1]]
 
     ## matrix af
-    d = dcast(res, loc ~ cell_barcode, value.var = "af")
+    d = data.table::dcast(res, loc ~ cell_barcode, value.var = "af")
     m_a = data.matrix(d[, -1])
     rownames(m_a) =  d[[1]]
 
@@ -538,7 +568,7 @@ export_dt = function(mtmutObj, percent_interp = 1, n_interp = 3, all_cell = F) {
         }
 
     }
-    m_b_dt = m_b %>% data.table(keep.rownames=T) %>% melt(id.var = 'rn', value.name = "mut_status") 
+    m_b_dt = m_b %>% data.table(keep.rownames=T) %>% data.table::melt(id.var = 'rn', value.name = "mut_status") 
     res = merge(res, m_b_dt, by.x = c('loc', "cell_barcode"), by.y = c('rn', "variable"), all = T)
 
     if (!all_cell) {
@@ -560,12 +590,12 @@ export_df = function(mtmutObj, ...) {
 #' @rdname export_dt
 export_pval = function(mtmutObj, memoSort = F, ...) {
     res = export_dt(mtmutObj, ...)
-    d = dcast(res, loc ~ cell_barcode, value.var = "pval")
+    d = data.table::dcast(res, loc ~ cell_barcode, value.var = "pval")
     m = data.matrix(d[, -1])
     rownames(m) =  d[[1]]
 
     if (memoSort) {
-        d = dcast(res, loc ~ cell_barcode, value.var = "mut_status")
+        d = data.table::dcast(res, loc ~ cell_barcode, value.var = "mut_status")
         m_b = data.matrix(d[, -1])
         rownames(m_b) =  d[[1]]
 
@@ -579,7 +609,7 @@ export_pval = function(mtmutObj, memoSort = F, ...) {
 #' @rdname export_dt
 export_binary = function(mtmutObj, memoSort = F, ...) {
     res = export_dt(mtmutObj, ...)
-    d = dcast(res, loc ~ cell_barcode, value.var = "mut_status")
+    d = data.table::dcast(res, loc ~ cell_barcode, value.var = "mut_status")
     m_b = data.matrix(d[, -1])
     rownames(m_b) =  d[[1]]
 
@@ -594,12 +624,12 @@ export_binary = function(mtmutObj, memoSort = F, ...) {
 #' @rdname export_dt
 export_af = function(mtmutObj, memoSort = F, ...) {
     res = export_dt(mtmutObj, ...)
-    d = dcast(res, loc ~ cell_barcode, value.var = "af")
+    d = data.table::dcast(res, loc ~ cell_barcode, value.var = "af")
     m = data.matrix(d[, -1])
     rownames(m) =  d[[1]]
 
     if (memoSort) {
-        d = dcast(res, loc ~ cell_barcode, value.var = "mut_status")
+        d = data.table::dcast(res, loc ~ cell_barcode, value.var = "mut_status")
         m_b = data.matrix(d[, -1])
         rownames(m_b) =  d[[1]]
 

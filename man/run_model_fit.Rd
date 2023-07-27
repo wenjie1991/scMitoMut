@@ -27,14 +27,16 @@ This function will fit three models for every candidate locus:
 The results are saved in the h5f file.
 }
 \examples{
-# load the data
-h5_f = system.file("extdata", "mut.h5", package = "scMitoMut")
+## Use the example data
+f = system.file("extdata", "mini_dataset.tsv.gz", package = "scMitoMut")
+## Load the data with parse_table function
+f_h5 = parse_table(f, sep = "\t", h5_file = "./mut.h5")
 # open the h5f file
-x = open_h5_file(h5_f)
+x = open_h5_file(f_h5)
 # run the model fit
 run_model_fit(x)
 x
-Filter the loci based on the model fit results
+# Filter the loci based on the model fit results
 x = filter_loc(x , min_cell = 5, model = "bb", p_threshold = 0.05, p_adj_method = "fdr", af_threshold = 0.05)
 x
 }

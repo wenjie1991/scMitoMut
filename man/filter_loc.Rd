@@ -36,7 +36,11 @@ a mtmutObj object with loc_pass and loc_filter updated.
 This function filters the mutations based on the mutation calling model and parameters. The loci passed the filter will be saved in the h5 file, together with the filter parameters.
 }
 \examples{
-h5_f = system.file("extdata", "mut.h5", package = "scMitoMut")
+## Use the example data
+f = system.file("extdata", "mini_dataset.tsv.gz", package = "scMitoMut")
+## Load the data with parse_table function
+f_h5 = parse_table(f, sep = "\t", h5_file = "./mut.h5")
+
 ## open the h5 file and create a mtmutObj object
 x <- open_h5_file(f_h5)
 run_model_fit(x)
