@@ -15,7 +15,7 @@ plot_af_coverage(
 \arguments{
 \item{mtmutObj}{an object of class "mtmutObj".}
 
-\item{loc}{a string of genome location, e.g. "chrM.1000".}
+\item{loc}{a string of genome location, e.g. "chrM.200".}
 
 \item{model}{a string of model name, one of "bb", "bm", "bi".}
 
@@ -29,5 +29,15 @@ plot_af_coverage(
 QC plot: 2D scatter plot for coverage ~ AF and UMAP
 }
 \examples{
-##
+# load the data
+h5_f = system.file("extdata", "mut.h5", package = "scMitoMut")
+# open the h5f file
+x = open_h5_file(h5_f)
+# run the model fit
+run_model_fit(x)
+x
+Filter the loci based on the model fit results
+x = filter_loc(x, min_cell = 5, model = "bb", p_threshold = 0.05, p_adj_method = "fdr", af_threshold = 0.05)
+# plot the locus profile for chrM.200
+plot_af_coverage(x, "chrM.200")
 }

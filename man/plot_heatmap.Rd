@@ -11,12 +11,39 @@ plot_heatmap(mtmutObj, type = "p", cell_ann = NULL, ann_colors = NULL, ...)
 
 \item{type}{a string of plot type, "p" for p-value, "af" for allele frequency.}
 
-\item{cell_ann}{a data.frame of cell annotation, with rownames as cell barcodes.}
+\item{cell_ann}{a data.frame of cell annotation, with rownames as cell barcodes, please refer to \code{\link{pheatmap::pheatmap}} for details.}
 
-\item{ann_colors}{a vector of colors for cell annotation with cell annotation as names.}
+\item{ann_colors}{a list of colors for cell annotation with cell annotation as names, please refer to \code{\link{pheatmap::pheatmap}} for details.}
 
 \item{...}{other parameters for \code{\link{export_df}} and \code{\link{pheatmap::pheatmap}}.}
 }
 \description{
 Heatmap plot
+}
+\examples{
+# load the data
+h5_f = system.file("extdata", "mut.h5", package = "scMitoMut")
+# open the h5f file
+x = open_h5_file(h5_f)
+# run the model fit
+run_model_fit(x)
+x
+Filter the loci based on the model fit results
+x = filter_loc(x, min_cell = 5, model = "bb", p_threshold = 0.05, p_adj_method = "fdr", af_threshold = 0.05)
+
+# set the cell annotation
+f = system.file("extdata", "mini_dataset_cell_ann.csv", package = "scMitoMut")
+cell_ann = read.csv(f, row.names=1)
+# Prepare the color for cell annotation
+colors = c(
+    "Cancer Epi" = "#f28482",
+    Blood = "#f6bd60")
+ann_colors = list("SeuratCellTypes" = colors)
+
+# plot the heatmap for p-value
+plot_heatmap(x, type = "p", cell_ann = cell_ann, ann_colors = ann_colors)
+# plot the heatmap for allele frequency
+plot_heatmap(x, type = "af", cell_ann = cell_ann, ann_colors = ann_colors)
+# plot the heatmap for binary mutation
+plot_heatmap(x, type = "binary", cell_ann = cell_ann, ann_colors = ann_colors)
 }

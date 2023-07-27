@@ -26,3 +26,15 @@ This function will fit three models for every candidate locus:
 }
 The results are saved in the h5f file.
 }
+\examples{
+# load the data
+h5_f = system.file("extdata", "mut.h5", package = "scMitoMut")
+# open the h5f file
+x = open_h5_file(h5_f)
+# run the model fit
+run_model_fit(x)
+x
+Filter the loci based on the model fit results
+x = filter_loc(x , min_cell = 5, model = "bb", p_threshold = 0.05, p_adj_method = "fdr", af_threshold = 0.05)
+x
+}

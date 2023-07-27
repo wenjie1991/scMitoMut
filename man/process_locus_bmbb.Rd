@@ -4,14 +4,14 @@
 \alias{process_locus_bmbb}
 \title{Fit tree models for one locus}
 \usage{
-process_locus_bmbb(mtmutObj, loc, maj_base = NULL, return_data = FALSE, ...)
+process_locus_bmbb(mtmutObj, loc, dom_allele = NULL, return_data = FALSE, ...)
 }
 \arguments{
 \item{mtmutObj}{a mtmutObj object.}
 
 \item{loc}{string given the locus name (e.g. "chrM1000").}
 
-\item{maj_base}{string given the dominant allele (e.g. "A"), if NULL auto detect the dominant allele.}
+\item{dom_allele}{string given the dominant allele (e.g. "A"), if NULL auto detect the dominant allele.}
 
 \item{return_data}{logical whether to return the allele count data, if FALSE, the \code{data} in the return value will be NULL. The default is FALSE.}
 
@@ -25,4 +25,11 @@ A list of three elements:
 }
 \description{
 This function fit binomial mixture model, beta binomial model and calculate the VMR and consistency of fwd rev strand for one locus.
+}
+\examples{
+h5_f = system.file("extdata", "mut.h5", package = "scMitoMut")
+x = open_h5_file(h5_f)
+res = process_locus_bmbb(x, loc = "chrM.1000")
+res
+
 }
