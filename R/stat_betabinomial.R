@@ -108,14 +108,14 @@ calc_pval_cpp = function(y, N, fit) {
     pbetabinom(y, N, a, b)
 }
 
-#' Fit beta-binomial distribution for one locus
-#'
-#' @param d_select_maj_base data.frame of one locus
-#' @param selected_maj_cell vector of selected cell
-#' @param max_theta maximum theta
-#' @param max_iter maximum iteration
-#' @param tol tolerance of log likelihood to stop iteration
-#' @return list of p-value and model parameters
+# Fit beta-binomial distribution for one locus
+#
+# @param d_select_maj_base data.frame of one locus
+# @param selected_maj_cell vector of selected cell
+# @param max_theta maximum theta
+# @param max_iter maximum iteration
+# @param tol tolerance of log likelihood to stop iteration
+# @return list of p-value and model parameters
 process_locus_bb = function(
     d_select_maj_base, 
     selected_maj_cell = NULL, 

@@ -63,6 +63,7 @@ process_locus_bmbb <- function(mtmutObj, loc, dom_allele = NULL, return_data = F
             binom_mix = res_bm
         )
     )
+    res
 }
 
 

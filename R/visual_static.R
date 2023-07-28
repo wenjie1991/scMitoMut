@@ -56,27 +56,28 @@ plot_locus <- function(
 # @param model a string of model name, one of "bb", "bm", "bi".
 # @param p_threshold a numeric value of p-value threshold.
 # @param p_adj_method a string of p-value adjustment method.
-# plot_locus_profile = function(mtmutObj, loc, seuratObj, model = NULL, p_threshold = NULL, p_adj_method = NULL) {
-#     ## get parameters
-#     model = ifelse(is.null(model), mtmutObj$loc_filter$model, model)
-#     p_threshold = ifelse(is.null(p_threshold), mtmutObj$loc_filter$p_threshold, p_threshold)
-#     p_adj_method = ifelse(is.null(p_adj_method), mtmutObj$loc_filter$p_adj_method, p_adj_method)
-#     y = process_locus_bmbb(mtmutObj, loc, return_data = TRUE)
-#     if (model == "bb") {
-#         p_depth_af = plot_locus(y$data, p = p.adjust(y$model$beta_binom$bb_pval, p_adj_method), p_threshold = p_threshold)
-#         cell_select_bb = y$data$cell_barcode[p.adjust(y$model$beta_binom$bb_pval, p_adj_method) < p_threshold]
-#     } else if (model == "bm") {
-#         p_depth_af = plot_locus(y$data, p = p.adjust(y$model$binom_mix$bm_pval, p_adj_method), p_threshold = p_threshold)
-#         cell_select_bb = y$data$cell_barcode[p.adjust(y$model$binom_mix$bm_pval, p_adj_method) < p_threshold]
-#     } else if (model == "bi") {
-#         p_depth_af = plot_locus(y$data, p = p.adjust(y$model$binom_mix$bi_pval, p_adj_method), p_threshold = p_threshold)
-#         cell_select_bb = y$data$cell_barcode[p.adjust(y$model$binom_mix$bi_pval, p_adj_method) < p_threshold]
-#     } else {
-#         stop("model should be one of bb, bm, bi")
-#     }
-#     p_umap = Seurat::DimPlot(seuratObj, cells.highlight = cell_select_bb) + theme_bw() + NoLegend() 
-#     egg::ggarrange(p_depth_af, p_umap, ncol = 2)
-# }
+plot_locus_profile = function(mtmutObj, loc, seuratObj, model = NULL, p_threshold = NULL, p_adj_method = NULL) {
+    ## get parameters
+    model = ifelse(is.null(model), mtmutObj$loc_filter$model, model)
+    p_threshold = ifelse(is.null(p_threshold), mtmutObj$loc_filter$p_threshold, p_threshold)
+    p_adj_method = ifelse(is.null(p_adj_method), mtmutObj$loc_filter$p_adj_method, p_adj_method)
+
+    y = process_locus_bmbb(mtmutObj, loc, return_data = TRUE)
+    if (model == "bb") {
+        p_depth_af = plot_locus(y$data, p = p.adjust(y$model$beta_binom$bb_pval, p_adj_method), p_threshold = p_threshold)
+        cell_select_bb = y$data$cell_barcode[p.adjust(y$model$beta_binom$bb_pval, p_adj_method) < p_threshold]
+    } else if (model == "bm") {
+        p_depth_af = plot_locus(y$data, p = p.adjust(y$model$binom_mix$bm_pval, p_adj_method), p_threshold = p_threshold)
+        cell_select_bb = y$data$cell_barcode[p.adjust(y$model$binom_mix$bm_pval, p_adj_method) < p_threshold]
+    } else if (model == "bi") {
+        p_depth_af = plot_locus(y$data, p = p.adjust(y$model$binom_mix$bi_pval, p_adj_method), p_threshold = p_threshold)
+        cell_select_bb = y$data$cell_barcode[p.adjust(y$model$binom_mix$bi_pval, p_adj_method) < p_threshold]
+    } else {
+        stop("model should be one of bb, bm, bi")
+    }
+    p_umap = Seurat::DimPlot(seuratObj, cells.highlight = cell_select_bb) + theme_bw() + NoLegend() 
+    egg::ggarrange(p_depth_af, p_umap, ncol = 2)
+}
 
 
 

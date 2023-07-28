@@ -23,7 +23,6 @@ library(scMitoMut)
 library(data.table)
 library(ggplot2)
 library(rhdf5)
-library(magrittr)
 ```
 
 # Overview
@@ -131,7 +130,7 @@ After subsetting the cells, the `cell_selected` slot will be updated.
 Only the selected cells will be used in the following p-value calculation. 
 
 ```{r}
-x$cell_selected %>% head()
+head(x$cell_selected)
 ```
 
 Similarly, we can select loci by using the `subset_locus` function. It saves time when we only focus on a few loci.
