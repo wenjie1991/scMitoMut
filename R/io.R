@@ -121,10 +121,15 @@ read_locus = function(mtmutObj, loc, maj_base = NULL) {
 #' @examples 
 #' ## Use the example data
 #' f = system.file("extdata", "mini_dataset.tsv.gz", package = "scMitoMut")
-#' f_h5 = parse_table(f, sep = "\t", h5_file = "./mut.h5")
+#'
+#' ## Create a temporary h5 file
+#' ## In real case, we keep the h5 in project folder for future use
+#' f_h5_tmp = tempfile(fileext = ".h5")
+#'
 #' ## Load the data with parse_table function
-#' f_h5 = parse_table(f, sep = "\t", h5_file = "./mut.h5")
+#' f_h5 = parse_table(f, sep = "\t", h5_file = f_h5_tmp)
 #' f_h5
+#'
 #' ## open the h5 file and create a mtmutObj object
 #' x <- open_h5_file(f_h5)
 #' x
@@ -185,8 +190,11 @@ parse_table = function(file, h5_file = 'mut.h5', ...) {
 #' @examples
 #' ## Use the allele count table data
 #' f = system.file("extdata", "mini_dataset.tsv.gz", package = "scMitoMut")
+#' ## Create a temporary h5 file
+#' ## In real case, we keep the h5 in project folder for future use
+#' f_h5_tmp = tempfile(fileext = ".h5")
 #' ## Load the data with parse_table function
-#' f_h5 = parse_table(f, sep = "\t", h5_file = "./mut.h5")
+#' f_h5 = parse_table(f, sep = "\t", h5_file = f_h5_tmp)
 #' f_h5
 #' ## Use the mgatk output 
 #' f = system.file("extdata", "mini_mgatk_out", package = "scMitoMut")
@@ -269,8 +277,11 @@ parse_mgatk = function(dir, prefix, h5_file = "mut.h5") {
 #' @examples
 #' ## Use the example data
 #' f = system.file("extdata", "mini_dataset.tsv.gz", package = "scMitoMut")
+#' ## Create a temporary h5 file
+#' ## In real case, we keep the h5 in project folder for future use
+#' f_h5_tmp = tempfile(fileext = ".h5")
 #' ## Load the data with parse_table function
-#' f_h5 = parse_table(f, sep = "\t", h5_file = "./mut.h5")
+#' f_h5 = parse_table(f, sep = "\t", h5_file = f_h5_tmp)
 #' f_h5
 #' ## open the h5 file and create a mtmutObj object
 #' x <- open_h5_file(f_h5)
@@ -356,9 +367,14 @@ is.mtmutObj <- function(x) inherits(x, "mtmutObj")
 #' @examples
 #' ## Use the example data
 #' f = system.file("extdata", "mini_dataset.tsv.gz", package = "scMitoMut")
+#'
+#' ## Create a temporary h5 file
+#' ## In real case, we keep the h5 in project folder for future use
+#' f_h5_tmp = tempfile(fileext = ".h5")
+#'
 #' ## Load the data with parse_table function
-#' f_h5 = parse_table(f, sep = "\t", h5_file = "./mut.h5")
-#
+#' f_h5 = parse_table(f, sep = "\t", h5_file = f_h5_tmp)
+#'
 #' ## open the h5 file and create a mtmutObj object
 #' x <- open_h5_file(f_h5)
 #' x
@@ -398,8 +414,12 @@ subset_loc <- function(mtmutObj, loc_list) {
 #' @examples
 #' ## Use the example data
 #' f = system.file("extdata", "mini_dataset.tsv.gz", package = "scMitoMut")
+#' ## Create a temporary h5 file
+#' ## In real case, we keep the h5 in project folder for future use
+#' f_h5_tmp = tempfile(fileext = ".h5")
+#'
 #' ## Load the data with parse_table function
-#' f_h5 = parse_table(f, sep = "\t", h5_file = "./mut.h5")
+#' f_h5 = parse_table(f, sep = "\t", h5_file = f_h5_tmp)
 #
 #' ## open the h5 file and create a mtmutObj object
 #' x <- open_h5_file(f_h5)
@@ -435,8 +455,13 @@ get_pval = function(mtmutObj, loc, model = "bb", method = "fdr") {
 #' @examples
 #' ## Use the example data
 #' f = system.file("extdata", "mini_dataset.tsv.gz", package = "scMitoMut")
+#'
+#' ## Create a temporary h5 file
+#' ## In real case, we keep the h5 in project folder for future use
+#' f_h5_tmp = tempfile(fileext = ".h5")
+#'
 #' ## Load the data with parse_table function
-#' f_h5 = parse_table(f, sep = "\t", h5_file = "./mut.h5")
+#' f_h5 = parse_table(f, sep = "\t", h5_file = f_h5_tmp)
 #'
 #' ## open the h5 file and create a mtmutObj object
 #' x <- open_h5_file(f_h5)
@@ -483,8 +508,14 @@ filter_loc = function(mtmutObj, min_cell = NULL, model = NULL, p_threshold = NUL
 #' @examples
 #' ## Use the example data
 #' f = system.file("extdata", "mini_dataset.tsv.gz", package = "scMitoMut")
+#'
+#' ## Create a temporary h5 file
+#' ## In real case, we keep the h5 in project folder for future use
+#' f_h5_tmp = tempfile(fileext = ".h5")
+#'
 #' ## Load the data with parse_table function
-#' f_h5 = parse_table(f, sep = "\t", h5_file = "./mut.h5")
+#' f_h5 = parse_table(f, sep = "\t", h5_file = f_h5_tmp)
+#
 #' ## open the h5 file and create a mtmutObj object
 #' x <- open_h5_file(f_h5)
 #' run_model_fit(x)

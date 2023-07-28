@@ -22,8 +22,11 @@ This function loads the mtGATK output and save it to a H5 file.
 \examples{
 ## Use the allele count table data
 f = system.file("extdata", "mini_dataset.tsv.gz", package = "scMitoMut")
+## Create a temporary h5 file
+## In real case, we keep the h5 in project folder for future use
+f_h5_tmp = tempfile(fileext = ".h5")
 ## Load the data with parse_table function
-f_h5 = parse_table(f, sep = "\t", h5_file = "./mut.h5")
+f_h5 = parse_table(f, sep = "\t", h5_file = f_h5_tmp)
 f_h5
 ## Use the mgatk output 
 f = system.file("extdata", "mini_mgatk_out", package = "scMitoMut")

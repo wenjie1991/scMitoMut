@@ -25,8 +25,14 @@ Functions to subset cell and loci for fitting models and plotting.
 \examples{
 ## Use the example data
 f = system.file("extdata", "mini_dataset.tsv.gz", package = "scMitoMut")
+
+## Create a temporary h5 file
+## In real case, we keep the h5 in project folder for future use
+f_h5_tmp = tempfile(fileext = ".h5")
+
 ## Load the data with parse_table function
-f_h5 = parse_table(f, sep = "\t", h5_file = "./mut.h5")
+f_h5 = parse_table(f, sep = "\t", h5_file = f_h5_tmp)
+
 ## open the h5 file and create a mtmutObj object
 x <- open_h5_file(f_h5)
 x
