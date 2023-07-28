@@ -11,7 +11,7 @@ parse_table(file, h5_file = "mut.h5", ...)
 
 \item{h5_file}{a string of the output h5 file directory.}
 
-\item{...}{other parameters passed to \code{\link[data.table::fread]{fread}}.}
+\item{...}{other parameters passed to \code{\link[data.table]{fread}}.}
 }
 \value{
 a string of the output h5 file directory.

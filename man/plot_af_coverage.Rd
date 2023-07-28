@@ -2,7 +2,7 @@
 % Please edit documentation in R/visual_static.R
 \name{plot_af_coverage}
 \alias{plot_af_coverage}
-\title{QC plot: 2D scatter plot for coverage ~ AF and UMAP}
+\title{QC plot: 2D scatter plot for coverage ~ AF}
 \usage{
 plot_af_coverage(
   mtmutObj,
@@ -22,11 +22,9 @@ plot_af_coverage(
 \item{p_threshold}{a numeric value of p-value threshold.}
 
 \item{p_adj_method}{a string of p-value adjustment method.}
-
-\item{seuratObj}{an object of class "Seurat".}
 }
 \description{
-QC plot: 2D scatter plot for coverage ~ AF and UMAP
+QC plot: 2D scatter plot for coverage ~ AF
 }
 \examples{
 ## Use the example data
@@ -39,7 +37,7 @@ x = open_h5_file(f_h5)
 run_model_fit(x)
 x
 # Filter the loci based on the model fit results
-x = filter_loc(x, min_cell = 5, model = "bb", p_threshold = 0.05, p_adj_method = "fdr", af_threshold = 0.05)
+x = filter_loc(x, min_cell = 5, model = "bb", p_threshold = 0.05, p_adj_method = "fdr")
 # plot the locus profile for chrM.200
 plot_af_coverage(x, "chrM.200")
 }

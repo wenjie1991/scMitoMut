@@ -17,7 +17,7 @@ get_bm_pval = function(x, method = "none") {
 #' @param loc string given the locus name (e.g. "chrM1000").
 #' @param dom_allele string given the dominant allele (e.g. "A"), if NULL auto detect the dominant allele.
 #' @param return_data logical whether to return the allele count data, if FALSE, the \code{data} in the return value will be NULL. The default is FALSE.
-#' @param ... other parameters passed to \code{\link{process_locus_bm}} and \code{\link{process_locus_bb}}.
+#' @param ... other parameters control the model fitting.
 #' @return A list of three elements:
 #' \item{data}{data.frame of the allele count data.}
 #' \item{locus}{data.table of the VMR and consistency of fwd rev strand.}
@@ -84,7 +84,7 @@ process_locus_bmbb <- function(mtmutObj, loc, dom_allele = NULL, return_data = F
 #' run_model_fit(x)
 #' x
 #' # Filter the loci based on the model fit results
-#' x = filter_loc(x , min_cell = 5, model = "bb", p_threshold = 0.05, p_adj_method = "fdr", af_threshold = 0.05)
+#' x = filter_loc(x , min_cell = 5, model = "bb", p_threshold = 0.05, p_adj_method = "fdr")
 #' x
 #' @export
 run_model_fit <- function(mtmutObj, mc.cores = getOption("mc.cores", 2L)) {

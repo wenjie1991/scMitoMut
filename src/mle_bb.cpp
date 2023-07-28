@@ -222,7 +222,7 @@ double LL_beta(
 }
 
 
-//' mle beta-binomial distribution
+// mle beta-binomial distribution
 // [[Rcpp::export]]
 Rcpp::List mle_bb(
     Rcpp::IntegerVector x, Rcpp::IntegerVector n,

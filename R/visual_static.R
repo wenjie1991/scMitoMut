@@ -24,8 +24,7 @@
 #     points(N[i], (y / N)[i], col = 'red', pch = 19)
 # }
 
-#' Draw depth ~ AF scatter plot
-#'
+# Draw depth ~ AF scatter plot
 plot_locus <- function(
     d_select_maj_base, p, p_threshold = 0.05, loc = NA, maj_base= NA) {
 
@@ -50,13 +49,13 @@ plot_locus <- function(
         # col = "red", pch = 19)
 }
 
-#' QC plot: 2D scatter plot for coverage ~ AF and UMAP
-#'
-#' @param loc a string of genome location, e.g. "chrM.200".
-#' @param seuratObj an object of class "Seurat".
-#' @param model a string of model name, one of "bb", "bm", "bi".
-#' @param p_threshold a numeric value of p-value threshold.
-#' @param p_adj_method a string of p-value adjustment method.
+# QC plot: 2D scatter plot for coverage ~ AF and UMAP
+#
+# @param loc a string of genome location, e.g. "chrM.200".
+# @param seuratObj an object of class "Seurat".
+# @param model a string of model name, one of "bb", "bm", "bi".
+# @param p_threshold a numeric value of p-value threshold.
+# @param p_adj_method a string of p-value adjustment method.
 # plot_locus_profile = function(mtmutObj, loc, seuratObj, model = NULL, p_threshold = NULL, p_adj_method = NULL) {
 #     ## get parameters
 #     model = ifelse(is.null(model), mtmutObj$loc_filter$model, model)
@@ -104,7 +103,7 @@ plot_locus <- function(
 #' run_model_fit(x)
 #' x
 #' # Filter the loci based on the model fit results
-#' x = filter_loc(x, min_cell = 5, model = "bb", p_threshold = 0.05, p_adj_method = "fdr", af_threshold = 0.05)
+#' x = filter_loc(x, min_cell = 5, model = "bb", p_threshold = 0.05, p_adj_method = "fdr")
 #' # plot the locus profile for chrM.200
 #' plot_af_coverage(x, "chrM.200")
 #' @export
@@ -123,9 +122,9 @@ plot_af_coverage = function(mtmutObj, loc, model = NULL, p_threshold = NULL, p_a
 #' 
 #' @param mtmutObj an object of class "mtmutObj".
 #' @param type a string of plot type, "p" for p-value, "af" for allele frequency.
-#' @param cell_ann a data.frame of cell annotation, with rownames as cell barcodes, please refer to \code{\link{pheatmap::pheatmap}} for details.
-#' @param ann_colors a list of colors for cell annotation with cell annotation as names, please refer to \code{\link{pheatmap::pheatmap}} for details.
-#' @param ... other parameters for \code{\link{export_df}} and \code{\link{pheatmap::pheatmap}}.
+#' @param cell_ann a data.frame of cell annotation, with rownames as cell barcodes, please refer to \code{\link[pheatmap]{pheatmap}} for details.
+#' @param ann_colors a list of colors for cell annotation with cell annotation as names, please refer to \code{\link[pheatmap]{pheatmap}} for details.
+#' @param ... other parameters for \code{\link[scMitoMut]{export_df}} and \code{\link[pheatmap]{pheatmap}}.
 #' @examples
 #' # load the data
 #' ## Use the example data
@@ -138,7 +137,7 @@ plot_af_coverage = function(mtmutObj, loc, model = NULL, p_threshold = NULL, p_a
 #' run_model_fit(x)
 #' x
 #' # Filter the loci based on the model fit results
-#' x = filter_loc(x, min_cell = 5, model = "bb", p_threshold = 0.05, p_adj_method = "fdr", af_threshold = 0.05)
+#' x = filter_loc(x, min_cell = 5, model = "bb", p_threshold = 0.05, p_adj_method = "fdr")
 #'
 #' # set the cell annotation
 #' f = system.file("extdata", "mini_dataset_cell_ann.csv", package = "scMitoMut")
@@ -150,11 +149,11 @@ plot_af_coverage = function(mtmutObj, loc, model = NULL, p_threshold = NULL, p_a
 #' ann_colors = list("SeuratCellTypes" = colors)
 #' 
 #' # plot the heatmap for p-value
-#' plot_heatmap(x, type = "p", cell_ann = cell_ann, ann_colors = ann_colors)
+#' plot_heatmap(x, type = "p", cell_ann = cell_ann, ann_colors = ann_colors, percent_interp = 0.2)
 #' # plot the heatmap for allele frequency
-#' plot_heatmap(x, type = "af", cell_ann = cell_ann, ann_colors = ann_colors)
+#' plot_heatmap(x, type = "af", cell_ann = cell_ann, ann_colors = ann_colors, percent_interp = 0.2)
 #' # plot the heatmap for binary mutation
-#' plot_heatmap(x, type = "binary", cell_ann = cell_ann, ann_colors = ann_colors)
+#' plot_heatmap(x, type = "binary", cell_ann = cell_ann, ann_colors = ann_colors, percent_interp = 0.2)
 #' @export
 plot_heatmap = function(mtmutObj, type = 'p', cell_ann = NULL, ann_colors = NULL, ...) {
 

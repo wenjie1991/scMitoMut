@@ -50,7 +50,7 @@ Rcpp::NumericVector estimate_posterior_p(
     return pval;
 }
 
-//' Estimate the parameters of a binomial mixture model using the EM algorithm
+// Estimate the parameters of a binomial mixture model using the EM algorithm
 // [[Rcpp::export]]
 Rcpp::List em_bm(
     const Rcpp::NumericVector x,

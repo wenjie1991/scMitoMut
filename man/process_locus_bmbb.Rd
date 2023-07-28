@@ -15,7 +15,7 @@ process_locus_bmbb(mtmutObj, loc, dom_allele = NULL, return_data = FALSE, ...)
 
 \item{return_data}{logical whether to return the allele count data, if FALSE, the \code{data} in the return value will be NULL. The default is FALSE.}
 
-\item{...}{other parameters passed to \code{\link{process_locus_bm}} and \code{\link{process_locus_bb}}.}
+\item{...}{other parameters control the model fitting.}
 }
 \value{
 A list of three elements:

@@ -11,27 +11,28 @@ License: MIT + file LICENSE
 Encoding: UTF-8
 Depends: R (>= 4.1.0)
 Imports: 
-    Rcpp,
     data.table,
+    Rcpp,
     magrittr,
     plyr,
     stringr,
     utils,
     stats,
     methods,
-    Rcpp,
     ggplot2,
     pheatmap,
     zlibbioc,
-    Seurat,
-    egg,
     RColorBrewer,
     rhdf5,
     readr,
-    parallel
+    parallel,
+    grDevices
+LinkingTo:
+    Rcpp,
+    RcppArmadillo
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
-Suggests: testthat (>= 3.0.0), BiocStyle, knitr, rmarkdown
+Suggests: testthat (>= 3.0.0), BiocStyle, knitr, rmarkdown, magick, VGAM
 Config/testthat/edition: 3
 VignetteBuilder: knitr
 NeedsCompilation: yes

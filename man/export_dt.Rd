@@ -26,9 +26,13 @@ export_af(mtmutObj, memoSort = F, ...)
 \item{n_interp}{A integer value, the minimum number of overlapped cells with mutation for triggering interpolation.}
 
 \item{all_cell}{A boolean to indicate whether to include all cells or only cells with mutation.}
+
+\item{...}{Other parameters passed to \code{\link{export_dt}} or \code{\link{export_df}}.}
+
+\item{memoSort}{A boolean to indicate whether to sort the loci by mutation frequency.}
 }
 \value{
-data.frame, data.table or matrix
+data.frame, data.table or matrix or p
 }
 \description{
 The helper functions to export the mutation results for further analysis. The output format can be data.frame, data.table or matrix for p value, allele frequency or binary mutation status.
@@ -41,7 +45,7 @@ f_h5 = parse_table(f, sep = "\t", h5_file = "./mut.h5")
 ## open the h5 file and create a mtmutObj object
 x <- open_h5_file(f_h5)
 run_model_fit(x)
-x = filter_loc(x , min_cell = 5, model = "bb", p_threshold = 0.05, p_adj_method = "fdr", af_threshold = 0.05)
+x = filter_loc(x , min_cell = 5, model = "bb", p_threshold = 0.05, p_adj_method = "fdr")
 x
 export_df(x)
 export_pval(x)

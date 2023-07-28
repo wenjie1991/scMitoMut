@@ -9,8 +9,7 @@ filter_loc(
   min_cell = NULL,
   model = NULL,
   p_threshold = NULL,
-  p_adj_method = NULL,
-  af_threshold = NULL
+  p_adj_method = NULL
 )
 }
 \arguments{
@@ -23,11 +22,7 @@ filter_loc(
 \item{p_threshold}{a numeric of the p-value threshold.}
 
 \item{p_adj_method}{a string of the method for p-value adjustment, .
-refer to \code{\link[p.adjust]{p.adjust}}.}
-
-\item{af_threshold}{a numeric of the majority allele frequency threshold,
-the major allele af < af_threshold will be considered as mutation.
-The default is 1, which means no filtering.}
+refer to \code{\link[stats]{p.adjust}}.}
 }
 \value{
 a mtmutObj object with loc_pass and loc_filter updated.
@@ -44,6 +39,6 @@ f_h5 = parse_table(f, sep = "\t", h5_file = "./mut.h5")
 ## open the h5 file and create a mtmutObj object
 x <- open_h5_file(f_h5)
 run_model_fit(x)
-x = filter_loc(x , min_cell = 5, model = "bb", p_threshold = 0.05, p_adj_method = "fdr", af_threshold = 0.05)
+x = filter_loc(x , min_cell = 5, model = "bb", p_threshold = 0.05, p_adj_method = "fdr")
 x
 }

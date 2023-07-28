@@ -13,7 +13,7 @@ get_pval(mtmutObj, loc, model = "bb", method = "fdr")
 
 \item{model}{a string of the model for mutation calling, it can be "bb", "bm" or "bi" which stands for beta binomial, binomial mixture and binomial model respectively.}
 
-\item{method}{a string of the method for p-value adjustment, refer to \code{\link[p.adjust]{p.adjust}}.}
+\item{method}{a string of the method for p-value adjustment, refer to \code{\link[stats]{p.adjust}}.}
 }
 \description{
 This function returns the p-value list for a single locus.

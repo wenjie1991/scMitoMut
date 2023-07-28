@@ -37,6 +37,6 @@ x = open_h5_file(f_h5)
 run_model_fit(x)
 x
 # Filter the loci based on the model fit results
-x = filter_loc(x , min_cell = 5, model = "bb", p_threshold = 0.05, p_adj_method = "fdr", af_threshold = 0.05)
+x = filter_loc(x , min_cell = 5, model = "bb", p_threshold = 0.05, p_adj_method = "fdr")
 x
 }

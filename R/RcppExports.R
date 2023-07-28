@@ -9,7 +9,6 @@ binomial_log_likelihood <- function(x, n, p) {
     .Call('_scMitoMut_binomial_log_likelihood', PACKAGE = 'scMitoMut', x, n, p)
 }
 
-#' Estimate the parameters of a binomial mixture model using the EM algorithm
 em_bm <- function(x, n, p1 = 0.5, p2 = 0.6, theta1 = 0.7, max_iter = 1000L, tol = 0.001) {
     .Call('_scMitoMut_em_bm', PACKAGE = 'scMitoMut', x, n, p1, p2, theta1, max_iter, tol)
 }
@@ -26,7 +25,6 @@ pbetabinom <- function(x, n, a, b) {
     .Call('_scMitoMut_pbetabinom', PACKAGE = 'scMitoMut', x, n, a, b)
 }
 
-#' mle beta-binomial distribution
 mle_bb <- function(x, n, max_iter = 100L, tol = 1e-3) {
     .Call('_scMitoMut_mle_bb', PACKAGE = 'scMitoMut', x, n, max_iter, tol)
 }

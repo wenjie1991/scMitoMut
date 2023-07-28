@@ -2,18 +2,9 @@
 % Please edit documentation in R/io.R
 \name{open_h5_file}
 \alias{open_h5_file}
-\alias{format.mtmutObj}
-\alias{print.mtmutObj}
-\alias{is.mtmutObj}
 \title{Open H5 file}
 \usage{
 open_h5_file(h5_file)
-
-\method{format}{mtmutObj}(x, ...)
-
-\method{print}{mtmutObj}(x, ...)
-
-is.mtmutObj(x)
 }
 \arguments{
 \item{h5_file}{a string of the h5 file directory}
@@ -40,8 +31,7 @@ It contains the following elements:
 \item{loc_filter$min_cell}{a integer of the minimum number of cells with mutation, the default is 1.}
 \item{loc_filter$model}{a string of the model for mutation calling, it can be "bb", "bm" or "bi", the default is "bb".}
 \item{loc_filter$p_threshold}{a numeric of the p-value threshold, the default is 0.05.}
-\item{loc_filter$p_adj_method}{a string of the method for p-value adjustment, refer to \code{\link[p.adjust]{p.adjust}}, the default is "fdr".}
-\item{loc_filter$af_threshold}{a numeric of the majority allele frequency threshold, the major allele af < af_threshold will be considered as mutation. The default is 1, which means no filtering.}
+\item{loc_filter$p_adj_method}{a string of the method for p-value adjustment, refer to \code{\link[stats]{p.adjust}}, the default is "fdr".}
 }
 }
 \examples{

@@ -1,7 +1,13 @@
-R/.vscode/settings.json
-src/.DS_Store
+R/.vscode
+.DS_Store
 src/em_bm.o
 src/mle_bb.o
-.gitignore
 src/RcppExports.o
 src/scMitoMut.so
+/doc/
+/Meta/
+.git
+compile_commands.json
+mut.h5
+/vignettes/*.R
+/vignettes/*.html

@@ -5,14 +5,14 @@
 ## Parse the output of mtGATK into a data.table.
 read_mgatk = function(mgatk_output_dir, prefix) {
     mgatk_output_dir = paste0(mgatk_output_dir)
-    base_reads_files = dir(mgatk_output_dir, str_glue("{prefix}.[ACTG].txt.gz"), full=T)
+    base_reads_files = dir(mgatk_output_dir, str_glue("{prefix}.[ACTG].txt.gz"), full.names=TRUE)
 
     print("Allele count files are:")
     print(base_reads_files)
 
     names(base_reads_files) = str_split_fixed(base_reads_files %>% basename, "\\.", 4)[, 2]
-    ref_file = dir(mgatk_output_dir, "ref", full=T)
-    coverage_file = dir(mgatk_output_dir, "coverage", full=T)
+    ref_file = dir(mgatk_output_dir, "ref", full.names=TRUE)
+    coverage_file = dir(mgatk_output_dir, "coverage", full.names=TRUE)
 
     ## base-wise sequence depth
     base_depth_d = lapply(seq_along(base_reads_files), function(i) {
@@ -105,7 +105,7 @@ read_locus = function(mtmutObj, loc, maj_base = NULL) {
 #' 
 #' @param file a string of the allele count table file directory.
 #' @param h5_file a string of the output h5 file directory.
-#' @param ... other parameters passed to \code{\link[data.table::fread]{fread}}.
+#' @param ... other parameters passed to \code{\link[data.table]{fread}}.
 #' @return a string of the output h5 file directory.
 #' @details The allele count table should be a data.table with the following columns:
 #' \describe{
@@ -200,7 +200,7 @@ parse_mgatk = function(dir, prefix, h5_file = "mut.h5") {
 
     ##############################
     ## Read in data
-    merge_d = read_mgatk(mgatk_output_ = dir, prefix = prefix)
+    merge_d = read_mgatk(mgatk_output_dir = dir, prefix = prefix)
 
     ##############################
     ## save to h5 file
@@ -263,8 +263,7 @@ parse_mgatk = function(dir, prefix, h5_file = "mut.h5") {
 #'  \item{loc_filter$min_cell}{a integer of the minimum number of cells with mutation, the default is 1.}
 #'  \item{loc_filter$model}{a string of the model for mutation calling, it can be "bb", "bm" or "bi", the default is "bb".}
 #'  \item{loc_filter$p_threshold}{a numeric of the p-value threshold, the default is 0.05.}
-#'  \item{loc_filter$p_adj_method}{a string of the method for p-value adjustment, refer to \code{\link[p.adjust]{p.adjust}}, the default is "fdr".}
-#'  \item{loc_filter$af_threshold}{a numeric of the majority allele frequency threshold, the major allele af < af_threshold will be considered as mutation. The default is 1, which means no filtering.}
+#'  \item{loc_filter$p_adj_method}{a string of the method for p-value adjustment, refer to \code{\link[stats]{p.adjust}}, the default is "fdr".}
 #'  }
 #' 
 #' @examples
@@ -298,8 +297,7 @@ open_h5_file <- function(h5_file) {
             min_cell = 1,
             model = "bb",
             p_threshold = 0.05,
-            p_adj_method = 'fdr',
-            af_threshold = 1 
+            p_adj_method = 'fdr'
         )
     )
     class(mtmutObj) = "mtmutObj"
@@ -307,39 +305,43 @@ open_h5_file <- function(h5_file) {
 }
 
 #' @export
-#' @rdname open_h5_file 
+#' @rdname print.mtmutObj 
 format.mtmutObj <- function(x, ...) {
     cat("mtmutObj object\n")
     cat("-------------------------------------------------\n")
     cat("h5 file: ")
     cat(x$file)
-    cat("\nAvailable loci:")
+    cat("\nAvailable loci: ")
     cat(length(x$loc_list))
-    cat("\nSelected loci:")
+    cat("\nSelected loci: ")
     cat(length(x$loc_selected))
-    cat("\nAvailable cells:")
+    cat("\nAvailable cells: ")
     cat(length(x$cell_list))
-    cat("\nSelected cells:")
+    cat("\nSelected cells: ")
     cat(length(x$cell_selected))
-    cat("\nLoci passed the filter:")
+    cat("\nLoci passed the filter: ")
     cat(length(x$loc_pass))
-    cat("\nfilter parameters:")
+    cat("\nfilter parameters: ")
     cat("\n")
     cat("\t", "min_cell: ", x$loc_filter$min_cell, "\n", sep = "")
     cat("\t", "model: ", x$loc_filter$model, "\n", sep = "")
     cat("\t", "p_threshold: ", x$loc_filter$p_threshold, "\n", sep = "")
     cat("\t", "p_adj_method: ", x$loc_filter$p_adj_method, "\n", sep = "")
-    cat("\t", "af_threshold: ", x$loc_filter$af_threshold, "\n", sep = "")
 }
 
+#' Print mtmutObj object
+#'
+#' The print method for mtmutObj object.
+#'
+#' @param x a mtmutObj object.
+#' @param ... other parameters passed to \code{\link[base]{format}} or \code{\link[base]{print}}.
 #' @export
-#' @rdname open_h5_file 
 print.mtmutObj <- function(x, ...) {
     format(x, ...)
 }
 
 #' @export
-#' @rdname open_h5_file 
+#' @rdname print.mtmutObj
 is.mtmutObj <- function(x) inherits(x, "mtmutObj")
 
 
@@ -392,7 +394,7 @@ subset_loc <- function(mtmutObj, loc_list) {
 #' @param mtmutObj a mtmutObj object.
 #' @param loc a string of the locus.
 #' @param model a string of the model for mutation calling, it can be "bb", "bm" or "bi" which stands for beta binomial, binomial mixture and binomial model respectively.
-#' @param method a string of the method for p-value adjustment, refer to \code{\link[p.adjust]{p.adjust}}.
+#' @param method a string of the method for p-value adjustment, refer to \code{\link[stats]{p.adjust}}.
 #' @examples
 #' ## Use the example data
 #' f = system.file("extdata", "mini_dataset.tsv.gz", package = "scMitoMut")
@@ -428,10 +430,7 @@ get_pval = function(mtmutObj, loc, model = "bb", method = "fdr") {
 #' @param model a string of the model for mutation calling, it can be "bb", "bm" or "bi" which stands for beta binomial, binomial mixture and binomial model respectively.
 #' @param p_threshold a numeric of the p-value threshold.
 #' @param p_adj_method a string of the method for p-value adjustment, .
-#'   refer to \code{\link[p.adjust]{p.adjust}}.
-#' @param af_threshold a numeric of the majority allele frequency threshold,
-#'   the major allele af < af_threshold will be considered as mutation.
-#'   The default is 1, which means no filtering.
+#'   refer to \code{\link[stats]{p.adjust}}.
 #' @return a mtmutObj object with loc_pass and loc_filter updated.
 #' @examples
 #' ## Use the example data
@@ -442,22 +441,20 @@ get_pval = function(mtmutObj, loc, model = "bb", method = "fdr") {
 #' ## open the h5 file and create a mtmutObj object
 #' x <- open_h5_file(f_h5)
 #' run_model_fit(x)
-#' x = filter_loc(x , min_cell = 5, model = "bb", p_threshold = 0.05, p_adj_method = "fdr", af_threshold = 0.05)
+#' x = filter_loc(x , min_cell = 5, model = "bb", p_threshold = 0.05, p_adj_method = "fdr")
 #' x
 #' @export
-filter_loc = function(
-    mtmutObj, min_cell = NULL, model = NULL, p_threshold = NULL, p_adj_method = NULL, af_threshold = NULL) {
+filter_loc = function(mtmutObj, min_cell = NULL, model = NULL, p_threshold = NULL, p_adj_method = NULL) {
     ## Get the parameters from mtmutObj if they are NULL
     min_cell = ifelse(is.null(min_cell), mtmutObj$loc_filter$min_cell, min_cell)
     model = ifelse(is.null(model), mtmutObj$loc_filter$model, model)
     p_threshold = ifelse(is.null(p_threshold), mtmutObj$loc_filter$p_threshold, p_threshold)
     p_adj_method = ifelse(is.null(p_adj_method), mtmutObj$loc_filter$p_adj_method, p_adj_method)
-    af_threshold = ifelse(is.null(af_threshold), mtmutObj$loc_filter$af_threshold, af_threshold)
 
     loc_list = mtmutObj$loc_selected
     res = parallel::mclapply(loc_list, function(xi) {
         pval = get_pval(mtmutObj, xi, model = model, method = p_adj_method)
-        data.frame(loc = xi, mut_cell_n = sum(pval < p_threshold, na.rm=T))
+        data.frame(loc = xi, mut_cell_n = sum(pval <= p_threshold, na.rm=T))
     }) %>% rbindlist
     res = res[mut_cell_n >= min_cell]
     mtmutObj$loc_pass = res$loc 
@@ -465,8 +462,7 @@ filter_loc = function(
         min_cell = min_cell,
         model = model,
         p_threshold = p_threshold,
-        p_adj_method = p_adj_method,
-        af_threshold = af_threshold
+        p_adj_method = p_adj_method
     )
     mtmutObj
 }
@@ -480,7 +476,9 @@ filter_loc = function(
 #' @param percent_interp A numeric value, the overlapping percentage threshold for triggering interpolation. The default is 1, which means no interpolation.
 #' @param n_interp A integer value, the minimum number of overlapped cells with mutation for triggering interpolation.
 #' @param all_cell A boolean to indicate whether to include all cells or only cells with mutation.
-#' @return data.frame, data.table or matrix
+#' @param memoSort A boolean to indicate whether to sort the loci by mutation frequency.
+#' @param ... Other parameters passed to \code{\link{export_dt}} or \code{\link{export_df}}.
+#' @return data.frame, data.table or matrix or p
 #' @export
 #' @examples
 #' ## Use the example data
@@ -490,7 +488,7 @@ filter_loc = function(
 #' ## open the h5 file and create a mtmutObj object
 #' x <- open_h5_file(f_h5)
 #' run_model_fit(x)
-#' x = filter_loc(x , min_cell = 5, model = "bb", p_threshold = 0.05, p_adj_method = "fdr", af_threshold = 0.05)
+#' x = filter_loc(x , min_cell = 5, model = "bb", p_threshold = 0.05, p_adj_method = "fdr")
 #' x
 #' export_df(x)
 #' export_pval(x)
@@ -505,7 +503,6 @@ export_dt = function(mtmutObj, percent_interp = 1, n_interp = 3, all_cell = F) {
     model = mtmutObj$loc_filter$model
     p_threshold = mtmutObj$loc_filter$p_threshold
     p_adj_method = mtmutObj$loc_filter$p_adj_method
-    af_threshold = mtmutObj$loc_filter$af_threshold
 
     res = parallel::mclapply(loc_list, function(loc_i) {
         d = read_locus(mtmutObj, loc_i)
@@ -534,7 +531,7 @@ export_dt = function(mtmutObj, percent_interp = 1, n_interp = 3, all_cell = F) {
     rownames(m_a) =  d[[1]]
 
     ## matrix binary
-    m_b = m_p < p_threshold & m_a < af_threshold
+    m_b = m_p < p_threshold 
 
     ## interpolate the mutation has higher frequency with the mutation has lower frequency
     if (percent_interp < 1) {

@@ -11,11 +11,11 @@ plot_heatmap(mtmutObj, type = "p", cell_ann = NULL, ann_colors = NULL, ...)
 
 \item{type}{a string of plot type, "p" for p-value, "af" for allele frequency.}
 
-\item{cell_ann}{a data.frame of cell annotation, with rownames as cell barcodes, please refer to \code{\link{pheatmap::pheatmap}} for details.}
+\item{cell_ann}{a data.frame of cell annotation, with rownames as cell barcodes, please refer to \code{\link[pheatmap]{pheatmap}} for details.}
 
-\item{ann_colors}{a list of colors for cell annotation with cell annotation as names, please refer to \code{\link{pheatmap::pheatmap}} for details.}
+\item{ann_colors}{a list of colors for cell annotation with cell annotation as names, please refer to \code{\link[pheatmap]{pheatmap}} for details.}
 
-\item{...}{other parameters for \code{\link{export_df}} and \code{\link{pheatmap::pheatmap}}.}
+\item{...}{other parameters for \code{\link[scMitoMut]{export_df}} and \code{\link[pheatmap]{pheatmap}}.}
 }
 \description{
 Heatmap plot
@@ -32,7 +32,7 @@ x = open_h5_file(f_h5)
 run_model_fit(x)
 x
 # Filter the loci based on the model fit results
-x = filter_loc(x, min_cell = 5, model = "bb", p_threshold = 0.05, p_adj_method = "fdr", af_threshold = 0.05)
+x = filter_loc(x, min_cell = 5, model = "bb", p_threshold = 0.05, p_adj_method = "fdr")
 
 # set the cell annotation
 f = system.file("extdata", "mini_dataset_cell_ann.csv", package = "scMitoMut")
@@ -44,9 +44,9 @@ colors = c(
 ann_colors = list("SeuratCellTypes" = colors)
 
 # plot the heatmap for p-value
-plot_heatmap(x, type = "p", cell_ann = cell_ann, ann_colors = ann_colors)
+plot_heatmap(x, type = "p", cell_ann = cell_ann, ann_colors = ann_colors, percent_interp = 0.2)
 # plot the heatmap for allele frequency
-plot_heatmap(x, type = "af", cell_ann = cell_ann, ann_colors = ann_colors)
+plot_heatmap(x, type = "af", cell_ann = cell_ann, ann_colors = ann_colors, percent_interp = 0.2)
 # plot the heatmap for binary mutation
-plot_heatmap(x, type = "binary", cell_ann = cell_ann, ann_colors = ann_colors)
+plot_heatmap(x, type = "binary", cell_ann = cell_ann, ann_colors = ann_colors, percent_interp = 0.2)
 }

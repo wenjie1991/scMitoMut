@@ -29,8 +29,6 @@ test_that("log_n_choose_k", {
 #                         Test model fitting                          #
 #######################################################################
 
-library(VGAM)
-
 ## Simulate 
 set.seed(123)
 n = round(rnorm(10000, 70, sd = 5))
