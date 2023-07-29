@@ -1,5 +1,5 @@
 #' scMitoMut
-#' 
+#'
 #' scMitoMut is a tool for detecting mitochondrial mutations in single-cell sequencing data.
 #'
 #' @name scMitoMut
@@ -19,5 +19,3 @@
 #' @import zlibbioc
 #' @useDynLib scMitoMut
 NULL
-
-

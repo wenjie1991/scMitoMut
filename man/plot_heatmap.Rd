@@ -23,31 +23,32 @@ Heatmap plot
 \examples{
 # load the data
 ## Use the example data
-f = system.file("extdata", "mini_dataset.tsv.gz", package = "scMitoMut")
+f <- system.file("extdata", "mini_dataset.tsv.gz", package = "scMitoMut")
 
 ## Create a temporary h5 file
 ## In real case, we keep the h5 in project folder for future use
-f_h5_tmp = tempfile(fileext = ".h5")
+f_h5_tmp <- tempfile(fileext = ".h5")
 
 ## Load the data with parse_table function
-f_h5 = parse_table(f, sep = "\t", h5_file = f_h5_tmp)
+f_h5 <- parse_table(f, sep = "\t", h5_file = f_h5_tmp)
 
 # open the h5f file
-x = open_h5_file(f_h5)
+x <- open_h5_file(f_h5)
 # run the model fit
 run_model_fit(x)
 x
 # Filter the loci based on the model fit results
-x = filter_loc(x, min_cell = 5, model = "bb", p_threshold = 0.05, p_adj_method = "fdr")
+x <- filter_loc(x, min_cell = 5, model = "bb", p_threshold = 0.05, p_adj_method = "fdr")
 
 # set the cell annotation
-f = system.file("extdata", "mini_dataset_cell_ann.csv", package = "scMitoMut")
-cell_ann = read.csv(f, row.names=1)
+f <- system.file("extdata", "mini_dataset_cell_ann.csv", package = "scMitoMut")
+cell_ann <- read.csv(f, row.names = 1)
 # Prepare the color for cell annotation
-colors = c(
-    "Cancer Epi" = "#f28482",
-    Blood = "#f6bd60")
-ann_colors = list("SeuratCellTypes" = colors)
+colors <- c(
+  "Cancer Epi" = "#f28482",
+  Blood = "#f6bd60"
+)
+ann_colors <- list("SeuratCellTypes" = colors)
 
 # plot the heatmap for p-value
 plot_heatmap(x, type = "p", cell_ann = cell_ann, ann_colors = ann_colors, percent_interp = 0.2)

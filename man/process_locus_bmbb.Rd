@@ -28,17 +28,17 @@ This function fit binomial mixture model, beta binomial model and calculate the 
 }
 \examples{
 ## Use the example data
-f = system.file("extdata", "mini_dataset.tsv.gz", package = "scMitoMut")
+f <- system.file("extdata", "mini_dataset.tsv.gz", package = "scMitoMut")
 
 ## Create a temporary h5 file
 ## In real case, we keep the h5 in project folder for future use
-f_h5_tmp = tempfile(fileext = ".h5")
+f_h5_tmp <- tempfile(fileext = ".h5")
 
 ## Load the data with parse_table function
-f_h5 = parse_table(f, sep = "\t", h5_file = f_h5_tmp)
+f_h5 <- parse_table(f, sep = "\t", h5_file = f_h5_tmp)
 
-x = open_h5_file(f_h5)
-res = process_locus_bmbb(x, loc = "chrM.1000")
+x <- open_h5_file(f_h5)
+res <- process_locus_bmbb(x, loc = "chrM.1000")
 res
 
 }
