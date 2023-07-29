@@ -1,5 +1,7 @@
 # scMitoMut: An R Package for Mitochondrial Mutation Analysis in Single-Cell Omics Data
 
+[![R](https://github.com/wenjie1991/scMitoMut/actions/workflows/r.yml/badge.svg)](https://github.com/wenjie1991/scMitoMut/actions/workflows/r.yml)
+
 ## Installation
 
 We are currently submitting the package to Bioconductor. To try it out, you can use the source code provided.
