@@ -8,15 +8,15 @@
 \alias{export_af}
 \title{Export the mutation matrix}
 \usage{
-export_dt(mtmutObj, percent_interp = 1, n_interp = 3, all_cell = F)
+export_dt(mtmutObj, percent_interp = 1, n_interp = 3, all_cell = FALSE)
 
 export_df(mtmutObj, ...)
 
-export_pval(mtmutObj, memoSort = F, ...)
+export_pval(mtmutObj, memoSort = FALSE, ...)
 
-export_binary(mtmutObj, memoSort = F, ...)
+export_binary(mtmutObj, memoSort = FALSE, ...)
 
-export_af(mtmutObj, memoSort = F, ...)
+export_af(mtmutObj, memoSort = FALSE, ...)
 }
 \arguments{
 \item{mtmutObj}{The scMtioMut object.}

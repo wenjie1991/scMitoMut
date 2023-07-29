@@ -15,6 +15,9 @@ get_pval(mtmutObj, loc, model = "bb", method = "fdr")
 
 \item{method}{a string of the method for p-value adjustment, refer to \code{\link[stats]{p.adjust}}.}
 }
+\value{
+a vector of p-value for each cell.
+}
 \description{
 This function returns the p-value list for a single locus.
 }

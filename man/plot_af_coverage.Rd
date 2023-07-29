@@ -23,6 +23,9 @@ plot_af_coverage(
 
 \item{p_adj_method}{a string of p-value adjustment method.}
 }
+\value{
+a ggplot object.
+}
 \description{
 QC plot: 2D scatter plot for coverage ~ AF
 }

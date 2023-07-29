@@ -29,7 +29,7 @@ read_mgatk <- function(mgatk_output_dir, prefix) {
 
   ## base-wise coverage
   if (length(coverage_file) == 0) {
-    coverage_d <- base_depth_d[, .(coverage = sum(fwd_depth + rev_depth, na.rm = T)), by = c("loc", "cell_barcode")]
+    coverage_d <- base_depth_d[, .(coverage = sum(fwd_depth + rev_depth, na.rm = TRUE)), by = c("loc", "cell_barcode")]
   } else {
     coverage_d <- data.table::fread(coverage_file)
     names(coverage_d) <- c("loc", "cell_barcode", "coverage")
@@ -350,6 +350,7 @@ format.mtmutObj <- function(x, ...) {
 #'
 #' @param x a mtmutObj object.
 #' @param ... other parameters passed to \code{\link[base]{format}} or \code{\link[base]{print}}.
+#' @return a string
 #' @export
 print.mtmutObj <- function(x, ...) {
   format(x, ...)
@@ -415,6 +416,7 @@ subset_loc <- function(mtmutObj, loc_list) {
 #' @param loc a string of the locus.
 #' @param model a string of the model for mutation calling, it can be "bb", "bm" or "bi" which stands for beta binomial, binomial mixture and binomial model respectively.
 #' @param method a string of the method for p-value adjustment, refer to \code{\link[stats]{p.adjust}}.
+#' @return a vector of p-value for each cell.
 #' @examples
 #' ## Use the example data
 #' f <- system.file("extdata", "mini_dataset.tsv.gz", package = "scMitoMut")
@@ -482,7 +484,7 @@ filter_loc <- function(mtmutObj, min_cell = NULL, model = NULL, p_threshold = NU
   loc_list <- mtmutObj$loc_selected
   res <- parallel::mclapply(loc_list, function(xi) {
     pval <- get_pval(mtmutObj, xi, model = model, method = p_adj_method)
-    data.frame(loc = xi, mut_cell_n = sum(pval <= p_threshold, na.rm = T))
+    data.frame(loc = xi, mut_cell_n = sum(pval <= p_threshold, na.rm = TRUE))
   }) %>% rbindlist()
   res <- res[mut_cell_n >= min_cell]
   mtmutObj$loc_pass <- res$loc

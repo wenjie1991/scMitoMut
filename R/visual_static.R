@@ -92,6 +92,7 @@ plot_locus_profile <- function(mtmutObj, loc, seuratObj, model = NULL, p_thresho
 #' @param model a string of model name, one of "bb", "bm", "bi".
 #' @param p_threshold a numeric value of p-value threshold.
 #' @param p_adj_method a string of p-value adjustment method.
+#' @return a ggplot object.
 #' @examples
 #' ## Use the example data
 #' f <- system.file("extdata", "mini_dataset.tsv.gz", package = "scMitoMut")
@@ -133,6 +134,7 @@ plot_af_coverage <- function(mtmutObj, loc, model = NULL, p_threshold = NULL, p_
 #' @param cell_ann a data.frame of cell annotation, with rownames as cell barcodes, please refer to \code{\link[pheatmap]{pheatmap}} for details.
 #' @param ann_colors a list of colors for cell annotation with cell annotation as names, please refer to \code{\link[pheatmap]{pheatmap}} for details.
 #' @param ... other parameters for \code{\link[scMitoMut]{export_df}} and \code{\link[pheatmap]{pheatmap}}.
+#' @return The pheatmap output
 #' @examples
 #' # load the data
 #' ## Use the example data

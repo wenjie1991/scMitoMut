@@ -17,6 +17,9 @@ plot_heatmap(mtmutObj, type = "p", cell_ann = NULL, ann_colors = NULL, ...)
 
 \item{...}{other parameters for \code{\link[scMitoMut]{export_df}} and \code{\link[pheatmap]{pheatmap}}.}
 }
+\value{
+The pheatmap output
+}
 \description{
 Heatmap plot
 }

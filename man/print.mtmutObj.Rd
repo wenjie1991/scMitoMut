@@ -17,6 +17,9 @@ is.mtmutObj(x)
 
 \item{...}{other parameters passed to \code{\link[base]{format}} or \code{\link[base]{print}}.}
 }
+\value{
+a string
+}
 \description{
 The print method for mtmutObj object.
 }
