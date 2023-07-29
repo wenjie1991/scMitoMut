@@ -95,7 +95,7 @@ process_locus_bmbb <- function(mtmutObj, loc, dom_allele = NULL, return_data = F
 #' x <- filter_loc(x, min_cell = 5, model = "bb", p_threshold = 0.05, p_adj_method = "fdr")
 #' x
 #' @export
-run_model_fit <- function(mtmutObj, mc.cores = getOption("mc.cores", 2L)) {
+run_model_fit <- function(mtmutObj, mc.cores = getOption("mc.cores", 1L)) {
   ## get the list of loci
   loc_list <- mtmutObj$loc_selected
 
