@@ -1,17 +1,24 @@
-# scMitoMut: a R package for mitochondiral mutation analysis in single cell omics data
+# scMitoMut: An R Package for Mitochondrial Mutation Analysis in Single-Cell Omics Data
 
 ## Installation
 
-You can install the pacakge from source code:
+We are currently submitting the package to Bioconductor. To try it out, you can use the source code provided.
 
 ```r
 # install.packages("devtools")
-devtools::install_github("TeamPerie/scMitoMut")
+devtools::install_github("username/packagename", build_vignettes = TRUE)
 ```
 
-## Example
+## Vignette
 
-This is a basic example which shows you the main function of the package:
+The vignette can be found here: [https://github.com/TeamPerie/scMitoMut/blob/main/vignettes/Analysis_colon_cancer_dataset.Rmd]().
+
+You can also access the HTML version by using the R command `browseVignettes('scMitoMut')` after installing the package.
+
+
+## Mini Example
+
+This is a simple example that demonstrates the main function of the package. It can be executed in less than 1 minute.
 
 ```r
 library(scMitoMut)

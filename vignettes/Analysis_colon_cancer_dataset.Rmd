@@ -2,7 +2,7 @@
 title: "scMitoMut demo: CRC dataset"
 author: 
 - name: Wenjie Sun
-package: CellBarcode
+package: scMitoMut
 output: 
   BiocStyle::html_document:
     toc_float: true
