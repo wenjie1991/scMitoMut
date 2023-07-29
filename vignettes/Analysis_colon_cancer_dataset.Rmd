@@ -13,9 +13,9 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r echo=F}
+```{r echo=FALSE}
 library(knitr)
-opts_chunk$set(echo = T, TOC = T)
+opts_chunk$set(echo = TRUE, TOC = TRUE)
 ```
 
 ```{r}
@@ -83,14 +83,14 @@ It helps for better memory usage and faster loading.
 
 The process may take some minutes. The return value is the `H5` file path.
 
-```{r, eval=T}
+```{r, eval=TRUE}
 ## Load the allele count table
 f <- system.file("extdata", "mini_dataset.tsv.gz", package = "scMitoMut")
 f_h5_tmp <- tempfile(fileext = ".h5")
 f_h5 <- parse_table(f, h5_file = f_h5_tmp)
 ```
 
-```{r, eval=T}
+```{r, eval=TRUE}
 f_h5
 ```
 
@@ -110,7 +110,7 @@ x <- open_h5_file(f_h5)
 str(x)
 
 ## Show what's in the h5 file
-h5ls(x$h5f, recursive = F)
+h5ls(x$h5f, recursive = FALSE)
 ```
 
 # Selecting cells
@@ -162,12 +162,12 @@ Using the model, we define the wild-type cells if it has a probability >= 0.001 
 3. Using those wild-type cells, we fit the beta-binomial model. 
 4. At last, based on the model, we calculate the p-value of observing the AF of the wild-type allele in the cell.
 
-```{r, eval=T}
+```{r, eval=TRUE}
 ## Run the model fitting
 run_model_fit(x, mc.cores = 1)
 
 ## The p-value is kept in the pval group of H5 file
-h5ls(x$h5f, recursive = F)
+h5ls(x$h5f, recursive = FALSE)
 ```
 
 # Filter mutations
@@ -319,8 +319,8 @@ It is also a demonstration of how to extract the information from the H5 file an
 m_dt <- data.table(m_df)
 m_dt[, cell_type := cell_ann[as.character(m_dt$cell_barcode), "SeuratCellTypes"]]
 m_dt_sub <- m_dt[loc == "chrM.1227"]
-m_dt_sub[, sum((pval) < 0.01, na.rm = T), by = cell_type]
-m_dt_sub[, sum((1 - af) > 0.05, na.rm = T), by = cell_type]
+m_dt_sub[, sum((pval) < 0.01, na.rm = TRUE), by = cell_type]
+m_dt_sub[, sum((1 - af) > 0.05, na.rm = TRUE), by = cell_type]
 ggplot(m_dt_sub) +
   aes(x = cell_type, y = -log10(pval), color = cell_type) +
   geom_jitter() +

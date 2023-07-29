@@ -100,7 +100,7 @@ run_model_fit <- function(mtmutObj, mc.cores = getOption("mc.cores", 2L)) {
   loc_list <- mtmutObj$loc_selected
 
   ## create a h5g to keep p value
-  if ("pval" %in% h5ls(mtmutObj$h5f, recursive = F)$name) {
+  if ("pval" %in% h5ls(mtmutObj$h5f, recursive = FALSE)$name) {
     h5delete(mtmutObj$h5f, "pval")
   }
   h5g <- H5Gcreate(h5loc = mtmutObj$h5f, name = "pval")
@@ -141,11 +141,11 @@ run_model_fit <- function(mtmutObj, mc.cores = getOption("mc.cores", 2L)) {
     h5write(res_i, h5g, loc_i)
   })
 
-  if ("model_par_bb" %in% h5ls(mtmutObj$h5f, recursive = F)$name) {
+  if ("model_par_bb" %in% h5ls(mtmutObj$h5f, recursive = FALSE)$name) {
     h5delete(mtmutObj$h5f, "model_par_bb")
   }
 
-  if ("model_par_bm" %in% h5ls(mtmutObj$h5f, recursive = F)$name) {
+  if ("model_par_bm" %in% h5ls(mtmutObj$h5f, recursive = FALSE)$name) {
     h5delete(mtmutObj$h5f, "model_par_bm")
   }
 

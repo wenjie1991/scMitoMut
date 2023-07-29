@@ -2,7 +2,7 @@
 #                         Internal functions                          #
 #######################################################################
 ## TODO: use the code elsewhere
-# if (F) {
+# if (FALSE) {
 #     par(mfrow = c(2, 2))
 #     ## alt / depth
 #     plot(N, y / (N + 0.001), log = "x", xlab = "Seq Depth", ylab = "p", main = paste0(loc_i, "_", maj_base))
@@ -19,7 +19,7 @@
 # }
 
 ## TODO: use it in the future
-# if (F) {
+# if (FALSE) {
 #     plot(N, y / N, log = 'x', xlab = "Seq Depth", ylab = "p", main = paste0(loc_i, "_", alt_base))
 #     points(N[i], (y / N)[i], col = 'red', pch = 19)
 # }
@@ -173,31 +173,31 @@ plot_af_coverage <- function(mtmutObj, loc, model = NULL, p_threshold = NULL, p_
 plot_heatmap <- function(mtmutObj, type = "p", cell_ann = NULL, ann_colors = NULL, ...) {
   if (type == "p") {
     ## heatmap of p value
-    m <- export_pval(mtmutObj, memoSort = T, ...)
+    m <- export_pval(mtmutObj, memoSort = TRUE, ...)
 
     p <- pheatmap::pheatmap(m,
       color = rev(colorRampPalette((RColorBrewer::brewer.pal(n = 7, name = "GnBu")))(100)),
-      show_colnames = F, annotation_col = cell_ann, cluster_cols = F,
-      cluster_rows = F, annotation_colors = ann_colors, na_col = "white"
+      show_colnames = FALSE, annotation_col = cell_ann, cluster_cols = FALSE,
+      cluster_rows = FALSE, annotation_colors = ann_colors, na_col = "white"
     )
   } else if (type == "af") {
     ## heatmap of af
-    m <- export_af(mtmutObj, memoSort = T, ...)
+    m <- export_af(mtmutObj, memoSort = TRUE, ...)
 
     p <- pheatmap::pheatmap(m,
       color = rev(colorRampPalette((RColorBrewer::brewer.pal(n = 7, name = "GnBu")))(100)),
-      show_colnames = F, annotation_col = cell_ann, cluster_cols = F,
-      cluster_rows = F, annotation_colors = ann_colors, na_col = "white"
+      show_colnames = FALSE, annotation_col = cell_ann, cluster_cols = FALSE,
+      cluster_rows = FALSE, annotation_colors = ann_colors, na_col = "white"
     )
   } else if (type == "binary") {
     ## heatmap of binary mutation
-    m_b <- export_binary(mtmutObj, memoSort = T, ...)
+    m_b <- export_binary(mtmutObj, memoSort = TRUE, ...)
     m_b %<>% as.data.frame() %>% data.matrix()
 
     p <- pheatmap::pheatmap(m_b,
       color = colorRampPalette((RColorBrewer::brewer.pal(n = 7, name = "GnBu")))(100),
-      show_colnames = F, annotation_col = cell_ann,
-      annotation_colors = ann_colors, cluster_cols = F, cluster_rows = F, legend = F,
+      show_colnames = FALSE, annotation_col = cell_ann,
+      annotation_colors = ann_colors, cluster_cols = FALSE, cluster_rows = FALSE, legend = FALSE,
       na_col = "white", ...
     )
   } else {

@@ -48,7 +48,7 @@ read_mgatk <- function(mgatk_output_dir, prefix) {
 ## This function sorts the matrix for better visualization of mutual exclusivity across genes
 ## Adaptoed from: https://gist.github.com/armish/564a65ab874a770e2c26
 memoSort <- function(M, m = NULL) {
-  geneOrder <- sort(rowSums(M, na.rm = T), decreasing = TRUE, index.return = TRUE)$ix
+  geneOrder <- sort(rowSums(M, na.rm = TRUE), decreasing = TRUE, index.return = TRUE)$ix
   scoreCol <- function(x) {
     score <- 0
     for (i in 1:length(x)) {
@@ -84,7 +84,7 @@ read_locus <- function(mtmutObj, loc, maj_base = NULL) {
   d_coverage <- unique(d_sub[, .(cell_barcode, coverage)])
 
   d_select_maj_base <- d_sub[alt == maj_base, .(cell_barcode, alt_depth = fwd_depth + rev_depth, fwd_depth, rev_depth)]
-  d_select_maj_base <- merge(d_select_maj_base, d_coverage, by = "cell_barcode", all = T)
+  d_select_maj_base <- merge(d_select_maj_base, d_coverage, by = "cell_barcode", all = TRUE)
   d_select_maj_base[is.na(d_select_maj_base)] <- 0
 
   ## TODO: do we need this?
@@ -388,7 +388,7 @@ is.mtmutObj <- function(x) inherits(x, "mtmutObj")
 #' x
 #' @export
 subset_cell <- function(mtmutObj, cell_list) {
-  if ("cell_selected" %in% h5ls(mtmutObj$h5f, recursive = F)$name) {
+  if ("cell_selected" %in% h5ls(mtmutObj$h5f, recursive = FALSE)$name) {
     h5delete(mtmutObj$h5f, "cell_selected")
   }
   h5write(cell_list, mtmutObj$h5f, "cell_selected")
@@ -399,7 +399,7 @@ subset_cell <- function(mtmutObj, cell_list) {
 #' @rdname subset_cell
 #' @export
 subset_loc <- function(mtmutObj, loc_list) {
-  if ("loc_selected" %in% h5ls(mtmutObj$h5f, recursive = F)$name) {
+  if ("loc_selected" %in% h5ls(mtmutObj$h5f, recursive = FALSE)$name) {
     h5delete(mtmutObj$h5f, "loc_selected")
   }
   h5write(loc_list, mtmutObj$h5f, "loc_selected")
@@ -527,7 +527,7 @@ filter_loc <- function(mtmutObj, min_cell = NULL, model = NULL, p_threshold = NU
 #' export_pval(x)
 #' export_af(x)
 #' export_binary(x)
-export_dt <- function(mtmutObj, percent_interp = 1, n_interp = 3, all_cell = F) {
+export_dt <- function(mtmutObj, percent_interp = 1, n_interp = 3, all_cell = FALSE) {
   loc_list <- mtmutObj$loc_pass
 
   ## Get the parameters from mtmutObj
@@ -546,8 +546,8 @@ export_dt <- function(mtmutObj, percent_interp = 1, n_interp = 3, all_cell = F) 
   res[, af := ((fwd_depth + rev_depth) / coverage)]
 
   # if (!all_cell) {
-  # cell_list = res[, .(n = sum(pval < p_threshold, na.rm=T)), by = cell_barcode][n > 0, cell_barcode]
-  # loc_list = res[, .(n = sum(pval < p_threshold, na.rm=T)), by = loc][n >= min_cell, loc]
+  # cell_list = res[, .(n = sum(pval < p_threshold, na.rm=TRUE)), by = cell_barcode][n > 0, cell_barcode]
+  # loc_list = res[, .(n = sum(pval < p_threshold, na.rm=TRUE)), by = loc][n >= min_cell, loc]
   # res <- res[cell_barcode %in% cell_list & loc %in% loc_list]
   # }
 
@@ -567,8 +567,8 @@ export_dt <- function(mtmutObj, percent_interp = 1, n_interp = 3, all_cell = F) 
 
   ## interpolate the mutation has higher frequency with the mutation has lower frequency
   if (percent_interp < 1) {
-    mut_count <- rowSums(m_b, na.rm = T)
-    ix <- sort(mut_count, decreasing = F, index.return = T)$ix
+    mut_count <- rowSums(m_b, na.rm = TRUE)
+    ix <- sort(mut_count, decreasing = FALSE, index.return = TRUE)$ix
 
     ## For the lowest framqent mutations
     for (i in 1:(length(ix) - 1)) {
@@ -579,8 +579,8 @@ export_dt <- function(mtmutObj, percent_interp = 1, n_interp = 3, all_cell = F) 
         mut_j <- ix[j]
         mut_v_maj <- m_b[mut_j, ]
         mut_v_min <- m_b[mut_i, ]
-        mut_v_maj[is.na(mut_v_maj)] <- F
-        mut_v_min[is.na(mut_v_min)] <- F
+        mut_v_maj[is.na(mut_v_maj)] <- FALSE
+        mut_v_min[is.na(mut_v_min)] <- FALSE
 
         # p <- fisher.test(mut_v_maj, mut_v_min)$p.value
         tab <- table(mut_v_maj, mut_v_min)
@@ -589,21 +589,21 @@ export_dt <- function(mtmutObj, percent_interp = 1, n_interp = 3, all_cell = F) 
         ## if the p value is small, then the two mutations are not independent
         ## interpolate the mutation has higher frequency with the mutation has lower frequency
         if (p >= percent_interp & tab[4] >= n_interp) {
-          m_b[mut_j, mut_v_min] <- T
+          m_b[mut_j, mut_v_min] <- TRUE
         } else {
-          m_b[mut_j, mut_v_min] <- F
+          m_b[mut_j, mut_v_min] <- FALSE
         }
       }
     }
   }
   m_b_dt <- m_b %>%
-    data.table(keep.rownames = T) %>%
+    data.table(keep.rownames = TRUE) %>%
     data.table::melt(id.var = "rn", value.name = "mut_status")
-  res <- merge(res, m_b_dt, by.x = c("loc", "cell_barcode"), by.y = c("rn", "variable"), all = T)
+  res <- merge(res, m_b_dt, by.x = c("loc", "cell_barcode"), by.y = c("rn", "variable"), all = TRUE)
 
   if (!all_cell) {
-    cell_list <- res[, .(n = sum(mut_status, na.rm = T)), by = cell_barcode][n > 0, cell_barcode]
-    loc_list <- res[, .(n = sum(mut_status, na.rm = T)), by = loc][n >= min_cell, loc]
+    cell_list <- res[, .(n = sum(mut_status, na.rm = TRUE)), by = cell_barcode][n > 0, cell_barcode]
+    loc_list <- res[, .(n = sum(mut_status, na.rm = TRUE)), by = loc][n >= min_cell, loc]
     res <- res[cell_barcode %in% cell_list & loc %in% loc_list]
   }
 
@@ -618,7 +618,7 @@ export_df <- function(mtmutObj, ...) {
 
 #' @export
 #' @rdname export_dt
-export_pval <- function(mtmutObj, memoSort = F, ...) {
+export_pval <- function(mtmutObj, memoSort = FALSE, ...) {
   res <- export_dt(mtmutObj, ...)
   d <- data.table::dcast(res, loc ~ cell_barcode, value.var = "pval")
   m <- data.matrix(d[, -1])
@@ -637,7 +637,7 @@ export_pval <- function(mtmutObj, memoSort = F, ...) {
 
 #' @export
 #' @rdname export_dt
-export_binary <- function(mtmutObj, memoSort = F, ...) {
+export_binary <- function(mtmutObj, memoSort = FALSE, ...) {
   res <- export_dt(mtmutObj, ...)
   d <- data.table::dcast(res, loc ~ cell_barcode, value.var = "mut_status")
   m_b <- data.matrix(d[, -1])
@@ -652,7 +652,7 @@ export_binary <- function(mtmutObj, memoSort = F, ...) {
 
 #' @export
 #' @rdname export_dt
-export_af <- function(mtmutObj, memoSort = F, ...) {
+export_af <- function(mtmutObj, memoSort = FALSE, ...) {
   res <- export_dt(mtmutObj, ...)
   d <- data.table::dcast(res, loc ~ cell_barcode, value.var = "af")
   m <- data.matrix(d[, -1])

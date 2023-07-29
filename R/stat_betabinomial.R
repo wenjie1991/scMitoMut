@@ -72,7 +72,7 @@
 #
 #     #################################################
 #     ## Model fitting
-#     # fit = vglm(cbind(y, N - y) ~ 1, family = betabinomialff, trace = T, weights = rep(1, length(N)))
+#     # fit = vglm(cbind(y, N - y) ~ 1, family = betabinomialff, trace = TRUE, weights = rep(1, length(N)))
 # 	# fit = fit_bb_r(y, N, mean_af, max_try)
 #     fit = fit_bb_cpp(y, N)
 #
@@ -141,13 +141,13 @@ process_locus_bb <- function(
 
     #################################################
     ## Model fitting
-    # fit = vglm(cbind(y, N - y) ~ 1, family = betabinomialff, trace = T, weights = rep(1, length(N)))
+    # fit = vglm(cbind(y, N - y) ~ 1, family = betabinomialff, trace = TRUE, weights = rep(1, length(N)))
     # fit = fit_bb_r(y, N, mean_af, max_try)
     fit <- fit_bb_cpp(y[is_selected_cell], N[is_selected_cell], max_iter = max_iter, tol = tol)
   } else {
     #################################################
     ## Model fitting
-    # fit = vglm(cbind(y, N - y) ~ 1, family = betabinomialff, trace = T, weights = rep(1, length(N)))
+    # fit = vglm(cbind(y, N - y) ~ 1, family = betabinomialff, trace = TRUE, weights = rep(1, length(N)))
     # fit = fit_bb_r(y, N, mean_af, max_try)
     fit <- fit_bb_cpp(y, N, tol = tol, max_iter = max_iter)
   }

@@ -14,7 +14,7 @@ fit_bm_cpp <- function(x, n, ave_p, p1, p2, theta1, max_iter = 100, tol = 1e-6) 
   em_out <- em_bm(x, n, p1, p2, theta1, max_iter, tol)
 
   loglike_k1 <- binomial_log_likelihood(x, n, ave_p)
-  pval_k1 <- pbinom(x, n, ave_p, lower.tail = T)
+  pval_k1 <- pbinom(x, n, ave_p, lower.tail = TRUE)
 
   list(
     k1 = list(
