@@ -114,6 +114,19 @@ plot_locus <- function(
 #' plot_af_coverage(x, "chrM.204")
 #' @export
 plot_af_coverage <- function(mtmutObj, loc, model = NULL, p_threshold = NULL, p_adj_method = NULL) {
+
+    if (class(mtmutObj) != "mtmutObj") {
+        stop("mtmutObj must be a mtmutObj object.")
+    }
+
+    if (model != "bb" & model != "bm" & model != "bi") {
+        stop("model should be one of bb, bm, bi")
+    }
+
+    if (p_threshold < 0 | p_threshold > 1) {
+        stop("p_threshold should be between 0 and 1")
+    }
+
     ## get parameters
     model <- ifelse(is.null(model), mtmutObj$loc_filter$model, model)
     p_threshold <- ifelse(is.null(p_threshold), mtmutObj$loc_filter$p_threshold, p_threshold)
@@ -169,6 +182,11 @@ plot_af_coverage <- function(mtmutObj, loc, model = NULL, p_threshold = NULL, p_
 #' plot_heatmap(x, type = "binary", cell_ann = cell_ann, ann_colors = ann_colors, percent_interp = 0.2)
 #' @export
 plot_heatmap <- function(mtmutObj, type = "p", cell_ann = NULL, ann_colors = NULL, ...) {
+
+    if (class(mtmutObj) != "mtmutObj") {
+        stop("mtmutObj must be a mtmutObj object.")
+    }
+
     if (type == "p") {
         ## heatmap of p value
         m <- export_pval(mtmutObj, memoSort = TRUE, ...)
