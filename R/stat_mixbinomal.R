@@ -1,15 +1,6 @@
 #######################################################################
 #                         Internal functions                          #
 #######################################################################
-# fit_bm_r <- function(x, n, init_theta, init_lambda) {
-#
-#     m = data.matrix(data.frame(x, n-x))
-#     em_out1 <- mixtools::multmixEM(m, k = 1)
-#
-#     em_out2 <- mixtools::multmixEM(m, theta = init_theta, lambda = init_lambda, k = 2)
-#     list(k1 = em_out1, k2 = em_out2)
-# }
-
 fit_bm_cpp <- function(x, n, ave_p, p1, p2, theta1, max_iter = 100, tol = 1e-6) {
   em_out <- em_bm(x, n, p1, p2, theta1, max_iter, tol)
 

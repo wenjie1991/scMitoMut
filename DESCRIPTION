@@ -2,14 +2,21 @@ Package: scMitoMut
 Title: Single-cell Mitochondrial Mutation Analysis Tool
 Version: 0.99.1
 Authors@R: 
-    person("Wenjie", "SUN", , "sunwjie@gmail.com", role = c("aut", "cre"),
-    comment = c(ORCID = "https://orcid.org/0000-0002-3100-2346"))
-Description: This package is for analysing mitochondrial mutations using single cell omics
-    data such as scRNASeq and scATACSeq. It provides functions for mutation
-    filtering and visualization.
+    person("Wenjie", "SUN", , "sunwjie@gmail.com", role = c("aut", "cre"))
+Description: 
+    This package can be used for analysing mitochondrial mutations using single
+    cell omics data such as scRNASeq and scATACSeq (prefered, due to RNA
+    editing issue). It provides functions for mutation filtering and
+    visualization (future be an independent package). The mutation filtering is
+    done by fitting the noise of PCR error, sequencing error,
+    mtDNA sampling, and heteroplasmy dynamic. If the noise can not explain a
+    observed allele frequency of a locus in a cell we call it as a mutation.
+    The allele frequency is needed as input. The mutation filtering is based on
+    fitting three independent models on the allele frequency: binomial,
+    binomial-mixture and beta-binomial models.
 License: MIT + file LICENSE
 Encoding: UTF-8
-Depends: R (>= 4.1.0)
+Depends: R (>= 4.3.0)
 Imports: 
     data.table,
     Rcpp,
@@ -36,4 +43,4 @@ Suggests: testthat (>= 3.0.0), BiocStyle, knitr, rmarkdown, VGAM, R.utils
 Config/testthat/edition: 3
 VignetteBuilder: knitr
 NeedsCompilation: yes
-biocViews: Preprocessing, Sequencing
+biocViews: Preprocessing, Sequencing, SingleCell

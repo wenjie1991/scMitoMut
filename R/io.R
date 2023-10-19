@@ -135,6 +135,10 @@ read_locus <- function(mtmutObj, loc, maj_base = NULL) {
 #' x
 #' @export
 parse_table <- function(file, h5_file = "mut.h5", ...) {
+
+  ## check file
+  ## 
+
   merge_d <- data.table::fread(file, ...)
 
   ##############################
