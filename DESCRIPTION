@@ -1,19 +1,23 @@
 Package: scMitoMut
 Title: Single-cell Mitochondrial Mutation Analysis Tool
-Version: 0.99.1
-Authors@R: 
-    person("Wenjie", "SUN", , "sunwjie@gmail.com", role = c("aut", "cre"))
+Version: 0.99.2
+Authors@R: c(
+  person("Wenjie", "Sun", email = "sunwjie@gmail.com", role = "cre", comment=c(ORCID="0000-0002-3100-2346")),
+  person("Leila", "Perie", email = "leila.perie@curie.fr", role = "aut")
+  )
 Description: 
-    This package can be used for analysing mitochondrial mutations using single
-    cell omics data such as scRNASeq and scATACSeq (prefered, due to RNA
-    editing issue). It provides functions for mutation filtering and
-    visualization (future be an independent package). The mutation filtering is
-    done by fitting the noise of PCR error, sequencing error,
-    mtDNA sampling, and heteroplasmy dynamic. If the noise can not explain a
-    observed allele frequency of a locus in a cell we call it as a mutation.
-    The allele frequency is needed as input. The mutation filtering is based on
-    fitting three independent models on the allele frequency: binomial,
-    binomial-mixture and beta-binomial models.
+    This package is designed for analyzing mitochondrial mutations using
+    single-cell sequencing data, such as scRNASeq and scATACSeq (preferably the
+    latter due to RNA editing issues). It includes functions for mutation
+    filtering and visualization. In the future, the visualization tool will
+    become an independent package. Mutation filtering is performed by fitting a
+    statistical model to account for various sources of noise, including PCR
+    error, sequencing error, mtDNA sampling and/or heteroplasmy dynamics. The
+    model tests whether the observed allele frequency of a locus in a cell can
+    be explained by the noise model. If not, we classify it as a mutation. The
+    input for this analysis is the allele frequency. The noise model consists
+    of three independent models: binomial, binomial-mixture, and beta-binomial
+    models.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Depends: R (>= 4.3.0)
