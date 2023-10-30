@@ -1,5 +1,2 @@
-# Conditional options for non-macOS
-ifeq ($(shell uname), Darwin)
-else
-    PKG_LIBS = $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS)
-endif
+# Conditional options for macOS
+PKG_LIBS = `os=\`uname -s\`; if [ "$$os" = "darwin" ]; then echo "$(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS)"; fi`
