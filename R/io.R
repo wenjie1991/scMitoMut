@@ -51,7 +51,7 @@ memoSort <- function(M, m = NULL) {
     geneOrder <- sort(rowSums(M, na.rm = TRUE), decreasing = TRUE, index.return = TRUE)$ix
     scoreCol <- function(x) {
         score <- 0
-        for (i in 1:length(x)) {
+        for (i in seq_along(x)) {
             if (x[i] & !is.na(x[i])) {
                 score <- score + 2^(length(x) - i)
             }
