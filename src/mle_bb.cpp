@@ -228,6 +228,8 @@ Rcpp::List mle_bb(
     Rcpp::IntegerVector x, Rcpp::IntegerVector n,
     int max_iter = 100, double tol = 1e-3
 ) {
+    Rcpp::checkUserInterrupt();
+
     long * x_ptr = new long[x.size()];
     long * n_ptr = new long[n.size()];
     long N = x.size();
