@@ -7,8 +7,8 @@ read_mgatk <- function(mgatk_output_dir, prefix) {
     mgatk_output_dir <- paste0(mgatk_output_dir)
     base_reads_files <- dir(mgatk_output_dir, str_glue("{prefix}.[ACTG].txt.gz"), full.names = TRUE)
 
-    print("Allele count files are:")
-    print(base_reads_files)
+    message("Allele count files are:")
+    message(base_reads_files)
 
     names(base_reads_files) <- str_split_fixed(base_reads_files %>% basename(), "\\.", 4)[, 2]
     ref_file <- dir(mgatk_output_dir, "ref", full.names = TRUE)
@@ -223,7 +223,7 @@ parse_mgatk <- function(dir, prefix, h5_file = "mut.h5") {
 
     ## check dir 
     if (!dir.exists(dir)) {
-        stop(paste0("Directory ", dir, " not exists!"))
+        stop("Directory ", dir, " not exists!")
     }
 
     ##############################
@@ -313,7 +313,7 @@ open_h5_file <- function(h5_file) {
 
     ## check file
     if (!file.exists(h5_file)) {
-        stop(paste0("File ", h5_file, " not exists!"))
+        stop("File ", h5_file, " not exists!")
     }
     
     h5f <- H5Fopen(h5_file)
@@ -413,7 +413,7 @@ is.mtmutObj <- function(x) inherits(x, "mtmutObj")
 #' x
 #' @export
 subset_cell <- function(mtmutObj, cell_list) {
-    if (is(mtmutObj, "mtmutObj")) {
+    if (!is(mtmutObj, "mtmutObj")) {
         stop("mtmutObj should be a mtmutObj object")
     }
 
@@ -428,7 +428,7 @@ subset_cell <- function(mtmutObj, cell_list) {
 #' @rdname subset_cell
 #' @export
 subset_loc <- function(mtmutObj, loc_list) {
-    if (is(mtmutObj, "mtmutObj")) {
+    if (!is(mtmutObj, "mtmutObj")) {
         stop("mtmutObj should be a mtmutObj object")
     }
 
@@ -466,7 +466,7 @@ subset_loc <- function(mtmutObj, loc_list) {
 #' get_pval(x, "chrM.1000", "bi", "fdr")
 #' @export
 get_pval <- function(mtmutObj, loc, model = "bb", method = "fdr") {
-    if (is(mtmutObj, "mtmutObj")) {
+    if (!is(mtmutObj, "mtmutObj")) {
         stop("mtmutObj should be a mtmutObj object")
     }
 
@@ -512,7 +512,7 @@ get_pval <- function(mtmutObj, loc, model = "bb", method = "fdr") {
 #' @export
 filter_loc <- function(mtmutObj, min_cell = 5, model = "bb", p_threshold = 0.05, p_adj_method = "fdr") {
 
-    if (is(mtmutObj, "mtmutObj")) {
+    if (!is(mtmutObj, "mtmutObj")) {
         stop("mtmutObj should be a mtmutObj object")
     }
 
@@ -584,7 +584,7 @@ filter_loc <- function(mtmutObj, min_cell = 5, model = "bb", p_threshold = 0.05,
 #' export_binary(x)
 export_dt <- function(mtmutObj, percent_interp = 1, n_interp = 3, all_cell = FALSE) {
 
-    if (is(mtmutObj, "mtmutObj")) {
+    if (!is(mtmutObj, "mtmutObj")) {
         stop("mtmutObj should be a mtmutObj object")
     }
 

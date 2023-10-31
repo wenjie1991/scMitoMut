@@ -115,7 +115,7 @@ plot_locus <- function(
 #' @export
 plot_af_coverage <- function(mtmutObj, loc, model = 'bb', p_threshold = 0.05, p_adj_method = 'fdr') {
 
-    if (is(mtmutObj, "mtmutObj")) {
+    if (!is(mtmutObj, "mtmutObj")) {
         stop("mtmutObj must be a mtmutObj object.")
     }
 
@@ -183,7 +183,7 @@ plot_af_coverage <- function(mtmutObj, loc, model = 'bb', p_threshold = 0.05, p_
 #' @export
 plot_heatmap <- function(mtmutObj, type = "p", cell_ann = NULL, ann_colors = NULL, ...) {
 
-    if (is(mtmutObj, "mtmutObj")) {
+    if (!is(mtmutObj, "mtmutObj")) {
         stop("mtmutObj must be a mtmutObj object.")
     }
 

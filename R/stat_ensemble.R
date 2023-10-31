@@ -40,7 +40,7 @@ get_bm_pval <- function(x, method = "none") {
 #' @export
 process_locus_bmbb <- function(mtmutObj, loc, dom_allele = NULL, return_data = FALSE, ...) {
 
-    if (is(mtmutObj, "mtmutObj")) {
+    if (!is(mtmutObj, "mtmutObj")) {
         stop("mtmutObj must be a mtmutObj object.")
     }
 
@@ -109,7 +109,7 @@ process_locus_bmbb <- function(mtmutObj, loc, dom_allele = NULL, return_data = F
 #' @export
 run_model_fit <- function(mtmutObj, mc.cores = getOption("mc.cores", 1L)) {
 
-    if (is(mtmutObj, "mtmutObj")) {
+    if (!is(mtmutObj, "mtmutObj")) {
         stop("mtmutObj must be a mtmutObj object.")
     }
 
@@ -125,7 +125,7 @@ run_model_fit <- function(mtmutObj, mc.cores = getOption("mc.cores", 1L)) {
     ## run the ensemble calling
     # pb <- progress::progress_bar$new(total = length(loc_list))
     res_l <- parallel::mclapply(loc_list, function(xi) {
-        print(xi)
+        message(xi)
         # pb$tick()
         res <- process_locus_bmbb(mtmutObj, xi, return_data = FALSE)
 
