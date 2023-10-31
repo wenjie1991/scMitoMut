@@ -85,9 +85,9 @@ plot_locus <- function(
 #'
 #' @param mtmutObj an object of class "mtmutObj".
 #' @param loc a string of genome location, e.g. "chrM.200".
-#' @param model a string of model name, one of "bb", "bm", "bi".
-#' @param p_threshold a numeric value of p-value threshold.
-#' @param p_adj_method a string of p-value adjustment method.
+#' @param model a string of model name, one of "bb", "bm", "bi", the default value is "bb".
+#' @param p_threshold a numeric value of p-value threshold, the default is 0.05.
+#' @param p_adj_method a string of p-value adjustment method, the default is FDR.
 #' @return a ggplot object.
 #' @examples
 #' ## Use the example data
@@ -113,9 +113,9 @@ plot_locus <- function(
 #' # plot the locus profile for chrM.200
 #' plot_af_coverage(x, "chrM.204")
 #' @export
-plot_af_coverage <- function(mtmutObj, loc, model = NULL, p_threshold = NULL, p_adj_method = NULL) {
+plot_af_coverage <- function(mtmutObj, loc, model = 'bb', p_threshold = 0.05, p_adj_method = 'fdr') {
 
-    if (class(mtmutObj) != "mtmutObj") {
+    if (is(mtmutObj, "mtmutObj")) {
         stop("mtmutObj must be a mtmutObj object.")
     }
 
@@ -183,7 +183,7 @@ plot_af_coverage <- function(mtmutObj, loc, model = NULL, p_threshold = NULL, p_
 #' @export
 plot_heatmap <- function(mtmutObj, type = "p", cell_ann = NULL, ann_colors = NULL, ...) {
 
-    if (class(mtmutObj) != "mtmutObj") {
+    if (is(mtmutObj, "mtmutObj")) {
         stop("mtmutObj must be a mtmutObj object.")
     }
 

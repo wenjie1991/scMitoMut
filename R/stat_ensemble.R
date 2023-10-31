@@ -40,17 +40,16 @@ get_bm_pval <- function(x, method = "none") {
 #' @export
 process_locus_bmbb <- function(mtmutObj, loc, dom_allele = NULL, return_data = FALSE, ...) {
 
-    if (class(mtmutObj) != "mtmutObj") {
+    if (is(mtmutObj, "mtmutObj")) {
         stop("mtmutObj must be a mtmutObj object.")
     }
 
-    if (dom_allele %in% c("A", "C", "G", "T")) {
-        dom_allele <- dom_allele
-    } else {
-        Warning("dom_allele must be one of A, C, G, T, auto detect the dominant allele.")
-        dom_allele <- NULL
+    if (!is.null(dom_allele)) {
+        if (!sum(dom_allele %in% c("A", "C", "G", "T"))) {
+            warning("dom_allele must be one of A, C, G, T, auto detect the dominant allele.")
+            dom_allele <- NULL
+        }
     }
-
 
     d_dom_allele <- read_locus(mtmutObj, loc, dom_allele)
 
@@ -110,7 +109,7 @@ process_locus_bmbb <- function(mtmutObj, loc, dom_allele = NULL, return_data = F
 #' @export
 run_model_fit <- function(mtmutObj, mc.cores = getOption("mc.cores", 1L)) {
 
-    if (class(mtmutObj) != "mtmutObj") {
+    if (is(mtmutObj, "mtmutObj")) {
         stop("mtmutObj must be a mtmutObj object.")
     }
 

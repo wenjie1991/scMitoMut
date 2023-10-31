@@ -12,24 +12,24 @@ export_dt(mtmutObj, percent_interp = 1, n_interp = 3, all_cell = FALSE)
 
 export_df(mtmutObj, ...)
 
-export_pval(mtmutObj, memoSort = FALSE, ...)
+export_pval(mtmutObj, memoSort = TRUE, ...)
 
-export_binary(mtmutObj, memoSort = FALSE, ...)
+export_binary(mtmutObj, memoSort = TRUE, ...)
 
-export_af(mtmutObj, memoSort = FALSE, ...)
+export_af(mtmutObj, memoSort = TRUE, ...)
 }
 \arguments{
 \item{mtmutObj}{The scMtioMut object.}
 
 \item{percent_interp}{A numeric value, the overlapping percentage threshold for triggering interpolation. The default is 1, which means no interpolation.}
 
-\item{n_interp}{A integer value, the minimum number of overlapped cells with mutation for triggering interpolation.}
+\item{n_interp}{A integer value, the minimum number of overlapped cells with mutation for triggering interpolation, the default is 3.}
 
-\item{all_cell}{A boolean to indicate whether to include all cells or only cells with mutation.}
+\item{all_cell}{A boolean to indicate whether to include all cells or only cells with mutation. By default, only cells with mutation are included.}
 
 \item{...}{Other parameters passed to \code{\link{export_dt}} or \code{\link{export_df}}.}
 
-\item{memoSort}{A boolean to indicate whether to sort the loci by mutation frequency.}
+\item{memoSort}{A boolean to indicate whether to sort the loci by mutation frequency. The default is TRUE, the advanced user will know when to set it to FALSE.}
 }
 \value{
 data.frame, data.table or matrix or p

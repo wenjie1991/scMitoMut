@@ -141,11 +141,13 @@ parse_table <- function(file, h5_file = "mut.h5", ...) {
         stop("File not exists!")
     }
 
-    if (!all(c("loc", "cell_barcode", "fwd_depth", "rev_depth", "alt", "ref", "coverage") %in% names(file))) {
+    merge_d <- data.table::fread(file, ...)
+
+    if (!all(c("loc", "cell_barcode", "fwd_depth", "rev_depth", "alt", "ref", "coverage") %in% names(merge_d))) {
         stop("The allele count table should have the following columns: loc, cell_barcode, fwd_depth, rev_depth, alt, ref, coverage")
     }
 
-    merge_d <- data.table::fread(file, ...)
+
 
     ##############################
     ## save to h5 file
@@ -411,7 +413,7 @@ is.mtmutObj <- function(x) inherits(x, "mtmutObj")
 #' x
 #' @export
 subset_cell <- function(mtmutObj, cell_list) {
-    if (class(mtmutObj) != "mtmutObj") {
+    if (is(mtmutObj, "mtmutObj")) {
         stop("mtmutObj should be a mtmutObj object")
     }
 
@@ -426,7 +428,7 @@ subset_cell <- function(mtmutObj, cell_list) {
 #' @rdname subset_cell
 #' @export
 subset_loc <- function(mtmutObj, loc_list) {
-    if (class(mtmutObj) != "mtmutObj") {
+    if (is(mtmutObj, "mtmutObj")) {
         stop("mtmutObj should be a mtmutObj object")
     }
 
@@ -464,7 +466,7 @@ subset_loc <- function(mtmutObj, loc_list) {
 #' get_pval(x, "chrM.1000", "bi", "fdr")
 #' @export
 get_pval <- function(mtmutObj, loc, model = "bb", method = "fdr") {
-    if (class(mtmutObj) != "mtmutObj") {
+    if (is(mtmutObj, "mtmutObj")) {
         stop("mtmutObj should be a mtmutObj object")
     }
 
@@ -485,11 +487,11 @@ get_pval <- function(mtmutObj, loc, model = "bb", method = "fdr") {
 #' This function filters the mutations based on the mutation calling model and parameters. The loci passed the filter will be saved in the h5 file, together with the filter parameters.
 #'
 #' @param mtmutObj a mtmutObj object.
-#' @param min_cell a integer of the minimum number of cells with mutation.
-#' @param model a string of the model for mutation calling, it can be "bb", "bm" or "bi" which stands for beta binomial, binomial mixture and binomial model respectively.
-#' @param p_threshold a numeric of the p-value threshold.
+#' @param min_cell a integer of the minimum number of cells with mutation, the default is 5.
+#' @param model a string of the model for mutation calling, it can be "bb", "bm" or "bi" which stands for beta binomial, binomial mixture and binomial model respectively, the default is "bb".
+#' @param p_threshold a numeric of the p-value threshold, the default is 0.05.
 #' @param p_adj_method a string of the method for p-value adjustment, .
-#'   refer to \code{\link[stats]{p.adjust}}.
+#'   refer to \code{\link[stats]{p.adjust}}. The default is "fdr".
 #' @return a mtmutObj object with loc_pass and loc_filter updated.
 #' @examples
 #' ## Use the example data
@@ -508,9 +510,9 @@ get_pval <- function(mtmutObj, loc, model = "bb", method = "fdr") {
 #' x <- filter_loc(x, min_cell = 5, model = "bb", p_threshold = 0.05, p_adj_method = "fdr")
 #' x
 #' @export
-filter_loc <- function(mtmutObj, min_cell = NULL, model = NULL, p_threshold = NULL, p_adj_method = NULL) {
+filter_loc <- function(mtmutObj, min_cell = 5, model = "bb", p_threshold = 0.05, p_adj_method = "fdr") {
 
-    if (class(mtmutObj) != "mtmutObj") {
+    if (is(mtmutObj, "mtmutObj")) {
         stop("mtmutObj should be a mtmutObj object")
     }
 
@@ -555,9 +557,9 @@ filter_loc <- function(mtmutObj, min_cell = NULL, model = NULL, p_threshold = NU
 #'
 #' @param mtmutObj The scMtioMut object.
 #' @param percent_interp A numeric value, the overlapping percentage threshold for triggering interpolation. The default is 1, which means no interpolation.
-#' @param n_interp A integer value, the minimum number of overlapped cells with mutation for triggering interpolation.
-#' @param all_cell A boolean to indicate whether to include all cells or only cells with mutation.
-#' @param memoSort A boolean to indicate whether to sort the loci by mutation frequency.
+#' @param n_interp A integer value, the minimum number of overlapped cells with mutation for triggering interpolation, the default is 3.
+#' @param all_cell A boolean to indicate whether to include all cells or only cells with mutation. By default, only cells with mutation are included.
+#' @param memoSort A boolean to indicate whether to sort the loci by mutation frequency. The default is TRUE, the advanced user will know when to set it to FALSE.
 #' @param ... Other parameters passed to \code{\link{export_dt}} or \code{\link{export_df}}.
 #' @return data.frame, data.table or matrix or p
 #' @export
@@ -582,7 +584,7 @@ filter_loc <- function(mtmutObj, min_cell = NULL, model = NULL, p_threshold = NU
 #' export_binary(x)
 export_dt <- function(mtmutObj, percent_interp = 1, n_interp = 3, all_cell = FALSE) {
 
-    if (class(mtmutObj) != "mtmutObj") {
+    if (is(mtmutObj, "mtmutObj")) {
         stop("mtmutObj should be a mtmutObj object")
     }
 
@@ -641,7 +643,7 @@ export_dt <- function(mtmutObj, percent_interp = 1, n_interp = 3, all_cell = FAL
         ix <- sort(mut_count, decreasing = FALSE, index.return = TRUE)$ix
 
         ## For the lowest framqent mutations
-        for (i in 1:(length(ix) - 1)) {
+        for (i in seq_len(length(ix) - 1)) {
             mut_i <- ix[i]
 
             ## test the overlap with other mutations
@@ -688,7 +690,7 @@ export_df <- function(mtmutObj, ...) {
 
 #' @export
 #' @rdname export_dt
-export_pval <- function(mtmutObj, memoSort = FALSE, ...) {
+export_pval <- function(mtmutObj, memoSort = TRUE, ...) {
     res <- export_dt(mtmutObj, ...)
     d <- data.table::dcast(res, loc ~ cell_barcode, value.var = "pval")
     m <- data.matrix(d[, -1])
@@ -707,7 +709,7 @@ export_pval <- function(mtmutObj, memoSort = FALSE, ...) {
 
 #' @export
 #' @rdname export_dt
-export_binary <- function(mtmutObj, memoSort = FALSE, ...) {
+export_binary <- function(mtmutObj, memoSort = TRUE, ...) {
     res <- export_dt(mtmutObj, ...)
     d <- data.table::dcast(res, loc ~ cell_barcode, value.var = "mut_status")
     m_b <- data.matrix(d[, -1])
@@ -722,7 +724,7 @@ export_binary <- function(mtmutObj, memoSort = FALSE, ...) {
 
 #' @export
 #' @rdname export_dt
-export_af <- function(mtmutObj, memoSort = FALSE, ...) {
+export_af <- function(mtmutObj, memoSort = TRUE, ...) {
     res <- export_dt(mtmutObj, ...)
     d <- data.table::dcast(res, loc ~ cell_barcode, value.var = "af")
     m <- data.matrix(d[, -1])
