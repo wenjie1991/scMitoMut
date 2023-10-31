@@ -2,8 +2,8 @@ Package: scMitoMut
 Title: Single-cell Mitochondrial Mutation Analysis Tool
 Version: 0.99.2
 Authors@R: c(
-  person("Wenjie", "Sun", email = "sunwjie@gmail.com", role = "cre", comment=c(ORCID="0000-0002-3100-2346")),
-  person("Leila", "Perie", email = "leila.perie@curie.fr", role = "aut")
+  person("Wenjie", "Sun", email = "sunwjie@gmail.com", role = c("cre", "aut"), comment=c(ORCID="0000-0002-3100-2346")),
+  person("Leila", "Perie", email = "leila.perie@curie.fr", role = "ctb")
   )
 Description: 
     This package is designed for analyzing mitochondrial mutations using
