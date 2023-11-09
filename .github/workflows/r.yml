@@ -10,6 +10,8 @@
 name: R
 
 on:
+  push:
+    branches: [ "master" ]
   pull_request:
     branches: [ "master" ]
 
