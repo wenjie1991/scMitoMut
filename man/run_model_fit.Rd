@@ -4,7 +4,7 @@
 \alias{run_model_fit}
 \title{Fit binomial mixture model for every candidate locus}
 \usage{
-run_model_fit(mtmutObj, mc.cores = getOption("mc.cores", 2L))
+run_model_fit(mtmutObj, mc.cores = getOption("mc.cores", 1L))
 }
 \arguments{
 \item{mtmutObj}{a mtmutObj object.}

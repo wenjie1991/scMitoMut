@@ -61,6 +61,8 @@ Rcpp::List em_bm(
     int max_iter = 1000, 
     double tol = 0.001
 ) {
+    Rcpp::checkUserInterrupt();
+
     double N = n.size();
     // Run the EM algorithm
 

@@ -6,23 +6,23 @@
 \usage{
 filter_loc(
   mtmutObj,
-  min_cell = NULL,
-  model = NULL,
-  p_threshold = NULL,
-  p_adj_method = NULL
+  min_cell = 5,
+  model = "bb",
+  p_threshold = 0.05,
+  p_adj_method = "fdr"
 )
 }
 \arguments{
 \item{mtmutObj}{a mtmutObj object.}
 
-\item{min_cell}{a integer of the minimum number of cells with mutation.}
+\item{min_cell}{a integer of the minimum number of cells with mutation, the default is 5.}
 
-\item{model}{a string of the model for mutation calling, it can be "bb", "bm" or "bi" which stands for beta binomial, binomial mixture and binomial model respectively.}
+\item{model}{a string of the model for mutation calling, it can be "bb", "bm" or "bi" which stands for beta binomial, binomial mixture and binomial model respectively, the default is "bb".}
 
-\item{p_threshold}{a numeric of the p-value threshold.}
+\item{p_threshold}{a numeric of the p-value threshold, the default is 0.05.}
 
 \item{p_adj_method}{a string of the method for p-value adjustment, .
-refer to \code{\link[stats]{p.adjust}}.}
+refer to \code{\link[stats]{p.adjust}}. The default is "fdr".}
 }
 \value{
 a mtmutObj object with loc_pass and loc_filter updated.

@@ -7,9 +7,9 @@
 plot_af_coverage(
   mtmutObj,
   loc,
-  model = NULL,
-  p_threshold = NULL,
-  p_adj_method = NULL
+  model = "bb",
+  p_threshold = 0.05,
+  p_adj_method = "fdr"
 )
 }
 \arguments{
@@ -17,11 +17,11 @@ plot_af_coverage(
 
 \item{loc}{a string of genome location, e.g. "chrM.200".}
 
-\item{model}{a string of model name, one of "bb", "bm", "bi".}
+\item{model}{a string of model name, one of "bb", "bm", "bi", the default value is "bb".}
 
-\item{p_threshold}{a numeric value of p-value threshold.}
+\item{p_threshold}{a numeric value of p-value threshold, the default is 0.05.}
 
-\item{p_adj_method}{a string of p-value adjustment method.}
+\item{p_adj_method}{a string of p-value adjustment method, the default is FDR.}
 }
 \value{
 a ggplot object.

@@ -18,6 +18,15 @@ library(knitr)
 opts_chunk$set(echo = TRUE, TOC = TRUE)
 ```
 
+
+Install package:
+
+```{r, eval=FALSE}
+BiocManager::install("scMitoMut")
+```
+
+Load packages:
+
 ```{r}
 library(scMitoMut)
 library(data.table)
