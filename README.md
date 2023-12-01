@@ -1,24 +1,30 @@
-# scMitoMut: An R Package for Mitochondrial Mutation Analysis in Single-Cell Omics Data
-
 [![R](https://github.com/wenjie1991/scMitoMut/actions/workflows/r.yml/badge.svg)](https://github.com/wenjie1991/scMitoMut/actions/workflows/r.yml)
 
-## Installation
+# The `scMitoMut` package
+
+The [**scMitoMut**](https://wenjie1991/scMitoMut/) is a R/Bioconductor Package for Mitochondrial Mutation Analysis in Single-Cell Omics Data
+
+# Installation
+
+## Install from bioconductor
 
 We are currently submitting the package to Bioconductor. To try it out, you can use the source code provided.
 
+## Install the devel version from GitHub
+
 ```r
 # install.packages("devtools")
-devtools::install_github("username/packagename", build_vignettes = TRUE)
+devtools::install_github("wenjie1991/scMitoMut", build_vignettes = TRUE)
 ```
 
-## Vignette
+# Vignette
 
 The vignette can be found here: [https://github.com/TeamPerie/scMitoMut/blob/main/vignettes/Analysis_colon_cancer_dataset.Rmd]().
 
 You can also access the HTML version by using the R command `browseVignettes('scMitoMut')` after installing the package.
 
 
-## Mini Example
+# Mini Example
 
 This is a simple example that demonstrates the main function of the package. It can be executed in less than 1 minute.
 
@@ -74,5 +80,7 @@ plot_heatmap(x, type = "af", cell_ann = cell_ann, ann_colors = ann_colors, perce
 plot_af_coverage(x, "chrM.200")
 ```
 
+# Contribution
 
+You are welcome to open an issue or make a pull request.
 
