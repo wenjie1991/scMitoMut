@@ -2,13 +2,13 @@
 
 # The `scMitoMut` package
 
-The [**scMitoMut**](https://wenjie1991/scMitoMut/) is a R/Bioconductor Package for Mitochondrial Mutation Analysis in Single-Cell Omics Data
+The [**scMitoMut**](https://github.com/wenjie1991/scMitoMut) is a R/Bioconductor Package for Mitochondrial Mutation Analysis in Single-Cell Omics Data
 
 # Installation
 
 ## Install from bioconductor
 
-We are currently submitting the package to Bioconductor. To try it out, you can use the source code provided.
+We are currently submitting the package to Bioconductor.
 
 ## Install the devel version from GitHub
 
@@ -19,7 +19,7 @@ devtools::install_github("wenjie1991/scMitoMut", build_vignettes = TRUE)
 
 # Vignette
 
-The vignette can be found here: [https://github.com/TeamPerie/scMitoMut/blob/main/vignettes/Analysis_colon_cancer_dataset.Rmd]().
+The vignette can be found here: [https://github.com/wenjie1991/scMitoMut/blob/main/vignettes/Analysis_colon_cancer_dataset.Rmd]().
 
 You can also access the HTML version by using the R command `browseVignettes('scMitoMut')` after installing the package.
 
