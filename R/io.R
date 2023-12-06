@@ -420,6 +420,9 @@ subset_cell <- function(mtmutObj, cell_list) {
     if ("cell_selected" %in% h5ls(mtmutObj$h5f, recursive = FALSE)$name) {
         h5delete(mtmutObj$h5f, "cell_selected")
     }
+    if (length(unique(cell_list)) != length(cell_list)) {
+        stop("cell_list should be unique")
+    }
     h5write(cell_list, mtmutObj$h5f, "cell_selected")
     mtmutObj$cell_selected <- cell_list
     mtmutObj
@@ -435,6 +438,11 @@ subset_loc <- function(mtmutObj, loc_list) {
     if ("loc_selected" %in% h5ls(mtmutObj$h5f, recursive = FALSE)$name) {
         h5delete(mtmutObj$h5f, "loc_selected")
     }
+
+    if (length(unique(loc_list)) != length(loc_list)) {
+        stop("loc_list should be unique")
+    }
+
     h5write(loc_list, mtmutObj$h5f, "loc_selected")
     mtmutObj$loc_selected <- loc_list
     mtmutObj
