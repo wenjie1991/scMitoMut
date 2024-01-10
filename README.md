@@ -8,7 +8,12 @@ The [**scMitoMut**](https://github.com/wenjie1991/scMitoMut) is a R/Bioconductor
 
 ## Install from bioconductor
 
-We are currently submitting the package to Bioconductor.
+```r
+## Install `BiocManager` package to manage Bioconductor packages.
+install.packages("BiocManager")
+## Install `scMitoMut` from Bioconductor
+BiocManager::install("scMitoMut")
+```
 
 ## Install the devel version from GitHub
 
