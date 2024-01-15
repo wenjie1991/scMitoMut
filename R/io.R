@@ -336,6 +336,7 @@ open_h5_file <- function(h5_file) {
             min_cell = 1,
             model = "bb",
             p_threshold = 0.05,
+            alt_count_threshold = 0,
             p_adj_method = "fdr"
         )
     )
@@ -365,6 +366,7 @@ format.mtmutObj <- function(x, ...) {
     cat("\t", "min_cell: ", x$loc_filter$min_cell, "\n", sep = "")
     cat("\t", "model: ", x$loc_filter$model, "\n", sep = "")
     cat("\t", "p_threshold: ", x$loc_filter$p_threshold, "\n", sep = "")
+    cat("\t", "alt_count_threshold: ", x$loc_filter$alt_count_threshold, "\n", sep = "")
     cat("\t", "p_adj_method: ", x$loc_filter$p_adj_method, "\n", sep = "")
 }
 
@@ -518,7 +520,7 @@ get_pval <- function(mtmutObj, loc, model = "bb", method = "fdr") {
 #' x <- filter_loc(x, min_cell = 5, model = "bb", p_threshold = 0.05, p_adj_method = "fdr")
 #' x
 #' @export
-filter_loc <- function(mtmutObj, min_cell = 5, model = "bb", p_threshold = 0.05, p_adj_method = "fdr") {
+filter_loc <- function(mtmutObj, min_cell = 5, model = "bb", p_threshold = 0.05, alt_count_threshold = 0, p_adj_method = "fdr") {
 
     if (!is(mtmutObj, "mtmutObj")) {
         stop("mtmutObj should be a mtmutObj object")
@@ -536,10 +538,15 @@ filter_loc <- function(mtmutObj, min_cell = 5, model = "bb", p_threshold = 0.05,
         stop("p_threshold should be in [0, 1]")
     }
 
+    if (alt_count_threshold < 0) {
+        stop("alt_count_threshold should be >= 0")
+    }
+
     ## Get the parameters from mtmutObj if they are NULL
     min_cell <- ifelse(is.null(min_cell), mtmutObj$loc_filter$min_cell, min_cell)
     model <- ifelse(is.null(model), mtmutObj$loc_filter$model, model)
     p_threshold <- ifelse(is.null(p_threshold), mtmutObj$loc_filter$p_threshold, p_threshold)
+    alt_count_threshold <- ifelse(is.null(alt_count_threshold), mtmutObj$loc_filter$alt_count_threshold, alt_count_threshold)
     p_adj_method <- ifelse(is.null(p_adj_method), mtmutObj$loc_filter$p_adj_method, p_adj_method)
 
     loc_list <- mtmutObj$loc_selected
@@ -548,11 +555,23 @@ filter_loc <- function(mtmutObj, min_cell = 5, model = "bb", p_threshold = 0.05,
         data.frame(loc = xi, mut_cell_n = sum(pval <= p_threshold, na.rm = TRUE))
     }) %>% rbindlist()
     res <- res[mut_cell_n >= min_cell]
+
+    if (alt_count_threshold > 0) {
+        res_2 <- parallel::mclapply(res$loc, function(xi) {
+            d <- read_locus(mtmutObj, xi)
+            pval <- get_pval(mtmutObj, xi, model = model, method = p_adj_method)
+            n <- sum((d$coverage - d$alt_depth) >= alt_count_threshold & pval <= p_threshold, na.rm = T)
+            data.frame(loc = xi, mut_cell_n = n)
+        }) %>% rbindlist()
+        res <- res_2[mut_cell_n >= min_cell]
+    }
+
     mtmutObj$loc_pass <- res$loc
     mtmutObj$loc_filter <- list(
         min_cell = min_cell,
         model = model,
         p_threshold = p_threshold,
+        alt_count_threshold = alt_count_threshold,
         p_adj_method = p_adj_method
     )
     mtmutObj
@@ -614,6 +633,7 @@ export_dt <- function(mtmutObj, percent_interp = 1, n_interp = 3, all_cell = FAL
     min_cell <- mtmutObj$loc_filter$min_cell
     model <- mtmutObj$loc_filter$model
     p_threshold <- mtmutObj$loc_filter$p_threshold
+    alt_count_threshold <- mtmutObj$loc_filter$alt_count_threshold
     p_adj_method <- mtmutObj$loc_filter$p_adj_method
 
     res <- parallel::mclapply(loc_list, function(loc_i) {
@@ -624,6 +644,7 @@ export_dt <- function(mtmutObj, percent_interp = 1, n_interp = 3, all_cell = FAL
     }) %>% rbindlist()
 
     res[, af := ((fwd_depth + rev_depth) / coverage)]
+    res[, alt_count := (coverage - alt_depth)]
 
     # if (!all_cell) {
     # cell_list = res[, .(n = sum(pval < p_threshold, na.rm=TRUE)), by = cell_barcode][n > 0, cell_barcode]
@@ -642,8 +663,13 @@ export_dt <- function(mtmutObj, percent_interp = 1, n_interp = 3, all_cell = FAL
     m_a <- data.matrix(d[, -1])
     rownames(m_a) <- d[[1]]
 
+    ## matrix alt_count
+    d <- data.table::dcast(res, loc ~ cell_barcode, value.var = "alt_count")
+    m_c <- data.matrix(d[, -1])
+    rownames(m_c) <- d[[1]]
+
     ## matrix binary
-    m_b <- m_p < p_threshold
+    m_b <- m_p < p_threshold & m_c >= alt_count_threshold
 
     ## interpolate the mutation has higher frequency with the mutation has lower frequency
     if (percent_interp < 1) {

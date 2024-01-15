@@ -26,14 +26,14 @@
 
 # Draw depth ~ AF scatter plot
 plot_locus <- function(
-    d_select_maj_base, p, p_threshold = 0.05, loc = NA, maj_base = NA) {
+    d_select_maj_base, p, p_threshold = 0.05, alt_count_threshold = 0, loc = NA, maj_base = NA) {
     ## alt / depth
     N <- d_select_maj_base$coverage
     y <- d_select_maj_base[, alt_depth]
     d_plot <- data.table(
         depth = N,
         af = y / (N + 0.001),
-        highlight = p < p_threshold
+        highlight = p < p_threshold & (N - y) > alt_count_threshold
     )
     ggplot(d_plot, aes(x = depth, y = af, color = highlight)) +
         geom_point() +
@@ -113,7 +113,7 @@ plot_locus <- function(
 #' # plot the locus profile for chrM.200
 #' plot_af_coverage(x, "chrM.204")
 #' @export
-plot_af_coverage <- function(mtmutObj, loc, model = 'bb', p_threshold = 0.05, p_adj_method = 'fdr') {
+plot_af_coverage <- function(mtmutObj, loc, model = 'bb', p_threshold = NULL, alt_count_threshold = NULL, p_adj_method = NULL) {
 
     if (!is(mtmutObj, "mtmutObj")) {
         stop("mtmutObj must be a mtmutObj object.")
@@ -133,7 +133,7 @@ plot_af_coverage <- function(mtmutObj, loc, model = 'bb', p_threshold = 0.05, p_
     p_adj_method <- ifelse(is.null(p_adj_method), mtmutObj$loc_filter$p_adj_method, p_adj_method)
 
     d <- read_locus(mtmutObj, loc)
-    plot_locus(d, p = get_pval(mtmutObj, loc, model, p_adj_method), p_threshold = p_threshold, loc = loc)
+    plot_locus(d, p = get_pval(mtmutObj, loc, model, p_adj_method), p_threshold = p_threshold, alt_count_threshold = alt_count_threshold, loc = loc)
 }
 
 #' Heatmap plot
