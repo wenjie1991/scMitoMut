@@ -17,6 +17,9 @@ get_bm_pval <- function(x, method = "none") {
 #' @param loc string given the locus name (e.g. "chrM1000").
 #' @param dom_allele string given the dominant allele (e.g. "A"), if NULL auto detect the dominant allele.
 #' @param return_data logical whether to return the allele count data, if FALSE, the \code{data} in the return value will be NULL. The default is FALSE.
+#' @param bb_over_bm logical weather to use binomial mixture model result to define the wildtype cells for training beta binomial model.
+#' @param bb_over_bm_p numeric the binomial mixutre model p value threshold for selecting the wildtype cells for training beta binomial model.
+#' @param bb_over_bm_adj string the method for adjusting the binomial mixture p value, default is "fdr".
 #' @param ... other parameters control the model fitting.
 #' @return A list of three elements:
 #' \item{data}{data.frame of the allele count data.}
@@ -38,7 +41,7 @@ get_bm_pval <- function(x, method = "none") {
 #' res
 #'
 #' @export
-process_locus_bmbb <- function(mtmutObj, loc, dom_allele = NULL, return_data = FALSE, ...) {
+process_locus_bmbb <- function(mtmutObj, loc, dom_allele = NULL, return_data = FALSE, bb_over_bm = TRUE, bb_over_bm_p = 0.05, bb_over_bm_adj = "fdr", ...) {
 
     if (!is(mtmutObj, "mtmutObj")) {
         stop("mtmutObj must be a mtmutObj object.")
@@ -57,7 +60,11 @@ process_locus_bmbb <- function(mtmutObj, loc, dom_allele = NULL, return_data = F
     res_bm <- process_locus_bm(d_dom_allele, ...)
 
     ## fit beta binomial model
-    selected_maj_cell <- d_dom_allele[get_bm_pval(res_bm, "fdr") >= 0.05]$cell_barcode
+    if (bb_over_bm) {
+        selected_maj_cell <- d_dom_allele[get_bm_pval(res_bm, bb_over_bm_adj) >= bb_over_bm_p]$cell_barcode
+    } else {
+        selected_maj_cell <- d_dom_allele$cell_barcode
+    }
     res_bb <- process_locus_bb(d_dom_allele, selected_maj_cell, ...)
 
     ## VMR and consistency of fwd rev strand
@@ -83,6 +90,9 @@ process_locus_bmbb <- function(mtmutObj, loc, dom_allele = NULL, return_data = F
 #'
 #' @param mtmutObj a mtmutObj object.
 #' @param mc.cores integer number of cores to use.
+#' @param bb_over_bm logical weather to use binomial mixture model result to define the wildtype cells for training beta binomial model.
+#' @param bb_over_bm_p numeric the binomial mixutre model p value threshold for selecting the wildtype cells for training beta binomial model.
+#' @param bb_over_bm_adj string the method for adjusting the binomial mixture p value, default is "fdr".
 #' @return NULL, the results are saved in the h5f file.
 #' @details
 #' This function will fit three models for every candidate locus:
@@ -107,7 +117,7 @@ process_locus_bmbb <- function(mtmutObj, loc, dom_allele = NULL, return_data = F
 #' x <- filter_loc(x, min_cell = 5, model = "bb", p_threshold = 0.05, p_adj_method = "fdr")
 #' x
 #' @export
-run_model_fit <- function(mtmutObj, mc.cores = getOption("mc.cores", 1L)) {
+run_model_fit <- function(mtmutObj, mc.cores = getOption("mc.cores", 1L), bb_over_bm = TRUE, bb_over_bm_p = 0.05, bb_over_bm_adj = "fdr") {
 
     if (!is(mtmutObj, "mtmutObj")) {
         stop("mtmutObj must be a mtmutObj object.")
@@ -127,7 +137,7 @@ run_model_fit <- function(mtmutObj, mc.cores = getOption("mc.cores", 1L)) {
     res_l <- parallel::mclapply(loc_list, function(xi) {
         message(xi)
         # pb$tick()
-        res <- process_locus_bmbb(mtmutObj, xi, return_data = FALSE)
+        res <- process_locus_bmbb(mtmutObj, xi, return_data = FALSE, bb_over_bm = bb_over_bm, bb_over_bm_p = bb_over_bm_p, bb_over_bm_adj = bb_over_bm_adj)
 
         list(
             bi_pval = res$model$binom_mix$bi_pval,

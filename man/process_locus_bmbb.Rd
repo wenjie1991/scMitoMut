@@ -4,7 +4,16 @@
 \alias{process_locus_bmbb}
 \title{Fit tree models for one locus}
 \usage{
-process_locus_bmbb(mtmutObj, loc, dom_allele = NULL, return_data = FALSE, ...)
+process_locus_bmbb(
+  mtmutObj,
+  loc,
+  dom_allele = NULL,
+  return_data = FALSE,
+  bb_over_bm = TRUE,
+  bb_over_bm_p = 0.05,
+  bb_over_bm_adj = "fdr",
+  ...
+)
 }
 \arguments{
 \item{mtmutObj}{a mtmutObj object.}
@@ -14,6 +23,12 @@ process_locus_bmbb(mtmutObj, loc, dom_allele = NULL, return_data = FALSE, ...)
 \item{dom_allele}{string given the dominant allele (e.g. "A"), if NULL auto detect the dominant allele.}
 
 \item{return_data}{logical whether to return the allele count data, if FALSE, the \code{data} in the return value will be NULL. The default is FALSE.}
+
+\item{bb_over_bm}{logical weather to use binomial mixture model result to define the wildtype cells for training beta binomial model.}
+
+\item{bb_over_bm_p}{numeric the binomial mixutre model p value threshold for selecting the wildtype cells for training beta binomial model.}
+
+\item{bb_over_bm_adj}{string the method for adjusting the binomial mixture p value, default is "fdr".}
 
 \item{...}{other parameters control the model fitting.}
 }

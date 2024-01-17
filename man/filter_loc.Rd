@@ -9,6 +9,7 @@ filter_loc(
   min_cell = 5,
   model = "bb",
   p_threshold = 0.05,
+  alt_count_threshold = 0,
   p_adj_method = "fdr"
 )
 }
@@ -20,6 +21,8 @@ filter_loc(
 \item{model}{a string of the model for mutation calling, it can be "bb", "bm" or "bi" which stands for beta binomial, binomial mixture and binomial model respectively, the default is "bb".}
 
 \item{p_threshold}{a numeric of the p-value threshold, the default is 0.05.}
+
+\item{alt_count_threshold}{a integer of the minimum number of alternative base count, the default is 0.}
 
 \item{p_adj_method}{a string of the method for p-value adjustment, .
 refer to \code{\link[stats]{p.adjust}}. The default is "fdr".}
