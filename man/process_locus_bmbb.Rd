@@ -9,7 +9,7 @@ process_locus_bmbb(
   loc,
   dom_allele = NULL,
   return_data = FALSE,
-  bb_over_bm = T,
+  bb_over_bm = TRUE,
   bb_over_bm_p = 0.05,
   bb_over_bm_adj = "fdr",
   ...

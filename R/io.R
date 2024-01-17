@@ -378,6 +378,19 @@ format.mtmutObj <- function(x, ...) {
 #' @param ... other parameters passed to \code{\link[base]{format}} or \code{\link[base]{print}}.
 #' @return a string
 #' @export
+#' @examples
+#' ## Use the example data
+#' f <- system.file("extdata", "mini_dataset.tsv.gz", package = "scMitoMut")
+#' ## Create a temporary h5 file
+#' ## In real case, we keep the h5 in project folder for future use
+#' f_h5_tmp <- tempfile(fileext = ".h5")
+#' ## Load the data with parse_table function
+#' f_h5 <- parse_table(f, sep = "\t", h5_file = f_h5_tmp)
+#' f_h5
+#' ## open the h5 file and create a mtmutObj object
+#' x <- open_h5_file(f_h5)
+#' x
+#' print(x)
 print.mtmutObj <- function(x, ...) {
     format(x, ...)
 }
@@ -561,7 +574,7 @@ filter_loc <- function(mtmutObj, min_cell = 5, model = "bb", p_threshold = 0.05,
         res_2 <- parallel::mclapply(res$loc, function(xi) {
             d <- read_locus(mtmutObj, xi)
             pval <- get_pval(mtmutObj, xi, model = model, method = p_adj_method)
-            n <- sum((d$coverage - d$alt_depth) >= alt_count_threshold & pval <= p_threshold, na.rm = T)
+            n <- sum((d$coverage - d$alt_depth) >= alt_count_threshold & pval <= p_threshold, na.rm = TRUE)
             data.frame(loc = xi, mut_cell_n = n)
         }) %>% rbindlist()
         res <- res_2[mut_cell_n >= min_cell]

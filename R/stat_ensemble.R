@@ -41,7 +41,7 @@ get_bm_pval <- function(x, method = "none") {
 #' res
 #'
 #' @export
-process_locus_bmbb <- function(mtmutObj, loc, dom_allele = NULL, return_data = FALSE, bb_over_bm = T, bb_over_bm_p = 0.05, bb_over_bm_adj = "fdr", ...) {
+process_locus_bmbb <- function(mtmutObj, loc, dom_allele = NULL, return_data = FALSE, bb_over_bm = TRUE, bb_over_bm_p = 0.05, bb_over_bm_adj = "fdr", ...) {
 
     if (!is(mtmutObj, "mtmutObj")) {
         stop("mtmutObj must be a mtmutObj object.")
@@ -117,7 +117,7 @@ process_locus_bmbb <- function(mtmutObj, loc, dom_allele = NULL, return_data = F
 #' x <- filter_loc(x, min_cell = 5, model = "bb", p_threshold = 0.05, p_adj_method = "fdr")
 #' x
 #' @export
-run_model_fit <- function(mtmutObj, mc.cores = getOption("mc.cores", 1L), bb_over_bm = T, bb_over_bm_p = 0.05, bb_over_bm_adj = "fdr") {
+run_model_fit <- function(mtmutObj, mc.cores = getOption("mc.cores", 1L), bb_over_bm = TRUE, bb_over_bm_p = 0.05, bb_over_bm_adj = "fdr") {
 
     if (!is(mtmutObj, "mtmutObj")) {
         stop("mtmutObj must be a mtmutObj object.")

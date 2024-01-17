@@ -7,7 +7,7 @@
 run_model_fit(
   mtmutObj,
   mc.cores = getOption("mc.cores", 1L),
-  bb_over_bm = T,
+  bb_over_bm = TRUE,
   bb_over_bm_p = 0.05,
   bb_over_bm_adj = "fdr"
 )
