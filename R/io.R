@@ -502,6 +502,7 @@ get_pval <- function(mtmutObj, loc, model = "bb", method = "fdr") {
 #' @param p_threshold a numeric of the p-value threshold, the default is 0.05.
 #' @param p_adj_method a string of the method for p-value adjustment, .
 #'   refer to \code{\link[stats]{p.adjust}}. The default is "fdr".
+#' @param alt_count_threshold a integer of the minimum number of alternative base count, the default is 0.
 #' @return a mtmutObj object with loc_pass and loc_filter updated.
 #' @examples
 #' ## Use the example data

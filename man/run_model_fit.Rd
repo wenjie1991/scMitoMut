@@ -4,12 +4,24 @@
 \alias{run_model_fit}
 \title{Fit binomial mixture model for every candidate locus}
 \usage{
-run_model_fit(mtmutObj, mc.cores = getOption("mc.cores", 1L))
+run_model_fit(
+  mtmutObj,
+  mc.cores = getOption("mc.cores", 1L),
+  bb_over_bm = T,
+  bb_over_bm_p = 0.05,
+  bb_over_bm_adj = "fdr"
+)
 }
 \arguments{
 \item{mtmutObj}{a mtmutObj object.}
 
 \item{mc.cores}{integer number of cores to use.}
+
+\item{bb_over_bm}{logical weather to use binomial mixture model result to define the wildtype cells for training beta binomial model.}
+
+\item{bb_over_bm_p}{numeric the binomial mixutre model p value threshold for selecting the wildtype cells for training beta binomial model.}
+
+\item{bb_over_bm_adj}{string the method for adjusting the binomial mixture p value, default is "fdr".}
 }
 \value{
 NULL, the results are saved in the h5f file.

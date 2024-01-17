@@ -88,6 +88,7 @@ plot_locus <- function(
 #' @param model a string of model name, one of "bb", "bm", "bi", the default value is "bb".
 #' @param p_threshold a numeric value of p-value threshold, the default is 0.05.
 #' @param p_adj_method a string of p-value adjustment method, the default is FDR.
+#' @param alt_count_threshold a numeric value of alternative allele count threshold, the default is NULL, which means use the value in mtmutObj.
 #' @return a ggplot object.
 #' @examples
 #' ## Use the example data
@@ -113,7 +114,14 @@ plot_locus <- function(
 #' # plot the locus profile for chrM.200
 #' plot_af_coverage(x, "chrM.204")
 #' @export
-plot_af_coverage <- function(mtmutObj, loc, model = 'bb', p_threshold = NULL, alt_count_threshold = NULL, p_adj_method = NULL) {
+plot_af_coverage <- function(mtmutObj, loc, model = NULL, p_threshold = NULL, alt_count_threshold = NULL, p_adj_method = NULL) {
+
+    ## get parameters
+    model <- ifelse(is.null(model), mtmutObj$loc_filter$model, model)
+    p_threshold <- ifelse(is.null(p_threshold), mtmutObj$loc_filter$p_threshold, p_threshold)
+    p_adj_method <- ifelse(is.null(p_adj_method), mtmutObj$loc_filter$p_adj_method, p_adj_method)
+    alt_count_threshold <- ifelse(is.null(alt_count_threshold), mtmutObj$loc_filter$alt_count_threshold, alt_count_threshold)
+    model <- ifelse(is.null(model), mtmutObj$loc_filter$model, model)
 
     if (!is(mtmutObj, "mtmutObj")) {
         stop("mtmutObj must be a mtmutObj object.")
@@ -126,11 +134,6 @@ plot_af_coverage <- function(mtmutObj, loc, model = 'bb', p_threshold = NULL, al
     if (p_threshold < 0 | p_threshold > 1) {
         stop("p_threshold should be between 0 and 1")
     }
-
-    ## get parameters
-    model <- ifelse(is.null(model), mtmutObj$loc_filter$model, model)
-    p_threshold <- ifelse(is.null(p_threshold), mtmutObj$loc_filter$p_threshold, p_threshold)
-    p_adj_method <- ifelse(is.null(p_adj_method), mtmutObj$loc_filter$p_adj_method, p_adj_method)
 
     d <- read_locus(mtmutObj, loc)
     plot_locus(d, p = get_pval(mtmutObj, loc, model, p_adj_method), p_threshold = p_threshold, alt_count_threshold = alt_count_threshold, loc = loc)

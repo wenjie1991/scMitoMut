@@ -17,6 +17,9 @@ get_bm_pval <- function(x, method = "none") {
 #' @param loc string given the locus name (e.g. "chrM1000").
 #' @param dom_allele string given the dominant allele (e.g. "A"), if NULL auto detect the dominant allele.
 #' @param return_data logical whether to return the allele count data, if FALSE, the \code{data} in the return value will be NULL. The default is FALSE.
+#' @param bb_over_bm logical weather to use binomial mixture model result to define the wildtype cells for training beta binomial model.
+#' @param bb_over_bm_p numeric the binomial mixutre model p value threshold for selecting the wildtype cells for training beta binomial model.
+#' @param bb_over_bm_adj string the method for adjusting the binomial mixture p value, default is "fdr".
 #' @param ... other parameters control the model fitting.
 #' @return A list of three elements:
 #' \item{data}{data.frame of the allele count data.}
@@ -87,6 +90,9 @@ process_locus_bmbb <- function(mtmutObj, loc, dom_allele = NULL, return_data = F
 #'
 #' @param mtmutObj a mtmutObj object.
 #' @param mc.cores integer number of cores to use.
+#' @param bb_over_bm logical weather to use binomial mixture model result to define the wildtype cells for training beta binomial model.
+#' @param bb_over_bm_p numeric the binomial mixutre model p value threshold for selecting the wildtype cells for training beta binomial model.
+#' @param bb_over_bm_adj string the method for adjusting the binomial mixture p value, default is "fdr".
 #' @return NULL, the results are saved in the h5f file.
 #' @details
 #' This function will fit three models for every candidate locus:

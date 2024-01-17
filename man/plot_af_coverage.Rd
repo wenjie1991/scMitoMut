@@ -7,9 +7,10 @@
 plot_af_coverage(
   mtmutObj,
   loc,
-  model = "bb",
-  p_threshold = 0.05,
-  p_adj_method = "fdr"
+  model = NULL,
+  p_threshold = NULL,
+  alt_count_threshold = NULL,
+  p_adj_method = NULL
 )
 }
 \arguments{
@@ -20,6 +21,8 @@ plot_af_coverage(
 \item{model}{a string of model name, one of "bb", "bm", "bi", the default value is "bb".}
 
 \item{p_threshold}{a numeric value of p-value threshold, the default is 0.05.}
+
+\item{alt_count_threshold}{a numeric value of alternative allele count threshold, the default is NULL, which means use the value in mtmutObj.}
 
 \item{p_adj_method}{a string of p-value adjustment method, the default is FDR.}
 }
