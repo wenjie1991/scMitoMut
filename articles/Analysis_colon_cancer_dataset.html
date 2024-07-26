@@ -215,7 +215,7 @@ loading.</p>
 <span><span class="va">f_h5</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/parse_table.html">parse_table</a></span><span class="op">(</span><span class="va">f</span>, h5_file <span class="op">=</span> <span class="va">f_h5_tmp</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">f_h5</span></span></code></pre></div>
-<pre><code><span><span class="co">## [1] "/var/folders/46/vh_b6qzs5kzgdhvx1kcn7hyh0000gn/T//Rtmpp9sqLf/file1f5f78d37c4d.h5"</span></span></code></pre>
+<pre><code><span><span class="co">## [1] "/var/folders/46/vh_b6qzs5kzgdhvx1kcn7hyh0000gn/T//RtmpgeFaeA/file45026e83326.h5"</span></span></code></pre>
 <p>After obtaining the <code>H5</code> file, the
 <code>open_h5_file</code> function can be utilized to load it, resulting
 in an object referred to as “mtmutObj”.</p>
@@ -230,7 +230,7 @@ loci - <code>cell_list</code> is a list of available cell ids -
 <span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/open_h5_file.html">open_h5_file</a></span><span class="op">(</span><span class="va">f_h5</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## List of 9</span></span>
-<span><span class="co">##  $ file         : chr "/var/folders/46/vh_b6qzs5kzgdhvx1kcn7hyh0000gn/T//Rtmpp9sqLf/file1f5f78d37c4d.h5"</span></span>
+<span><span class="co">##  $ file         : chr "/var/folders/46/vh_b6qzs5kzgdhvx1kcn7hyh0000gn/T//RtmpgeFaeA/file45026e83326.h5"</span></span>
 <span><span class="co">##  $ h5f          :Formal class 'H5IdComponent' [package "rhdf5"] with 2 slots</span></span>
 <span><span class="co">##   .. ..@ ID    : chr "72057594037927938"</span></span>
 <span><span class="co">##   .. ..@ native: logi FALSE</span></span>
@@ -331,8 +331,8 @@ the wild-type allele in specific cell.</p>
 <span><span class="co">## [1] "chrM.16093"</span></span>
 <span><span class="co">## [1] "chrM.16147"</span></span></code></pre>
 <pre><code><span><span class="co">##           used (Mb) gc trigger  (Mb) limit (Mb) max used  (Mb)</span></span>
-<span><span class="co">## Ncells 1189246 63.6    2338485 124.9         NA  2338485 124.9</span></span>
-<span><span class="co">## Vcells 2256682 17.3    8388608  64.0      16384  6536029  49.9</span></span></code></pre>
+<span><span class="co">## Ncells 1189246 63.6    2338517 124.9         NA  2338517 124.9</span></span>
+<span><span class="co">## Vcells 2256682 17.3    8388608  64.0      16384  6537387  49.9</span></span></code></pre>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## The p-value is kept in the pval group of H5 file</span></span>
 <span><span class="fu"><a href="https://rdrr.io/pkg/rhdf5/man/h5ls.html" class="external-link">h5ls</a></span><span class="op">(</span><span class="va">x</span><span class="op">$</span><span class="va">h5f</span>, recursive <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
