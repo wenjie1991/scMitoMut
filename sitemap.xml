@@ -4,12 +4,6 @@
     <loc>/404.html</loc>
   </url>
   <url>
-    <loc>/LICENSE-text.html</loc>
-  </url>
-  <url>
-    <loc>/LICENSE.html</loc>
-  </url>
-  <url>
     <loc>/articles/Analysis_colon_cancer_dataset.html</loc>
   </url>
   <url>
@@ -56,6 +50,9 @@
   </url>
   <url>
     <loc>/reference/process_locus_bmbb.html</loc>
+  </url>
+  <url>
+    <loc>/reference/rm_mtmutObj.html</loc>
   </url>
   <url>
     <loc>/reference/run_model_fit.html</loc>

@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>scMitoMut demo: CRC dataset • scMitoMut</title>
-<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous">
+<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="../bootstrap-toc.css">
 <script src="../bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">scMitoMut</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.99.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.1.1</span>
       </span>
     </div>
 
@@ -58,7 +58,14 @@
   <a href="../news/index.html">Changelog</a>
 </li>
       </ul>
-<ul class="nav navbar-nav navbar-right"></ul>
+<ul class="nav navbar-nav navbar-right">
+<li>
+  <a href="https://github.com/wenjie1991/scMitoMut/" class="external-link">
+    <span class="fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
+      </ul>
 </div>
 <!--/.nav-collapse -->
   </div>
@@ -75,19 +82,26 @@
                         <h4 data-toc-skip class="author">Wenjie Sun</h4>
                         
       
-      
+      <small class="dont-index">Source: <a href="https://github.com/wenjie1991/scMitoMut/blob/HEAD/vignettes/Analysis_colon_cancer_dataset.Rmd" class="external-link"><code>vignettes/Analysis_colon_cancer_dataset.Rmd</code></a></small>
       <div class="hidden name"><code>Analysis_colon_cancer_dataset.Rmd</code></div>
 
     </div>
 
     
     
-<p>Install package:</p>
+<p>Install {scMitoMut} from Biocondcutor:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://bioconductor.github.io/BiocManager/reference/install.html" class="external-link">install</a></span><span class="op">(</span><span class="st">"scMitoMut"</span><span class="op">)</span></span></code></pre></div>
-<p>Load packages:</p>
+<code class="sourceCode R"><span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"BiocManager"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"BiocManager"</span><span class="op">)</span></span>
+<span><span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://bioconductor.github.io/BiocManager/reference/install.html" class="external-link">install</a></span><span class="op">(</span><span class="st">"scMitoMut"</span><span class="op">)</span></span></code></pre></div>
+<p>or from github:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">scMitoMut</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"remotes"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"remotes"</span><span class="op">)</span></span>
+<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"wenjie1991/scMitoMut"</span><span class="op">)</span></span></code></pre></div>
+<p>Load required packages.</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="http://github.com/wenjie1991/scMitoMut" class="external-link">scMitoMut</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-datatable.com" class="external-link">data.table</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/grimbough/rhdf5" class="external-link">rhdf5</a></span><span class="op">)</span></span></code></pre></div>
@@ -97,7 +111,7 @@
 <div class="section level3">
 <h3 id="key-functions">Key functions<a class="anchor" aria-label="anchor" href="#key-functions"></a>
 </h3>
-<p>Key functions used in the scMitoMut package:</p>
+<p>Following are the key functions used in the scMitoMut package:</p>
 <ul>
 <li>
 <code><a href="../reference/parse_mgatk.html">parse_mgatk()</a></code>: Parses the mgatk output and saves the
@@ -112,58 +126,53 @@ object.</li>
 <code><a href="../reference/run_model_fit.html">run_model_fit()</a></code>: Runs the model fitting and saves the
 results in the H5 file.</li>
 <li>
-<code>mut_filter()</code>: Filters the mutations based on specific
-criteria.</li>
+<code><a href="../reference/filter_loc.html">filter_loc()</a></code>: Filters the mutations based on
+criterias.</li>
 <li>
-<code><a href="../reference/plot_heatmap.html">plot_heatmap()</a></code>: Plots a heatmap with different types of
-data, including p-values, allele frequencies, or binary mutation
-status.</li>
+<code><a href="../reference/plot_heatmap.html">plot_heatmap()</a></code>: Plots a heatmap for p-values, allele
+frequencies, or binary mutation status.</li>
 <li>
 <code><a href="../reference/export_dt.html">export_df()</a></code>, <code><a href="../reference/export_dt.html">export_af()</a></code>,
 <code><a href="../reference/export_dt.html">export_pval()</a></code>, and <code><a href="../reference/export_dt.html">export_binary()</a></code>: Export the
-mutation data in various formats.</li>
+mutation data in <code>data.frame</code> format and the allele
+frequency, p-value, and binary mutation status in
+<code>data.matrix</code> format.</li>
 </ul>
 </div>
 <div class="section level3">
 <h3 id="key-conceptions">Key conceptions<a class="anchor" aria-label="anchor" href="#key-conceptions"></a>
 </h3>
 <ul>
-<li>Somatic mutation: a mutation that occurs in a cell or a cell
-population, but not in the germline.</li>
-<li>AF or VAF: allele frequency or variant allele frequency. It is the
-ratio of the number of reads supporting the variant allele to the total
-number of reads.</li>
-<li>p-value: the probability of observing a test statistic at least as
-extreme as the one that was observed, assuming that the null hypothesis
-is correct.</li>
+<li>Somatic mutation: the mutation that occurs in cells after
+fertilizatoin.</li>
+<li>AF or VAF: allele frequency (AF) or variant allele frequency (VAF).
+It is the ratio of the number of reads supporting the variant allele to
+the total number of reads covering that locus.</li>
 </ul>
-<p><strong>IMPORTANT</strong>: In this vignette, I will use the term
-“mutation” to refer to the somatic mutation. For the somatic mutation, I
-use the dominant allele detected as the reference allele. And if the
-reference allele frequency is significant (FDR &lt; 0.05) lowe, I will
-call the <strong>locus</strong> a mutation.</p>
+<p><strong>IMPORTANT</strong>: In this vignette, I used the term
+“mutation” to refer to the lineage-related somatic mutation. For each
+mutation, I used the dominant allele as the reference allele. If the
+reference allele frequency is significantly (FDR &lt; 0.05) lower, I
+will call the <strong>locus</strong> a mutation.</p>
+<!-- TODO: Describing the modeling details.-->
 </div>
 <div class="section level3">
 <h3 id="background">Background<a class="anchor" aria-label="anchor" href="#background"></a>
 </h3>
-<p>Single-cell genomics technology provides a powerful tool for
-understanding cellular heterogeneity and diversity within complex
+<p>Single-cell genomics technology serves as a powerful tool for gaining
+insights into cellular heterogeneity and diversity within complex
 tissues.</p>
-<p>Mitochondrial DNA (mtDNA) is small, without chromatin, and has
-multiple copies within a cell. Those features help us to get good mtDNA
-sequencing depth in single-cell ATAC seq data, which facilitates somatic
-mutation detections.</p>
-<p>Together with chromatin openness data, mitochondrial somatic mutation
-can be used as a lineage label for helping us understand cellular
-differentiation, oncogenesis and development.</p>
+<p>Mitochondrial DNA (mtDNA) is characterized by its small size and the
+presence of multiple copies within a cell. These attributes contribute
+to achieving robust mtDNA sequencing coverage and depth in single-cell
+sequencing data, thereby enhancing the detection of somatic mutations
+without dropout.</p>
 <p>In this vignette, the scMitoMut package is used to identify and
-visualize mtDNA single nucleic somatic mutations.</p>
+visualize lineage-related mtDNA single nucleic somatic mutations.</p>
 <p>In the following analysis, scMitoMut was used to analyze the allele
-count data, which is the output of <a href="https://github.com/caleblareau/mgatk" class="external-link">mgatk</a>. The only few loci
-have been selected for the demonstration purpose to reduce the file size
-and the run time.</p>
-<p>The full demostration can be found XXX, which shows the analysis
-begins with mgatk and CellRanger output.</p>
+count data, which is the output of <a href="https://github.com/caleblareau/mgatk" class="external-link">mgatk</a>. Only a few loci
+have been selected for demonstration purposes to reduce file size and
+run time. The full dataset can be access from {Signac} <a href="https://github.com/stuart-lab/signac/blob/1.9.0/vignettes/mito.Rmd" class="external-link">vignette</a>.</p>
 </div>
 </div>
 <div class="section level2">
@@ -175,7 +184,8 @@ function. The allele count table consists with following columns:</p>
 <li>
 <code>loc</code>: the locus name</li>
 <li>
-<code>cell_barcode</code>: the cell barcode of the cell</li>
+<code>cell_barcode</code>: the cell barcode in single-cell
+sequencing data</li>
 <li>
 <code>fwd_depth</code>: the forward read count of the allele</li>
 <li>
@@ -183,43 +193,44 @@ function. The allele count table consists with following columns:</p>
 <li>
 <code>alt</code>: the allele name</li>
 <li>
-<code>coverage</code>: the total read count of the locus</li>
+<code>coverage</code>: the read count covering the locus</li>
 <li>
 <code>ref</code>: the reference allele name</li>
 </ol>
-<p>Instead of using the table above as input, the output from the
-<code>mgatk</code> also can be read in directly using the
+<p>Instead of using the table above as input, the output from
+<code>mgatk</code> can also be directly read using the
 <code>parse_mgatk</code> function.</p>
 <p>Using the <code>parse_table</code> function or
-<code>parse_mgatk</code> function, the allele count data are transformed
-into an <code>H5</code> file. The <code>H5</code> file works as a
-database, which does not occupy the memory, and data can be accessed by
-querying. It helps for better memory usage and faster loading.</p>
+<code>parse_mgatk</code> function, the allele count data are read and
+saved into an <code>H5</code> file. The <code>H5</code> file works as a
+database, which does not occupy memory, and data can be randomly
+accessed by querying. It helps with better memory usage and faster
+loading.</p>
 <p>The process may take some minutes. The return value is the
 <code>H5</code> file path.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## Load the allele count table</span></span>
 <span><span class="va">f</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"mini_dataset.tsv.gz"</span>, package <span class="op">=</span> <span class="st">"scMitoMut"</span><span class="op">)</span></span>
 <span><span class="va">f_h5_tmp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".h5"</span><span class="op">)</span></span>
 <span><span class="va">f_h5</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/parse_table.html">parse_table</a></span><span class="op">(</span><span class="va">f</span>, h5_file <span class="op">=</span> <span class="va">f_h5_tmp</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">f_h5</span></span></code></pre></div>
-<pre><code><span><span class="co">## [1] "/var/folders/46/vh_b6qzs5kzgdhvx1kcn7hyh0000gn/T//Rtmpyym5Of/file20bb120974a2.h5"</span></span></code></pre>
-<p>Once we have the <code>H5</code> file, we can use
-<code>open_h5_file</code> function to load it and get an object named
-“mtmutObj”.</p>
+<pre><code><span><span class="co">## [1] "/var/folders/46/vh_b6qzs5kzgdhvx1kcn7hyh0000gn/T//Rtmpp9sqLf/file1f5f78d37c4d.h5"</span></span></code></pre>
+<p>After obtaining the <code>H5</code> file, the
+<code>open_h5_file</code> function can be utilized to load it, resulting
+in an object referred to as “mtmutObj”.</p>
 <p><strong>Detail</strong>: On this step, the <code>mtmutObj</code> has
 6 slots - <code>h5f</code> is the <code>H5</code> file handle -
 <code>mut_table</code> is the allele count table - <code>loc_list</code>
 is a list of available loci - <code>loc_selected</code> is the selected
 loci - <code>cell_list</code> is a list of available cell ids -
 <code>cell_selected</code> is the selected cell ids</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## Open the h5 file as a scMitoMut object</span></span>
 <span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/open_h5_file.html">open_h5_file</a></span><span class="op">(</span><span class="va">f_h5</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## List of 9</span></span>
-<span><span class="co">##  $ file         : chr "/var/folders/46/vh_b6qzs5kzgdhvx1kcn7hyh0000gn/T//Rtmpyym5Of/file20bb120974a2.h5"</span></span>
+<span><span class="co">##  $ file         : chr "/var/folders/46/vh_b6qzs5kzgdhvx1kcn7hyh0000gn/T//Rtmpp9sqLf/file1f5f78d37c4d.h5"</span></span>
 <span><span class="co">##  $ h5f          :Formal class 'H5IdComponent' [package "rhdf5"] with 2 slots</span></span>
 <span><span class="co">##   .. ..@ ID    : chr "72057594037927938"</span></span>
 <span><span class="co">##   .. ..@ native: logi FALSE</span></span>
@@ -237,7 +248,7 @@ loci - <code>cell_list</code> is a list of available cell ids -
 <span><span class="co">##   ..$ p_threshold : num 0.05</span></span>
 <span><span class="co">##   ..$ p_adj_method: chr "fdr"</span></span>
 <span><span class="co">##  - attr(*, "class")= chr "mtmutObj"</span></span></code></pre>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## Show what's in the h5 file</span></span>
 <span><span class="fu"><a href="https://rdrr.io/pkg/rhdf5/man/h5ls.html" class="external-link">h5ls</a></span><span class="op">(</span><span class="va">x</span><span class="op">$</span><span class="va">h5f</span>, recursive <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##   group          name       otype dclass  dim</span></span>
@@ -253,15 +264,16 @@ loci - <code>cell_list</code> is a list of available cell ids -
 <p>We are only interested in annotated good-quality cells.</p>
 <p>So we will select the cells with annotation, which are good quality
 cells.</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">f</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"mini_dataset_cell_ann.csv"</span>, package <span class="op">=</span> <span class="st">"scMitoMut"</span><span class="op">)</span></span>
 <span><span class="va">cell_ann</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="va">f</span>, row.names <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
+<span></span>
 <span><span class="co">## Subset the cells, the cell id can be found by colnames() for the Seurat object</span></span>
 <span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/subset_cell.html">subset_cell</a></span><span class="op">(</span><span class="va">x</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">cell_ann</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>After subsetting the cells, the <code>cell_selected</code> slot will
 be updated. Only the selected cells will be used in the following
 p-value calculation.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">x</span><span class="op">$</span><span class="va">cell_selected</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## [1] "AAACGAAAGAACCCGA-1" "AAACGAAAGTACCTCA-1" "AAACGAACAGAAAGAG-1"</span></span>
 <span><span class="co">## [4] "AAACGAAGTGGTCGAA-1" "AAACGAATCAATCGTG-1" "AAACGAATCCCACGGA-1"</span></span></code></pre>
@@ -271,14 +283,12 @@ function. It saves time when we only focus on a few loci.</p>
 <div class="section level2">
 <h2 id="calculating-mutation-p-value">Calculating mutation p-value<a class="anchor" aria-label="anchor" href="#calculating-mutation-p-value"></a>
 </h2>
-<p>Assuming an mtDNA locus’s majority base has constant allele frequency
-in cells, the allele frequency mutation was caused by sequencing error
-or sampling. Based on that assumption, we build a null hypothesis that
-there are no mutations for that locus in the cell. Then we fit the
-allele frequency distribution and calculate the probability of observing
-allele frequency for a specific locus in a cell. If the probability is
-small, we can reject the null hypothesis and conclude that there is a
-mutation for that locus in the cell.</p>
+<p>We built an null-hypothesis that there are not lineage-related
+mutation for specific locus in all cells. Then we fit the allele
+frequency distribution with beta-binomial distribution and calculate the
+probability of observing allele frequency for a specific locus in a
+cell. If the probability is small, we can reject the null hypothesis and
+conclude that there is a mutation for that locus in the cell.</p>
 <p>To calculate the probability value (p-value), we run
 <code>run_calling</code> function, which has 2 arguments: -
 <code>mtmutObj</code> is the <code>scMitoMut</code> object -
@@ -292,16 +302,16 @@ time.</p>
 mutation p-value is the probability that with the null hypothesis: there
 are no mutations for that locus in the cell.</p>
 <!--Remove the following lines-->
-<p><strong>Detail</strong>: For a specific locus, we calculate the
-p-value using the following steps. 1. Defining the wild-type allele as
-the allele with the highest average AF among cells. 2. Fitting a 2
-components binomial-mixture model to the AF of the wild-type allele for
-all cells. Using the model, we define the wild-type cells if it has a
-probability &gt;= 0.001 to be the wild type. 3. Using those wild-type
-cells, we fit the beta-binomial model. 4. At last, based on the model,
-we calculate the p-value of observing the AF of the wild-type allele in
-the cell.</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<p><strong>Detail</strong>: For each locus, we calculate the p-value
+using the following steps. 1. Defining the wild-type allele as the
+allele with the highest median allele frequency among cells. 2. Fitting
+a 2 components binomial-mixture distribution as classifier to select the
+likely wild-type cells. We define the likely wild-type cells if it has a
+probability &gt;= 0.001 to be the wild type. 3. Using those likely
+wild-type cells, we fit the beta-binomial model. 4. At last, based on
+the model, we calculate the p-value of observing the allele frequency of
+the wild-type allele in specific cell.</p>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## Run the model fitting</span></span>
 <span><span class="fu"><a href="../reference/run_model_fit.html">run_model_fit</a></span><span class="op">(</span><span class="va">x</span>, mc.cores <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## [1] "chrM.200"</span></span>
@@ -321,9 +331,9 @@ the cell.</p>
 <span><span class="co">## [1] "chrM.16093"</span></span>
 <span><span class="co">## [1] "chrM.16147"</span></span></code></pre>
 <pre><code><span><span class="co">##           used (Mb) gc trigger  (Mb) limit (Mb) max used  (Mb)</span></span>
-<span><span class="co">## Ncells 1166717 62.4    2296251 122.7         NA  2296251 122.7</span></span>
-<span><span class="co">## Vcells 2225695 17.0    8388608  64.0      16384  6295544  48.1</span></span></code></pre>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<span><span class="co">## Ncells 1189246 63.6    2338485 124.9         NA  2338485 124.9</span></span>
+<span><span class="co">## Vcells 2256682 17.3    8388608  64.0      16384  6536029  49.9</span></span></code></pre>
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## The p-value is kept in the pval group of H5 file</span></span>
 <span><span class="fu"><a href="https://rdrr.io/pkg/rhdf5/man/h5ls.html" class="external-link">h5ls</a></span><span class="op">(</span><span class="va">x</span><span class="op">$</span><span class="va">h5f</span>, recursive <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##   group          name       otype   dclass  dim</span></span>
@@ -341,8 +351,8 @@ the cell.</p>
 </h2>
 <p>Then we will filter the mutations by using the
 <code>mut_filter</code> function with the following criteria: - The
-mutation has at least 5 cells mutant. - The FDR-adjusted p-value is less
-than 0.05.</p>
+mutation has at least 5 cells mutant. - The FDR (false discovery rate)
+adjusted p-value (mutation quality q-value) is less than 0.05.</p>
 <p>The output is a <code>data.frame</code> with 2 columns -
 <code>loc</code> is the locus - <code>mut_cell_n</code> is the cell
 number</p>
@@ -351,8 +361,8 @@ number</p>
 arguments: - <code>mtmutObj</code> is the <code>mtmutObj</code> object -
 <code>min_cell</code> is the minimum number of mutant cells -
 <code>p_adj_method</code> is the method used to adjust the p-value. -
-<code>p_threshold</code> is the adjusted p-value threshold</p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<code>p_threshold</code> is the adjusted p-value (q-value) threshold</p>
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## Filter mutation</span></span>
 <span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/filter_loc.html">filter_loc</a></span><span class="op">(</span></span>
 <span>  mtmutObj <span class="op">=</span> <span class="va">x</span>,</span>
@@ -370,95 +380,94 @@ arguments: - <code>mtmutObj</code> is the <code>mtmutObj</code> object -
 <h2 id="visualization">Visualization<a class="anchor" aria-label="anchor" href="#visualization"></a>
 </h2>
 <p>We will visualize the mutation by heatmap using the
-<code>plot_heatmap</code> function. It can draw a heatmap of p-value,
-AF, or binarized mutation status. Its input is the <code>mtmutObj</code>
-object. It will independently apply all the filters we used in the
-<code>mut_filter</code> function, and select the cells and loci that
-pass the filter criteria. In all kinds of figures, the mutation status
-will be calculated, and the loci and cells are ordered by the mutation
-status.</p>
+<code>plot_heatmap</code> function. It can draw a heatmap of q-value,
+allele frequency, or binarized mutation status. Its input is the
+<code>mtmutObj</code> object. It will independently apply all the
+filters we used in the <code>mut_filter</code> function, and select the
+cells and loci that pass the filter criteria. In all kinds of figures,
+the mutation status will be calculated, and the loci and cells are
+ordered by the mutation status.</p>
+<!--TODO: make p value to be q-value-->
 <p><strong>Detail</strong>: The <code>plot_heatmap</code> arguments. -
-<code>mtmutObj</code> is the <code>scMitoMut</code> object -
-<code>pos_list</code> is the list of loci - <code>cell_ann</code> is the
-cell annotation - <code>ann_colors</code> is the color of the cell
-annotation - <code>type</code> is the type of the heatmap which can be
-<code>p</code>, <code>af</code>, or <code>binary</code> -
-<code>p_adj_method</code> is the method used to adjust the p-value -
+<code>mtmutObj</code> is the <code>scMitoMut</code> object. -
+<code>pos_list</code> is the list of loci. - <code>cell_ann</code> is
+the cell annotation. - <code>ann_colors</code> is the color of the cell
+annotation. - <code>type</code> is the type of the heatmap which can be
+<code>p</code>, <code>af</code>, or <code>binary</code>. -
+<code>p_adj_method</code> is the method used to adjust the p-value. -
 <code>p_threshold</code> is the adjusted p-value threshold to determine
-if a cell has mutation when selecting the cells and loci -
+if a cell has mutation when selecting the cells and loci. -
 <code>min_cell_n</code> is the minimum number of cells that have
-mutation when selecting the cells and loci - <code>p_binary</code> is
-the adjusted p-value threshold to get the binary mutation status -
+mutation when selecting the cells and loci. - <code>p_binary</code> is
+the adjusted p-value threshold to get the binary mutation status. -
 <code>percent_interp</code> is the percentage overlap threshold between
 mutations, to determine if two mutations are correlated for
 interpolating the mutation status - <code>n_interp</code> is the number
 of overlapped cells to determine if two mutations are correlated for
-interpolating</p>
+interpolating.</p>
 <p>The interpolation is based on the assumption that the mutation are
 unique, it is rare to have two mutation in the same population.
 Therefore, when two mutations are correlated, one of them is likely a
-subclone of the other one.</p>
+subclone of the other one. The interpolation is utilized primarily for
+the purpose of ordering cells during visualization.</p>
 <div class="section level3">
 <h3 id="binary-heatmap">Binary heatmap<a class="anchor" aria-label="anchor" href="#binary-heatmap"></a>
 </h3>
-<p>The binary heatmap will show the mutation status of each cell for
-each locus. The red means mutant, the blue means no mutant, and the grey
-means the missing value.</p>
-<p>For the mutation status, if two mutations are correlated, we set the
-high-frequency locus will get the mutant status from the low-frequency
-one. The correlation is determined by the percentage and number of cells
-overlapping between the two mutations.</p>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<p>The binary heatmap displays the mutation status of each cell
+corresponding to each locus. The color red suggests the presence of a
+mutant, whereas blue indicates its absence, and white denotes a missing
+value.</p>
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## Prepare the color for cell annotation</span></span>
 <span><span class="va">colors</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
 <span>  <span class="st">"Cancer Epi"</span> <span class="op">=</span> <span class="st">"#f28482"</span>,</span>
 <span>  Blood <span class="op">=</span> <span class="st">"#f6bd60"</span></span>
 <span><span class="op">)</span></span>
 <span><span class="va">ann_colors</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"SeuratCellTypes"</span> <span class="op">=</span> <span class="va">colors</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## binary heatmap</span></span>
 <span><span class="fu"><a href="../reference/plot_heatmap.html">plot_heatmap</a></span><span class="op">(</span><span class="va">x</span>,</span>
 <span>  cell_ann <span class="op">=</span> <span class="va">cell_ann</span>, ann_colors <span class="op">=</span> <span class="va">ann_colors</span>, type <span class="op">=</span> <span class="st">"binary"</span>,</span>
 <span>  percent_interp <span class="op">=</span> <span class="fl">0.2</span>, n_interp <span class="op">=</span> <span class="fl">3</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p><img src="Analysis_colon_cancer_dataset_files/figure-html/unnamed-chunk-12-1.png" width="1152"></p>
+<p><img src="Analysis_colon_cancer_dataset_files/figure-html/unnamed-chunk-13-1.png" width="1152"></p>
 <p>Also we can turn off the interpolation by setting
 <code>percent_interp = 1</code>.</p>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## binary heatmap</span></span>
 <span><span class="fu"><a href="../reference/plot_heatmap.html">plot_heatmap</a></span><span class="op">(</span><span class="va">x</span>,</span>
 <span>  cell_ann <span class="op">=</span> <span class="va">cell_ann</span>, ann_colors <span class="op">=</span> <span class="va">ann_colors</span>, type <span class="op">=</span> <span class="st">"binary"</span>,</span>
 <span>  percent_interp <span class="op">=</span> <span class="fl">1</span>, n_interp <span class="op">=</span> <span class="fl">3</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p><img src="Analysis_colon_cancer_dataset_files/figure-html/unnamed-chunk-13-1.png" width="1152"></p>
+<p><img src="Analysis_colon_cancer_dataset_files/figure-html/unnamed-chunk-14-1.png" width="1152"></p>
 </div>
 <div class="section level3">
 <h3 id="p-value-heatmap">P value heatmap<a class="anchor" aria-label="anchor" href="#p-value-heatmap"></a>
 </h3>
-<p>The p-value heatmap shows the adjusted p-value of each cell for each
-locus. The order of the cells and loci is determined by the mutation
-status.</p>
-<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<p>The p-value heatmap illustrates the adjusted p-values for each cell
+corresponding to each locus. The arrangement of the cells and loci is
+based on their binary mutation status.</p>
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## p value heatmap</span></span>
 <span><span class="fu"><a href="../reference/plot_heatmap.html">plot_heatmap</a></span><span class="op">(</span><span class="va">x</span>,</span>
 <span>  cell_ann <span class="op">=</span> <span class="va">cell_ann</span>, ann_colors <span class="op">=</span> <span class="va">ann_colors</span>, type <span class="op">=</span> <span class="st">"p"</span>,</span>
 <span>  percent_interp <span class="op">=</span> <span class="fl">0.2</span>, n_interp <span class="op">=</span> <span class="fl">3</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p><img src="Analysis_colon_cancer_dataset_files/figure-html/unnamed-chunk-14-1.png" width="1152"></p>
+<p><img src="Analysis_colon_cancer_dataset_files/figure-html/unnamed-chunk-15-1.png" width="1152"></p>
 </div>
 <div class="section level3">
 <h3 id="af-heatmap">AF heatmap<a class="anchor" aria-label="anchor" href="#af-heatmap"></a>
 </h3>
-<p>The AF heatmap will show the AF of each cell for each locus. Similar
-to the p-value heatmap, the order of the cells and loci are determined
-by the mutation status.</p>
-<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<p>The allele frequency heatmap illustrates the allele frequency of each
+cell at each locus. The order of the cells and loci are determined by
+the mutation status too.</p>
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## allele frequency heatmap</span></span>
 <span><span class="fu"><a href="../reference/plot_heatmap.html">plot_heatmap</a></span><span class="op">(</span><span class="va">x</span>,</span>
 <span>  cell_ann <span class="op">=</span> <span class="va">cell_ann</span>, ann_colors <span class="op">=</span> <span class="va">ann_colors</span>, type <span class="op">=</span> <span class="st">"af"</span>,</span>
 <span>  percent_interp <span class="op">=</span> <span class="fl">0.2</span>, n_interp <span class="op">=</span> <span class="fl">3</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p><img src="Analysis_colon_cancer_dataset_files/figure-html/unnamed-chunk-15-1.png" width="1152"></p>
+<p><img src="Analysis_colon_cancer_dataset_files/figure-html/unnamed-chunk-16-1.png" width="1152"></p>
 </div>
 </div>
 <div class="section level2">
@@ -485,7 +494,7 @@ names.</li>
 </ul>
 <p>Those functions have the same filtering options as the
 <code>plot_heatmap</code> function.</p>
-<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## Export the mutation data as data.frame</span></span>
 <span><span class="va">m_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/export_dt.html">export_df</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
 <span><span class="va">m_df</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">10</span>, <span class="op">]</span></span></code></pre></div>
@@ -511,7 +520,7 @@ names.</li>
 <span><span class="co">## 8  1.000000      FALSE</span></span>
 <span><span class="co">## 9  1.000000      FALSE</span></span>
 <span><span class="co">## 10 1.000000      FALSE</span></span></code></pre>
-<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## Export allele frequency data as data.matrix</span></span>
 <span><span class="fu"><a href="../reference/export_dt.html">export_af</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span></span></code></pre></div>
 <pre><code><span><span class="co">##            AAACGAAAGAACCCGA-1 AAACGAAAGTACCTCA-1 AAACGAACAGAAAGAG-1</span></span>
@@ -526,7 +535,7 @@ names.</li>
 <span><span class="co">## chrM.16093                  1                  1</span></span>
 <span><span class="co">## chrM.16147                  0                  1</span></span>
 <span><span class="co">## chrM.200                    1                  1</span></span></code></pre>
-<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## Export p-value data as data.matrix</span></span>
 <span><span class="fu"><a href="../reference/export_dt.html">export_pval</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span></span></code></pre></div>
 <pre><code><span><span class="co">##            AAACGAAAGAACCCGA-1 AAACGAAAGTACCTCA-1 AAACGAACAGAAAGAG-1</span></span>
@@ -541,7 +550,7 @@ names.</li>
 <span><span class="co">## chrM.16093       1.000000e+00                  1</span></span>
 <span><span class="co">## chrM.16147       1.082287e-09                  1</span></span>
 <span><span class="co">## chrM.200         1.000000e+00                  1</span></span></code></pre>
-<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## Export binary mutation status data as data.matrix</span></span>
 <span><span class="fu"><a href="../reference/export_dt.html">export_binary</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span></span></code></pre></div>
 <pre><code><span><span class="co">##            AAACGAAAGAACCCGA-1 AAACGAAAGTACCTCA-1 AAACGAACAGAAAGAG-1</span></span>
@@ -558,55 +567,73 @@ names.</li>
 <span><span class="co">## chrM.200                    0                  0</span></span></code></pre>
 </div>
 <div class="section level2">
-<h2 id="show-the-p-value-versus-af-plot">Show the p value versus af plot<a class="anchor" aria-label="anchor" href="#show-the-p-value-versus-af-plot"></a>
+<h2 id="show-the-p-value-af-plot-versus-cell-types">Show the p value, af plot versus cell types<a class="anchor" aria-label="anchor" href="#show-the-p-value-af-plot-versus-cell-types"></a>
 </h2>
-<p>Lastly, we try to show the distribution of p value and AF value. It
-is also a demonstration of how to extract the information from the H5
-file and use it for further analysis.</p>
-<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">m_dt</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></span><span class="op">(</span><span class="va">m_df</span><span class="op">)</span></span>
+<p>Lastly, we try to show the distribution of p value and allele
+frequency value versus cell types.</p>
+<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co">## The `m_df` is exported using the `export_df` function above.</span></span>
+<span><span class="va">m_dt</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></span><span class="op">(</span><span class="va">m_df</span><span class="op">)</span></span>
 <span><span class="va">m_dt</span><span class="op">[</span>, <span class="va">cell_type</span> <span class="op">:=</span> <span class="va">cell_ann</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="va">m_dt</span><span class="op">$</span><span class="va">cell_barcode</span><span class="op">)</span>, <span class="st">"SeuratCellTypes"</span><span class="op">]</span><span class="op">]</span></span>
 <span><span class="va">m_dt_sub</span> <span class="op">&lt;-</span> <span class="va">m_dt</span><span class="op">[</span><span class="va">loc</span> <span class="op">==</span> <span class="st">"chrM.1227"</span><span class="op">]</span></span>
 <span><span class="va">m_dt_sub</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="op">(</span><span class="va">pval</span><span class="op">)</span> <span class="op">&lt;</span> <span class="fl">0.01</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>, by <span class="op">=</span> <span class="va">cell_type</span><span class="op">]</span></span></code></pre></div>
-<pre><code><span><span class="co">##     cell_type V1</span></span>
-<span><span class="co">## 1: Cancer Epi 28</span></span>
-<span><span class="co">## 2:      Blood  0</span></span></code></pre>
-<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
+<pre><code><span><span class="co">##     cell_type    V1</span></span>
+<span><span class="co">##        &lt;char&gt; &lt;int&gt;</span></span>
+<span><span class="co">## 1: Cancer Epi    28</span></span>
+<span><span class="co">## 2:      Blood     0</span></span></code></pre>
+<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">m_dt_sub</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="op">(</span><span class="fl">1</span> <span class="op">-</span> <span class="va">af</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">0.05</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>, by <span class="op">=</span> <span class="va">cell_type</span><span class="op">]</span></span></code></pre></div>
-<pre><code><span><span class="co">##     cell_type V1</span></span>
-<span><span class="co">## 1: Cancer Epi 42</span></span>
-<span><span class="co">## 2:      Blood  2</span></span></code></pre>
-<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">m_dt_sub</span><span class="op">)</span> <span class="op">+</span></span>
+<pre><code><span><span class="co">##     cell_type    V1</span></span>
+<span><span class="co">##        &lt;char&gt; &lt;int&gt;</span></span>
+<span><span class="co">## 1: Cancer Epi    42</span></span>
+<span><span class="co">## 2:      Blood     2</span></span></code></pre>
+<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co">## The p value versus cell types</span></span>
+<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">m_dt_sub</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">cell_type</span>, y <span class="op">=</span> <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log10</a></span><span class="op">(</span><span class="va">pval</span><span class="op">)</span>, color <span class="op">=</span> <span class="va">cell_type</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_jitter.html" class="external-link">geom_jitter</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_manual.html" class="external-link">scale_color_manual</a></span><span class="op">(</span>values <span class="op">=</span> <span class="va">colors</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_bw</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html" class="external-link">geom_hline</a></span><span class="op">(</span>yintercept <span class="op">=</span> <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log10</a></span><span class="op">(</span><span class="fl">0.01</span><span class="op">)</span>, linetype <span class="op">=</span> <span class="st">"dashed"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ylab</a></span><span class="op">(</span><span class="st">"-log10(FDR)"</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## Warning in FUN(X[[i]], ...): NaNs produced</span></span>
-<span></span>
-<span><span class="co">## Warning in FUN(X[[i]], ...): NaNs produced</span></span></code></pre>
-<pre><code><span><span class="co">## Warning: Removed 4 rows containing missing values (`geom_point()`).</span></span></code></pre>
-<p><img src="Analysis_colon_cancer_dataset_files/figure-html/unnamed-chunk-17-1.png" width="480"></p>
-<div class="sourceCode" id="cb40"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">m_dt_sub</span><span class="op">)</span> <span class="op">+</span></span>
+<pre><code><span><span class="co">## Warning in FUN(X[[i]], ...): NaNs produced</span></span></code></pre>
+<pre><code><span><span class="co">## Warning: Removed 4 rows containing missing values or values outside the scale range</span></span>
+<span><span class="co">## (`geom_point()`).</span></span></code></pre>
+<p><img src="Analysis_colon_cancer_dataset_files/figure-html/unnamed-chunk-18-1.png" width="480"></p>
+<div class="sourceCode" id="cb41"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co">## The allele frequency versus cell types</span></span>
+<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">m_dt_sub</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">cell_type</span>, y <span class="op">=</span> <span class="fl">1</span> <span class="op">-</span> <span class="va">af</span>, color <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">cell_type</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_jitter.html" class="external-link">geom_jitter</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_manual.html" class="external-link">scale_color_manual</a></span><span class="op">(</span>values <span class="op">=</span> <span class="va">colors</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_bw</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html" class="external-link">geom_hline</a></span><span class="op">(</span>yintercept <span class="op">=</span> <span class="fl">0.05</span>, linetype <span class="op">=</span> <span class="st">"dashed"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ylab</a></span><span class="op">(</span><span class="st">"1 - Dominant Allele Frequency"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Analysis_colon_cancer_dataset_files/figure-html/unnamed-chunk-17-2.png" width="480"></p>
+<p><img src="Analysis_colon_cancer_dataset_files/figure-html/unnamed-chunk-18-2.png" width="480"></p>
+<div class="sourceCode" id="cb42"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co">## The p value versus allele frequency</span></span>
+<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">m_dt_sub</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log10</a></span><span class="op">(</span><span class="va">pval</span><span class="op">)</span>, y <span class="op">=</span> <span class="fl">1</span> <span class="op">-</span> <span class="va">af</span>, color <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">cell_type</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_manual.html" class="external-link">scale_color_manual</a></span><span class="op">(</span>values <span class="op">=</span> <span class="va">colors</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_bw</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html" class="external-link">geom_hline</a></span><span class="op">(</span>yintercept <span class="op">=</span> <span class="fl">0.05</span>, linetype <span class="op">=</span> <span class="st">"dashed"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html" class="external-link">geom_vline</a></span><span class="op">(</span>xintercept <span class="op">=</span> <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log10</a></span><span class="op">(</span><span class="fl">0.01</span><span class="op">)</span>, linetype <span class="op">=</span> <span class="st">"dashed"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">xlab</a></span><span class="op">(</span><span class="st">"-log10(FDR)"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ylab</a></span><span class="op">(</span><span class="st">"1 - Dominant Allele Frequency"</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## Warning in FUN(X[[i]], ...): NaNs produced</span></span>
+<span><span class="co">## Warning in FUN(X[[i]], ...): Removed 4 rows containing missing values or values outside the scale range</span></span>
+<span><span class="co">## (`geom_point()`).</span></span></code></pre>
+<p><img src="Analysis_colon_cancer_dataset_files/figure-html/unnamed-chunk-18-3.png" width="480"></p>
 </div>
 <div class="section level2">
 <h2 id="session-info">Session Info<a class="anchor" aria-label="anchor" href="#session-info"></a>
 </h2>
-<div class="sourceCode" id="cb41"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb44"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## R version 4.3.0 (2023-04-21)</span></span>
+<pre><code><span><span class="co">## R version 4.3.2 (2023-10-31)</span></span>
 <span><span class="co">## Platform: x86_64-apple-darwin20 (64-bit)</span></span>
-<span><span class="co">## Running under: macOS 14.1</span></span>
+<span><span class="co">## Running under: macOS Sonoma 14.5</span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## Matrix products: default</span></span>
 <span><span class="co">## BLAS:   /Library/Frameworks/R.framework/Versions/4.3-x86_64/Resources/lib/libRblas.0.dylib </span></span>
@@ -622,32 +649,32 @@ file and use it for further analysis.</p>
 <span><span class="co">## [1] stats     graphics  grDevices utils     datasets  methods   base     </span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## other attached packages:</span></span>
-<span><span class="co">## [1] rhdf5_2.44.0      ggplot2_3.4.2     data.table_1.14.8 scMitoMut_0.99.1 </span></span>
-<span><span class="co">## [5] knitr_1.43        BiocStyle_2.28.0 </span></span>
+<span><span class="co">## [1] rhdf5_2.46.1      ggplot2_3.5.0     data.table_1.15.4 scMitoMut_0.99.1 </span></span>
+<span><span class="co">## [5] knitr_1.46        BiocStyle_2.30.0  nvimcom_0.9.45   </span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## loaded via a namespace (and not attached):</span></span>
-<span><span class="co">##  [1] sass_0.4.6          utf8_1.2.3          generics_0.1.3     </span></span>
-<span><span class="co">##  [4] stringi_1.7.12      hms_1.1.3           digest_0.6.31      </span></span>
-<span><span class="co">##  [7] magrittr_2.0.3      RColorBrewer_1.1-3  evaluate_0.21      </span></span>
-<span><span class="co">## [10] grid_4.3.0          bookdown_0.34       fastmap_1.1.1      </span></span>
-<span><span class="co">## [13] R.oo_1.25.0         plyr_1.8.8          rprojroot_2.0.3    </span></span>
-<span><span class="co">## [16] jsonlite_1.8.5      R.utils_2.12.2      BiocManager_1.30.21</span></span>
-<span><span class="co">## [19] purrr_1.0.1         fansi_1.0.4         scales_1.2.1       </span></span>
-<span><span class="co">## [22] textshaping_0.3.6   jquerylib_0.1.4     cli_3.6.1          </span></span>
-<span><span class="co">## [25] rlang_1.1.1         R.methodsS3_1.8.2   munsell_0.5.0      </span></span>
-<span><span class="co">## [28] withr_2.5.0         cachem_1.0.8        yaml_2.3.7         </span></span>
-<span><span class="co">## [31] parallel_4.3.0      tools_4.3.0         tzdb_0.4.0         </span></span>
-<span><span class="co">## [34] memoise_2.0.1       dplyr_1.1.2         colorspace_2.1-0   </span></span>
-<span><span class="co">## [37] Rhdf5lib_1.22.0     vctrs_0.6.3         R6_2.5.1           </span></span>
-<span><span class="co">## [40] lifecycle_1.0.3     zlibbioc_1.46.0     stringr_1.5.0      </span></span>
-<span><span class="co">## [43] fs_1.6.2            ragg_1.2.5          pkgconfig_2.0.3    </span></span>
-<span><span class="co">## [46] desc_1.4.2          pkgdown_2.0.7       bslib_0.5.0        </span></span>
-<span><span class="co">## [49] pillar_1.9.0        gtable_0.3.3        glue_1.6.2         </span></span>
-<span><span class="co">## [52] Rcpp_1.0.10         systemfonts_1.0.4   highr_0.10         </span></span>
-<span><span class="co">## [55] xfun_0.39           tibble_3.2.1        tidyselect_1.2.0   </span></span>
-<span><span class="co">## [58] rhdf5filters_1.12.1 farver_2.1.1        htmltools_0.5.5    </span></span>
-<span><span class="co">## [61] labeling_0.4.2      rmarkdown_2.22      readr_2.1.4        </span></span>
-<span><span class="co">## [64] pheatmap_1.0.12     compiler_4.3.0</span></span></code></pre>
+<span><span class="co">##  [1] sass_0.4.9          utf8_1.2.4          generics_0.1.3     </span></span>
+<span><span class="co">##  [4] stringi_1.8.3       hms_1.1.3           digest_0.6.35      </span></span>
+<span><span class="co">##  [7] magrittr_2.0.3      RColorBrewer_1.1-3  evaluate_0.23      </span></span>
+<span><span class="co">## [10] grid_4.3.2          bookdown_0.38       fastmap_1.1.1      </span></span>
+<span><span class="co">## [13] R.oo_1.26.0         plyr_1.8.9          jsonlite_1.8.8     </span></span>
+<span><span class="co">## [16] R.utils_2.12.3      BiocManager_1.30.22 purrr_1.0.2        </span></span>
+<span><span class="co">## [19] fansi_1.0.6         scales_1.3.0        textshaping_0.3.7  </span></span>
+<span><span class="co">## [22] jquerylib_0.1.4     cli_3.6.2           rlang_1.1.3        </span></span>
+<span><span class="co">## [25] R.methodsS3_1.8.2   munsell_0.5.1       withr_3.0.0        </span></span>
+<span><span class="co">## [28] cachem_1.0.8        yaml_2.3.8          parallel_4.3.2     </span></span>
+<span><span class="co">## [31] tools_4.3.2         tzdb_0.4.0          memoise_2.0.1      </span></span>
+<span><span class="co">## [34] dplyr_1.1.4         colorspace_2.1-0    Rhdf5lib_1.24.2    </span></span>
+<span><span class="co">## [37] vctrs_0.6.5         R6_2.5.1            lifecycle_1.0.4    </span></span>
+<span><span class="co">## [40] stringr_1.5.1       zlibbioc_1.48.2     fs_1.6.3           </span></span>
+<span><span class="co">## [43] htmlwidgets_1.6.4   ragg_1.3.0          pkgconfig_2.0.3    </span></span>
+<span><span class="co">## [46] desc_1.4.3          pkgdown_2.0.8       bslib_0.7.0        </span></span>
+<span><span class="co">## [49] pillar_1.9.0        gtable_0.3.4        glue_1.7.0         </span></span>
+<span><span class="co">## [52] Rcpp_1.0.12         systemfonts_1.0.6   highr_0.10         </span></span>
+<span><span class="co">## [55] xfun_0.43           tibble_3.2.1        tidyselect_1.2.1   </span></span>
+<span><span class="co">## [58] rhdf5filters_1.14.1 farver_2.1.1        htmltools_0.5.8.1  </span></span>
+<span><span class="co">## [61] labeling_0.4.3      rmarkdown_2.26      readr_2.1.5        </span></span>
+<span><span class="co">## [64] pheatmap_1.0.12     compiler_4.3.2</span></span></code></pre>
 </div>
   </div>
 
@@ -668,7 +695,7 @@ file and use it for further analysis.</p>
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.8.</p>
 </div>
 
       </footer>
