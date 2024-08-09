@@ -1,7 +1,6 @@
-pandoc: 2.17.1.1
-pkgdown: 2.0.8
-pkgdown_sha: ~
+pandoc: 3.2.1
+pkgdown: 2.1.0.9000
+pkgdown_sha: 1d40a80e6b3564a6d7da0ce467b0a4570aa5665e
 articles:
   Analysis_colon_cancer_dataset: Analysis_colon_cancer_dataset.html
-last_built: 2024-07-26T22:59Z
-
+last_built: 2024-08-09T14:52Z
