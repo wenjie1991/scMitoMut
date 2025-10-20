@@ -3,7 +3,7 @@
 #######################################################################
 
 ## Parse the output of mtGATK into a data.table.
-read_mgatk <- function(mgatk_output_dir, prefix) {
+read_mgatk_single <- function(mgatk_output_dir, prefix) {
     mgatk_output_dir <- paste0(mgatk_output_dir)
     base_reads_files <- dir(mgatk_output_dir, str_glue("{prefix}.[ACTG].txt.gz"), full.names = TRUE)
 
@@ -42,6 +42,36 @@ read_mgatk <- function(mgatk_output_dir, prefix) {
     # rm(coverage_d)
     # rm(ref_d)
     # gc()
+    ## loc, cell_barcode, fwd_depth, rev_depth, alt, coverage, ref
+    merge_d
+}
+
+## HACK: align the variable length, if length 1, replicate it; 
+## if length n, keep it; if not the same length, throw error
+read_mgatk <- function(mgatk_output_dir, prefix, barcode_add_suffix = NULL) {
+    if (length(mgatk_output_dir) != 1 & length(prefix) != 1 & length(mgatk_output_dir) != length(prefix)) {
+        stop("Parameter `mgatk_output_dir` and `prefix` should have the same length or `prefix` should be length 1")
+    }
+
+    if (length(mgatk_output_dir) == 1) {
+        merge_d <- read_mgatk_single(mgatk_output_dir, prefix)
+        if (!is.null(barcode_add_suffix)) {
+            merge_d[, cell_barcode := paste0(cell_barcode, barcode_add_suffix)]
+        }
+    } else {
+        if (length(prefix) == 1) {
+            prefix <- rep(prefix, length(mgatk_output_dir))
+        }
+        if (length(barcode_add_suffix) == 1 & !is.null(barcode_add_suffix)) {
+            barcode_add_suffix <- rep(barcode_add_suffix, length(mgatk_output_dir))
+        }
+        merge_d <- lapply(seq_along(mgatk_output_dir), function(i) {
+            d = read_mgatk_single(mgatk_output_dir[i], prefix[i])
+            if (!is.null(barcode_add_suffix)) {
+                d[, cell_barcode := paste0(cell_barcode, barcode_add_suffix[i])]
+            }
+        }) %>% rbindlist()
+    }
     merge_d
 }
 
@@ -259,16 +289,18 @@ rm_mtmutObj <- function(x, envir = .GlobalEnv) {
 #' x
 #' ##
 #' @export
-parse_mgatk <- function(dir, prefix, h5_file = "mut.h5") {
+parse_mgatk <- function(dir, prefix, h5_file = "mut.h5", barcode_add_suffix = NULL) {
 
     ## check dir 
-    if (!dir.exists(dir)) {
-        stop("Directory ", dir, " not exists!")
+    for (d in dir) {
+        if (!dir.exists(d)) {
+            stop("Directory ", d, " not exists!")
+        }
     }
 
     ##############################
     ## Read in data
-    merge_d <- read_mgatk(mgatk_output_dir = dir, prefix = prefix)
+    merge_d <- read_mgatk(mgatk_output_dir = dir, prefix = prefix, barcode_add_suffix = barcode_add_suffix)
 
     ##############################
     ## save to h5 file
